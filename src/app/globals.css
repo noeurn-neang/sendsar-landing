@@ -1,0 +1,71 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/*
+ * Flash Chat — brand palette (flashchat-brand.svg v1)
+ * Primary #14b8a6 · Dark #0f172a · Flash #fb923c
+ */
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --surface: #ffffff;
+  --surface-muted: #f8fafc;
+  --border: #e2e8f0;
+  --brand: #14b8a6;
+  --brand-strong: #0d9488;
+  --brand-light: #ccfbf1;
+  --flash: #fb923c;
+  --flash-strong: #ea580c;
+  --hero: #0f172a;
+  --hero-muted: #94a3b8;
+  --hero-surface: #1e293b;
+  --hero-border: #334155;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-light: var(--brand-light);
+  --color-flash: var(--flash);
+  --color-flash-strong: var(--flash-strong);
+  --color-hero: var(--hero);
+  --color-hero-muted: var(--hero-muted);
+  --color-hero-surface: var(--hero-surface);
+  --color-hero-border: var(--hero-border);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-family-brand: var(--font-inter), system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0f172a;
+    --foreground: #f8fafc;
+    --surface: #1e293b;
+    --surface-muted: #1e293b;
+    --border: #334155;
+    --brand: #14b8a6;
+    --brand-strong: #2dd4bf;
+    --brand-light: #134e4a;
+    --hero: #0f172a;
+    --hero-muted: #64748b;
+    --hero-surface: #1e293b;
+    --hero-border: #334155;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  overflow-x: clip;
+}
+
+html {
+  scroll-behavior: smooth;
+}
