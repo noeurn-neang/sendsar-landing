@@ -19,8 +19,17 @@ export default function OgImage() {
           color: "#ffffff",
         }}
       >
-        <div style={{ fontSize: 72, fontWeight: 800, letterSpacing: "-2px" }}>
-          Flash <span style={{ color: "#14b8a6" }}>Chat</span>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            fontSize: 72,
+            fontWeight: 800,
+            letterSpacing: "-2px",
+          }}
+        >
+          <span>Flash </span>
+          <span style={{ color: "#14b8a6" }}>Chat</span>
         </div>
         <div style={{ fontSize: 32, color: "#94a3b8", marginTop: 20 }}>
           Headless Chat API · Connect any two parties. Instantly.
