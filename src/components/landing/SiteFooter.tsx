@@ -14,7 +14,6 @@ const footerLinks = {
   Developers: [
     { label: "Documentation", href: siteConfig.docsUrl, external: true },
     { label: "API reference", href: `${siteConfig.docsUrl}/api/`, external: true },
-    { label: "GitHub", href: siteConfig.githubUrl, external: true },
     { label: "Live demo", href: siteConfig.demoUrl, external: true },
   ],
   Resources: [{ label: "Blog", href: "/blog" }],

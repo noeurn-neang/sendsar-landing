@@ -14,7 +14,6 @@ export function HomeJsonLd() {
             name: siteConfig.name,
             url: absoluteUrl("/"),
             logo: absoluteUrl("/icon.svg"),
-            sameAs: [siteConfig.githubUrl],
           },
           {
             "@type": "WebSite",

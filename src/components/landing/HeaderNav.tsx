@@ -199,14 +199,6 @@ export function HeaderNav() {
 
       <div className="hidden items-center gap-3 lg:flex">
         <a
-          href={siteConfig.githubUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sm font-medium text-neutral-600 transition hover:text-brand dark:text-neutral-300"
-        >
-          GitHub
-        </a>
-        <a
           href={siteConfig.quickstartUrl}
           target="_blank"
           rel="noopener noreferrer"
@@ -260,15 +252,6 @@ export function HeaderNav() {
           </ul>
 
           <div className="flex flex-col gap-2 border-t border-border pt-4">
-            <a
-              href={siteConfig.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-lg border border-border px-3 py-2.5 text-center text-sm font-semibold text-neutral-700 transition hover:border-brand/40 hover:text-brand dark:text-neutral-200"
-              onClick={close}
-            >
-              GitHub
-            </a>
             <a
               href={siteConfig.quickstartUrl}
               target="_blank"

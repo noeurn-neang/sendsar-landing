@@ -49,12 +49,6 @@ export const developerLinks: NavItem[] = [
     external: true,
     description: "REST endpoints",
   },
-  {
-    label: "GitHub",
-    href: siteConfig.githubUrl,
-    external: true,
-    description: "Open source gateway",
-  },
 ];
 
 export const topNavLinks: NavItem[] = [

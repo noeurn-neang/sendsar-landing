@@ -1,6 +1,5 @@
 const docsUrl =
-  process.env.NEXT_PUBLIC_DOCS_URL ??
-  "https://flashchat-staging-api.direxme.com/docs";
+  process.env.NEXT_PUBLIC_DOCS_URL ?? "https://flashchat-api.direxme.com/docs";
 
 export const siteConfig = {
   name: "Flash Chat",
@@ -12,9 +11,7 @@ export const siteConfig = {
   docsUrl,
   quickstartUrl: `${docsUrl.replace(/\/$/, "")}/setup/quickstart`,
   demoUrl:
-    process.env.NEXT_PUBLIC_DEMO_URL ??
-    "https://flashchat-staging-demo.direxme.com",
-  githubUrl: "https://github.com/direxme/flash-chat",
+    process.env.NEXT_PUBLIC_DEMO_URL ?? "https://flashchat-demo.direxme.com",
   keywords: [
     "headless chat API",
     "in-app messaging",

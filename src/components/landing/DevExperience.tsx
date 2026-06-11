@@ -41,12 +41,12 @@ export function DevExperience() {
                 Open documentation
               </a>
               <a
-                href={siteConfig.githubUrl}
+                href={siteConfig.quickstartUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-md border border-hero-border px-4 py-2 text-sm font-semibold text-stone-200 hover:border-brand/60"
               >
-                View on GitHub
+                Quickstart guide
               </a>
             </div>
           </div>
