@@ -23,6 +23,8 @@
 # misc
 .DS_Store
 *.pem
+.favicon-gen
+.favicon-*.png
 
 # debug
 npm-debug.log*

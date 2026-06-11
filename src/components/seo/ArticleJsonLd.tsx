@@ -32,7 +32,7 @@ export function ArticleJsonLd({
               name: siteConfig.name,
               logo: {
                 "@type": "ImageObject",
-                url: absoluteUrl("/icon.svg"),
+                url: absoluteUrl("/favicon.svg"),
               },
             },
             mainEntityOfPage: { "@type": "WebPage", "@id": url },

@@ -13,7 +13,7 @@ export function HomeJsonLd() {
             "@id": `${absoluteUrl("/")}#organization`,
             name: siteConfig.name,
             url: absoluteUrl("/"),
-            logo: absoluteUrl("/icon.svg"),
+            logo: absoluteUrl("/favicon.svg"),
           },
           {
             "@type": "WebSite",
