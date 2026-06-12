@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Logo } from "@/components/landing/Logo";
+import { navVisibility } from "@/lib/nav";
 import { siteConfig } from "@/lib/site";
 
 const footerLinks = {
@@ -8,13 +9,21 @@ const footerLinks = {
     { label: "Platform overview", href: "/#platform" },
     { label: "How it works", href: "/#how-it-works" },
     { label: "Features", href: "/#features" },
-    { label: "Pricing", href: "/pricing" },
+    ...(navVisibility.pricing ? [{ label: "Pricing", href: "/pricing" }] : []),
     { label: "Use cases", href: "/#use-cases" },
   ],
-  Developers: [
-    { label: "Documentation", href: siteConfig.docsUrl, external: true },
-    { label: "API reference", href: `${siteConfig.docsUrl}/api/`, external: true },
-    { label: "Live demo", href: siteConfig.demoUrl, external: true },
+  ...(navVisibility.developers
+    ? {
+        Developers: [
+          { label: "Documentation", href: siteConfig.docsUrl, external: true },
+          { label: "Quickstart", href: siteConfig.quickstartUrl, external: true },
+          { label: "Telegram", href: siteConfig.contactTelegram, external: true },
+        ],
+      }
+    : {}),
+  Contact: [
+    { label: "Email", href: siteConfig.earlyAccessMailto, external: true },
+    { label: "Telegram", href: siteConfig.contactTelegram, external: true },
   ],
   Resources: [{ label: "Blog", href: "/blog" }],
 };
@@ -31,7 +40,12 @@ export function SiteFooter() {
             </p>
             <p className="mt-3 text-sm text-neutral-500">
               Connect any two parties.{" "}
-              <span className="font-semibold text-brand">Instantly.</span>
+              <span className="font-semibold text-brand-gradient">Instantly.</span>
+            </p>
+            <p className="mt-3 text-sm text-neutral-500">
+              <a href={siteConfig.earlyAccessMailto} className="hover:text-brand">
+                {siteConfig.contactEmail}
+              </a>
             </p>
           </div>
 

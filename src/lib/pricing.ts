@@ -17,15 +17,16 @@ export const pricingTiers: PricingTier[] = [
     id: "build",
     name: "Build",
     price: "$0",
-    priceNote: "Free for development",
-    description: "Self-host or use our sandbox to integrate and test without commitment.",
-    cta: "Start building",
-    ctaHref: siteConfig.quickstartUrl,
+    priceNote: "Early access · self-host or sandbox",
+    description:
+      "Integrate locally or on your own infra. Contact us for sandbox credentials while hosted tiers roll out.",
+    cta: "Get early access",
+    ctaHref: siteConfig.earlyAccessMailto,
     features: [
-      "Unlimited local & staging usage",
+      "Self-host the open-source gateway",
       "Full REST + WebSocket API",
       "Session JWT flow",
-      "Community support",
+      "Direct founder support",
     ],
   },
   {
@@ -33,9 +34,9 @@ export const pricingTiers: PricingTier[] = [
     name: "Platform",
     price: "$149",
     priceNote: "Per month · billed monthly",
-    description: "Flat pricing for production platforms — no per-MAU surprises as you grow.",
-    cta: "Get started",
-    ctaHref: "mailto:hello@direxme.com?subject=Flash%20Chat%20Platform%20plan",
+    description: "Flat pricing for production platforms — onboarding by request during early access.",
+    cta: "Contact us",
+    ctaHref: siteConfig.contactMailto,
     highlighted: true,
     features: [
       "Up to 10,000 monthly active users",
@@ -50,8 +51,8 @@ export const pricingTiers: PricingTier[] = [
     price: "$399",
     priceNote: "Per month · billed monthly",
     description: "Higher limits and optional voice/video for teams shipping at volume.",
-    cta: "Talk to sales",
-    ctaHref: "mailto:hello@direxme.com?subject=Flash%20Chat%20Scale%20plan",
+    cta: "Contact us",
+    ctaHref: siteConfig.contactMailto,
     features: [
       "Up to 50,000 monthly active users",
       "Voice & video (LiveKit)",
@@ -66,7 +67,7 @@ export const pricingTiers: PricingTier[] = [
     priceNote: "Volume discounts available",
     description: "Dedicated infrastructure, compliance needs, and hands-on onboarding.",
     cta: "Contact us",
-    ctaHref: "mailto:hello@direxme.com?subject=Flash%20Chat%20Enterprise",
+    ctaHref: siteConfig.contactMailto,
     features: [
       "Custom MAU & concurrency",
       "Dedicated support & SLA",
@@ -90,6 +91,10 @@ export const pricingComparisonRows = [
 ] as const;
 
 export const pricingFaqs = [
+  {
+    q: "How do I get started today?",
+    a: "Email us or message on Telegram — we'll share docs, answer architecture questions, and set up sandbox or self-host access. Hosted production tiers are onboarding early partners one at a time.",
+  },
   {
     q: "Why flat pricing instead of per-MAU?",
     a: "Flash Chat is built for B2B platforms with predictable unit economics. Flat tiers mean you can forecast costs without surprise bills when a customer goes viral.",

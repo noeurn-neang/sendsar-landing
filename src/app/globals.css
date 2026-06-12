@@ -69,3 +69,34 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+/* Brand gradient — matches docs hero (teal → flash orange) */
+.text-brand-gradient {
+  background: linear-gradient(120deg, var(--brand) 30%, var(--flash));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bg-hero-gradient {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(20, 184, 166, 0.22), transparent),
+    radial-gradient(ellipse 50% 40% at 100% 50%, rgba(251, 146, 60, 0.12), transparent),
+    linear-gradient(180deg, #0f172a 0%, #0c1929 50%, #0f172a 100%);
+}
+
+.bg-hero-gradient-subtle {
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 0%, rgba(20, 184, 166, 0.14), transparent),
+    radial-gradient(ellipse 40% 30% at 90% 80%, rgba(251, 146, 60, 0.08), transparent),
+    var(--surface-muted);
+}
+
+@media (prefers-color-scheme: dark) {
+  .bg-hero-gradient-subtle {
+    background:
+      radial-gradient(ellipse 70% 50% at 20% 0%, rgba(20, 184, 166, 0.12), transparent),
+      radial-gradient(ellipse 40% 30% at 90% 80%, rgba(251, 146, 60, 0.06), transparent),
+      var(--surface-muted);
+  }
+}

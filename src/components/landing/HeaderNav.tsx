@@ -5,8 +5,9 @@ import { useEffect, useState } from "react";
 
 import {
   developerLinks,
+  navVisibility,
   productLinks,
-  topNavLinks,
+  visibleTopNavLinks,
   type NavItem,
 } from "@/lib/nav";
 import { siteConfig } from "@/lib/site";
@@ -191,20 +192,28 @@ export function HeaderNav() {
     <>
       <nav className="hidden items-center gap-8 lg:flex" aria-label="Main">
         <DesktopDropdown label="Product" items={productLinks} />
-        {topNavLinks.map((link) => (
+        {visibleTopNavLinks.map((link) => (
           <NavLink key={link.label} item={link} className={linkClass} />
         ))}
-        <DesktopDropdown label="Developers" items={developerLinks} />
+        {navVisibility.developers ? (
+          <DesktopDropdown label="Developers" items={developerLinks} />
+        ) : null}
       </nav>
 
       <div className="hidden items-center gap-3 lg:flex">
         <a
-          href={siteConfig.quickstartUrl}
+          href={siteConfig.contactTelegram}
           target="_blank"
           rel="noopener noreferrer"
+          className="rounded-lg border border-border px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-brand/40 hover:text-brand dark:text-neutral-300"
+        >
+          Telegram
+        </a>
+        <a
+          href={siteConfig.earlyAccessMailto}
           className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-strong"
         >
-          Get started
+          Get early access
         </a>
       </div>
 
@@ -238,28 +247,39 @@ export function HeaderNav() {
       >
         <nav className="container mx-auto max-w-6xl space-y-4 px-6 py-4" aria-label="Mobile">
           <MobileGroup title="Product" items={productLinks} onNavigate={close} />
-          <MobileGroup title="Developers" items={developerLinks} onNavigate={close} />
-          <ul className="space-y-0.5 border-t border-border pt-4">
-            {topNavLinks.map((link) => (
-              <li key={link.label}>
-                <NavLink
-                  item={link}
-                  onNavigate={close}
-                  className="block rounded-lg px-3 py-2.5 text-base font-medium text-neutral-700 transition hover:bg-surface-muted hover:text-brand dark:text-neutral-200"
-                />
-              </li>
-            ))}
-          </ul>
+          {navVisibility.developers ? (
+            <MobileGroup title="Developers" items={developerLinks} onNavigate={close} />
+          ) : null}
+          {visibleTopNavLinks.length > 0 ? (
+            <ul className="space-y-0.5 border-t border-border pt-4">
+              {visibleTopNavLinks.map((link) => (
+                <li key={link.label}>
+                  <NavLink
+                    item={link}
+                    onNavigate={close}
+                    className="block rounded-lg px-3 py-2.5 text-base font-medium text-neutral-700 transition hover:bg-surface-muted hover:text-brand dark:text-neutral-200"
+                  />
+                </li>
+              ))}
+            </ul>
+          ) : null}
 
           <div className="flex flex-col gap-2 border-t border-border pt-4">
             <a
-              href={siteConfig.quickstartUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={siteConfig.earlyAccessMailto}
               className="rounded-lg bg-brand px-3 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-brand-strong"
               onClick={close}
             >
-              Get started
+              Get early access
+            </a>
+            <a
+              href={siteConfig.contactTelegram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-lg border border-border px-3 py-2.5 text-center text-sm font-semibold transition hover:border-brand/40 hover:text-brand"
+              onClick={close}
+            >
+              Telegram
             </a>
           </div>
         </nav>

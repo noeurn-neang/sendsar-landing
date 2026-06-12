@@ -1,3 +1,4 @@
+import { ContactCta } from "@/components/landing/ContactCta";
 import { siteConfig } from "@/lib/site";
 
 const flowSteps = [
@@ -9,40 +10,28 @@ const flowSteps = [
 
 export function Hero() {
   return (
-    <section className="border-b border-hero-border bg-hero text-white">
+    <section className="border-b border-hero-border bg-hero-gradient text-white">
       <div className="container mx-auto max-w-6xl px-6 py-16 lg:py-24">
         <div className="mx-auto max-w-3xl text-center">
           <p className="mb-5 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-hero-muted">
             <span className="h-1.5 w-1.5 rounded-full bg-flash" />
-            Headless Chat API
+            Early access · Headless Chat API
           </p>
           <h1 className="text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
             In-app chat for platforms{" "}
-            <span className="text-flash">that already exist</span>
+            <span className="text-brand-gradient">that already exist</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-hero-muted sm:text-lg">
             {siteConfig.description} APIs and SDKs for your stack — your IDs,
             your login, our real-time engine.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <a
-              href={siteConfig.quickstartUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex rounded-lg bg-brand px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-strong"
-            >
-              Get started for free
-            </a>
-            <a
-              href={siteConfig.demoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex rounded-lg border border-hero-border px-6 py-3 text-sm font-semibold text-stone-200 transition hover:border-brand/60 hover:text-white"
-            >
-              See live demo
-            </a>
+          <div className="mt-8">
+            <ContactCta variant="hero" showDocsLink />
           </div>
+          <p className="mx-auto mt-4 max-w-lg text-sm text-hero-muted">
+            {siteConfig.earlyAccessNote}
+          </p>
         </div>
 
         <div className="mx-auto mt-14 min-w-0 max-w-4xl space-y-4">

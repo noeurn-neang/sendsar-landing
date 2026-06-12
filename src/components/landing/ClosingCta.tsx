@@ -1,36 +1,31 @@
+import { ContactCta } from "@/components/landing/ContactCta";
 import { siteConfig } from "@/lib/site";
 
 export function ClosingCta() {
   return (
-    <section className="border-t border-border bg-surface-muted py-16">
+    <section id="contact" className="border-t border-border bg-hero-gradient-subtle py-16">
       <div className="container mx-auto max-w-6xl px-6">
         <div className="flex flex-col items-start justify-between gap-6 rounded-lg border border-border bg-surface p-8 sm:flex-row sm:items-center">
           <div>
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              Ready to add chat without the rebuild?
+              Ready to add chat{" "}
+              <span className="text-brand-gradient">without the rebuild?</span>
             </h2>
             <p className="mt-2 max-w-md text-sm text-neutral-600 dark:text-neutral-400">
-              Start with the quickstart, explore the demo shop, or read the API
-              reference — all headless, all yours.
+              Email or message on Telegram — we&apos;ll set you up with docs,
+              sandbox access, and a path to production when you&apos;re ready.
+            </p>
+            <p className="mt-2 text-sm text-neutral-500">
+              <a
+                href={`mailto:${siteConfig.contactEmail}`}
+                className="hover:text-brand"
+              >
+                {siteConfig.contactEmail}
+              </a>
             </p>
           </div>
-          <div className="flex shrink-0 flex-wrap gap-3">
-            <a
-              href={siteConfig.quickstartUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-md bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-strong"
-            >
-              Start building
-            </a>
-            <a
-              href={siteConfig.demoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-md border border-border px-5 py-2.5 text-sm font-semibold hover:border-brand/40 hover:text-brand"
-            >
-              Open demo
-            </a>
+          <div className="shrink-0">
+            <ContactCta variant="light" emailLabel="Contact us" />
           </div>
         </div>
       </div>

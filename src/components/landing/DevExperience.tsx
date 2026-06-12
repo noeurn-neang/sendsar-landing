@@ -4,7 +4,7 @@ const stacks = ["JavaScript", "React", "Flutter", "REST", "WebSocket", "Node.js"
 
 export function DevExperience() {
   return (
-    <section className="bg-hero py-20 text-white">
+    <section className="bg-hero-gradient py-20 text-white">
       <div className="container mx-auto max-w-6xl px-6">
         <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
           <div className="min-w-0">
@@ -12,12 +12,13 @@ export function DevExperience() {
               Developer experience
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              Built for backend teams first
+              Built for backend teams{" "}
+              <span className="text-brand-gradient">first</span>
             </h2>
             <p className="mt-4 leading-relaxed text-hero-muted">
               Start with the API, add SDKs where they help. Docs, webhooks, and
               session flows are designed around how platform engineers actually
-              integrate — not how a UI kit demo looks on day one.
+              integrate — reach out when you want help wiring it up.
             </p>
 
             <div className="mt-6 flex flex-wrap gap-2">
@@ -33,20 +34,18 @@ export function DevExperience() {
 
             <div className="mt-8 flex flex-wrap gap-3">
               <a
-                href={siteConfig.docsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={siteConfig.earlyAccessMailto}
                 className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-strong"
               >
-                Open documentation
+                Get early access
               </a>
               <a
-                href={siteConfig.quickstartUrl}
+                href={siteConfig.docsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-md border border-hero-border px-4 py-2 text-sm font-semibold text-stone-200 hover:border-brand/60"
               >
-                Quickstart guide
+                Open documentation
               </a>
             </div>
           </div>

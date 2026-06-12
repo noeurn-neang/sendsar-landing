@@ -30,6 +30,7 @@ export function HomeJsonLd() {
             operatingSystem: "Web",
             description: siteConfig.description,
             url: absoluteUrl("/"),
+            documentation: siteConfig.docsUrl,
             offers: {
               "@type": "AggregateOffer",
               lowPrice: "0",

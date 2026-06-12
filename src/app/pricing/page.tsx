@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+import { ContactCta } from "@/components/landing/ContactCta";
 import { PricingCards } from "@/components/landing/PricingCards";
 import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
 import {
@@ -7,7 +6,6 @@ import {
   pricingFaqs,
 } from "@/lib/pricing";
 import { createMetadata } from "@/lib/seo";
-import { siteConfig } from "@/lib/site";
 
 export const metadata = createMetadata({
   title: "Pricing",
@@ -38,17 +36,19 @@ export default function PricingPage() {
     <div className="bg-background">
       <FaqJsonLd items={pricingFaqs} />
 
-      <section className="border-b border-border bg-surface-muted py-16">
+      <section className="border-b border-border bg-hero-gradient-subtle py-16">
         <div className="container mx-auto max-w-6xl px-6 text-center">
           <p className="font-mono text-xs uppercase tracking-widest text-brand">
             Pricing
           </p>
           <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
-            Simple, transparent, predictable
+            Simple, transparent,{" "}
+            <span className="text-brand-gradient">predictable</span>
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-neutral-600 dark:text-neutral-400">
             Know exactly what you&apos;ll pay — and why. Flat monthly tiers built
-            for B2B platforms, not per-MAU sticker shock.
+            for B2B platforms. Hosted plans are available by request during early
+            access.
           </p>
         </div>
       </section>
@@ -144,29 +144,18 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section className="border-t border-border bg-hero py-16 text-white">
+      <section className="border-t border-border bg-hero-gradient py-16 text-white">
         <div className="container mx-auto max-w-6xl px-6 text-center">
           <h2 className="text-2xl font-bold sm:text-3xl">
-            Everything your platform needs to talk.
+            Everything your platform needs to{" "}
+            <span className="text-brand-gradient">talk</span>.
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-hero-muted">
-            Headless messaging infrastructure — handled — so you can just build.
+            Headless messaging infrastructure — reach out and we&apos;ll help you
+            ship.
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <a
-              href={siteConfig.quickstartUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-lg bg-brand px-6 py-3 text-sm font-semibold text-white hover:bg-brand-strong"
-            >
-              Get started for free
-            </a>
-            <Link
-              href="/blog"
-              className="rounded-lg border border-hero-border px-6 py-3 text-sm font-semibold text-stone-200 hover:border-brand/60"
-            >
-              Read comparisons
-            </Link>
+          <div className="mt-8 flex justify-center">
+            <ContactCta variant="hero" showDocsLink />
           </div>
         </div>
       </section>

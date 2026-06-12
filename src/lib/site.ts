@@ -1,5 +1,5 @@
 const docsUrl =
-  process.env.NEXT_PUBLIC_DOCS_URL ?? "https://flashchat-api.direxme.com/docs";
+  process.env.NEXT_PUBLIC_DOCS_URL ?? "https://flashchat-docs.direxme.com";
 
 export const siteConfig = {
   name: "Flash Chat",
@@ -12,6 +12,14 @@ export const siteConfig = {
   quickstartUrl: `${docsUrl.replace(/\/$/, "")}/setup/quickstart`,
   demoUrl:
     process.env.NEXT_PUBLIC_DEMO_URL ?? "https://flashchat-demo.direxme.com",
+  contactEmail: "noeurnnneang@gmail.com",
+  contactTelegram: "https://t.me/noeurn_neang",
+  earlyAccessMailto:
+    "mailto:noeurnnneang@gmail.com?subject=Flash%20Chat%20%E2%80%94%20early%20access",
+  contactMailto:
+    "mailto:noeurnnneang@gmail.com?subject=Flash%20Chat",
+  earlyAccessNote:
+    "We're onboarding early partners personally — reach out by email or Telegram while we scale hosted infrastructure.",
   keywords: [
     "headless chat API",
     "in-app messaging",
