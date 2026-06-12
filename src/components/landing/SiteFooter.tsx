@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { Logo } from "@/components/landing/Logo";
-import { navVisibility } from "@/lib/nav";
+import { siteMode } from "@/lib/nav";
 import { siteConfig } from "@/lib/site";
 
 const footerLinks = {
@@ -9,10 +9,12 @@ const footerLinks = {
     { label: "Platform overview", href: "/#platform" },
     { label: "How it works", href: "/#how-it-works" },
     { label: "Features", href: "/#features" },
-    ...(navVisibility.pricing ? [{ label: "Pricing", href: "/pricing" }] : []),
+    ...(siteMode.showPricing
+      ? [{ label: "Pricing", href: "/pricing" }]
+      : [{ label: "Contact us", href: "/#contact" }]),
     { label: "Use cases", href: "/#use-cases" },
   ],
-  ...(navVisibility.developers
+  ...(siteMode.showDevelopersMenu
     ? {
         Developers: [
           { label: "Documentation", href: siteConfig.docsUrl, external: true },

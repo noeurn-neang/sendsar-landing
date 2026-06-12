@@ -1,23 +1,29 @@
 import { ContactCta } from "@/components/landing/ContactCta";
 import { PricingCards } from "@/components/landing/PricingCards";
 import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
+import { siteMode } from "@/lib/nav";
 import {
   pricingComparisonRows,
   pricingFaqs,
 } from "@/lib/pricing";
 import { createMetadata } from "@/lib/seo";
+import { siteConfig } from "@/lib/site";
 
 export const metadata = createMetadata({
-  title: "Pricing",
-  description:
-    "Simple, transparent Flash Chat pricing. Flat monthly tiers for headless messaging — no per-MAU surprise bills.",
+  title: siteMode.showPricing ? "Pricing" : "Contact us",
+  description: siteMode.showPricing
+    ? "Simple, transparent Flash Chat pricing. Flat monthly tiers for headless messaging — no per-MAU surprise bills."
+    : "Get early access to Flash Chat — contact us by email or Telegram for docs, sandbox access, and pricing.",
   path: "/pricing",
-  keywords: [
-    "chat API pricing",
-    "headless chat pricing",
-    "flat rate messaging API",
-    "B2B chat pricing",
-  ],
+  noIndex: !siteMode.showPricing,
+  keywords: siteMode.showPricing
+    ? [
+        "chat API pricing",
+        "headless chat pricing",
+        "flat rate messaging API",
+        "B2B chat pricing",
+      ]
+    : undefined,
 });
 
 function CellValue({ value }: { value: string | boolean }) {
@@ -31,7 +37,41 @@ function CellValue({ value }: { value: string | boolean }) {
   return <span>{value}</span>;
 }
 
+function ContactPricingPage() {
+  return (
+    <div className="bg-background">
+      <section className="border-b border-border bg-hero-gradient-subtle py-20">
+        <div className="container mx-auto max-w-6xl px-6 text-center">
+          <p className="font-mono text-xs uppercase tracking-widest text-brand">
+            Early access
+          </p>
+          <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+            <span className="text-brand-gradient">Contact us</span> for pricing
+          </h1>
+          <p className="mx-auto mt-4 max-w-2xl text-neutral-600 dark:text-neutral-400">
+            Hosted tiers aren&apos;t live yet — we&apos;re onboarding early partners
+            one at a time. Reach out and we&apos;ll walk you through docs, sandbox
+            access, and a plan that fits your stage.
+          </p>
+          <div className="mt-8 flex justify-center">
+            <ContactCta variant="light" emailLabel="Get early access" />
+          </div>
+          <p className="mt-4 text-sm text-neutral-500">
+            <a href={`mailto:${siteConfig.contactEmail}`} className="hover:text-brand">
+              {siteConfig.contactEmail}
+            </a>
+          </p>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export default function PricingPage() {
+  if (!siteMode.showPricing) {
+    return <ContactPricingPage />;
+  }
+
   return (
     <div className="bg-background">
       <FaqJsonLd items={pricingFaqs} />

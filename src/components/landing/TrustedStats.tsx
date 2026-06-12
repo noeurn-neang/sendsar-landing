@@ -2,7 +2,7 @@ const stats = [
   { value: "7ms", label: "Typical API response" },
   { value: "Headless", label: "Your UI, our engine" },
   { value: "2-party", label: "Native room model" },
-  { value: "Flat", label: "Monthly pricing" },
+  { value: "Early access", label: "Onboarding now" },
 ];
 
 export function TrustedStats() {

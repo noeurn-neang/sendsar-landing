@@ -7,7 +7,22 @@ export type NavItem = {
   description?: string;
 };
 
-export const productLinks: NavItem[] = [
+/**
+ * Early access — flip flags when hosted pricing & full tiers are ready.
+ */
+export const siteMode = {
+  /** Pricing tiers, /pricing page, and "Pricing" nav */
+  showPricing: false,
+  /** Developers dropdown in header */
+  showDevelopersMenu: true,
+} as const;
+
+export const contactNavLink: NavItem = {
+  label: "Contact us",
+  href: "/#contact",
+};
+
+const productLinksAll: NavItem[] = [
   {
     label: "Platform overview",
     href: "/#platform",
@@ -42,6 +57,11 @@ export const productLinks: NavItem[] = [
   },
 ];
 
+/** Hide docs from Product menu when Developers dropdown is shown. */
+export const productLinks = siteMode.showDevelopersMenu
+  ? productLinksAll.filter((item) => item.label !== "Documentation")
+  : productLinksAll;
+
 export const developerLinks: NavItem[] = [
   {
     label: "Documentation",
@@ -57,17 +77,15 @@ export const developerLinks: NavItem[] = [
   },
 ];
 
-export const topNavLinks: NavItem[] = [
-  { label: "Pricing", href: "/pricing" },
+export const visibleTopNavLinks: NavItem[] = [
+  ...(siteMode.showPricing
+    ? [{ label: "Pricing", href: "/pricing" }]
+    : [contactNavLink]),
   { label: "Blog", href: "/blog" },
 ];
 
-/** Flip to re-show header/footer items without deleting link config. */
+/** @deprecated use siteMode */
 export const navVisibility = {
-  pricing: false,
-  developers: false,
+  pricing: siteMode.showPricing,
+  developers: siteMode.showDevelopersMenu,
 } as const;
-
-export const visibleTopNavLinks = topNavLinks.filter(
-  (link) => navVisibility.pricing || link.href !== "/pricing",
-);

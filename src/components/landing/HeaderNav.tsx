@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 
 import {
   developerLinks,
-  navVisibility,
   productLinks,
+  siteMode,
   visibleTopNavLinks,
   type NavItem,
 } from "@/lib/nav";
@@ -195,7 +195,7 @@ export function HeaderNav() {
         {visibleTopNavLinks.map((link) => (
           <NavLink key={link.label} item={link} className={linkClass} />
         ))}
-        {navVisibility.developers ? (
+        {siteMode.showDevelopersMenu ? (
           <DesktopDropdown label="Developers" items={developerLinks} />
         ) : null}
       </nav>
@@ -247,7 +247,7 @@ export function HeaderNav() {
       >
         <nav className="container mx-auto max-w-6xl space-y-4 px-6 py-4" aria-label="Mobile">
           <MobileGroup title="Product" items={productLinks} onNavigate={close} />
-          {navVisibility.developers ? (
+          {siteMode.showDevelopersMenu ? (
             <MobileGroup title="Developers" items={developerLinks} onNavigate={close} />
           ) : null}
           {visibleTopNavLinks.length > 0 ? (
