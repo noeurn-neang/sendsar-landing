@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Flash Chat — Headless Chat API";
+export const alt = "Sendsar — Headless Chat API";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -28,8 +28,8 @@ export default function OgImage() {
             letterSpacing: "-2px",
           }}
         >
-          <span>Flash </span>
-          <span style={{ color: "#14b8a6" }}>Chat</span>
+          <span>Send</span>
+          <span style={{ color: "#0096c8" }}>sar</span>
         </div>
         <div style={{ fontSize: 32, color: "#94a3b8", marginTop: 20 }}>
           Headless Chat API · Connect any two parties. Instantly.

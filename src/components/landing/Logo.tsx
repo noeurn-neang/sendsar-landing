@@ -31,7 +31,7 @@ export function Logo({
           isInverse ? "text-white" : "text-foreground"
         }`}
       >
-        Flash <span className="text-brand">Chat</span>
+        Send<span className="text-brand">sar</span>
       </span>
     </Link>
   );

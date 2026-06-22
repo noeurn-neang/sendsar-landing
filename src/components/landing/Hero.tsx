@@ -4,7 +4,7 @@ import { siteConfig } from "@/lib/site";
 const flowSteps = [
   { label: "Your app", detail: "Existing users & auth" },
   { label: "Your server", detail: "Issues session JWT" },
-  { label: "Flash Chat", detail: "Rooms & delivery" },
+  { label: "Sendsar", detail: "Rooms & delivery" },
   { label: "Your UI", detail: "Headless — you design it" },
 ];
 
@@ -45,14 +45,17 @@ export function Hero() {
             <div className="overflow-x-auto p-4 sm:p-6">
               <pre className="text-left text-xs leading-relaxed text-stone-300 sm:text-sm">
                 <code className="block w-max max-w-none">{`// Your server — API key stays here
-const session = await flashchat.sessions.create({
-  tenantId: "acme",
-  userId: user.id,      // your user ID
-  displayName: user.name
-});
+const { token } = await fetch(\`\${API_URL}/v1/auth/token\`, {
+  method: "POST",
+  headers: { "x-api-key": process.env.SENDSAR_API_KEY },
+  body: JSON.stringify({
+    userId: user.id,
+    displayName: user.name,
+  }),
+}).then((r) => r.json());
 
 // Client connects with short-lived JWT
-client.connect(session.token);`}</code>
+await client.connect(token);`}</code>
               </pre>
             </div>
           </div>

@@ -19,7 +19,7 @@ export function Differentiator() {
       <div className="container mx-auto max-w-6xl px-6">
         <div className="max-w-2xl">
           <p className="font-mono text-xs uppercase tracking-widest text-brand">
-            Why Flash Chat
+            Why Sendsar
           </p>
           <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
             Headless means you stay in control
@@ -35,7 +35,7 @@ export function Differentiator() {
             <p className="border-r border-border px-6 py-4 text-neutral-500">
               Typical chat SDK
             </p>
-            <p className="px-6 py-4 text-brand">Flash Chat</p>
+            <p className="px-6 py-4 text-brand">Sendsar</p>
           </div>
           {contrasts.map((row) => (
             <div

@@ -2,7 +2,7 @@ const steps = [
   {
     title: "Keep your user system",
     description:
-      "Flash Chat maps to your existing user IDs. No parallel user directory, no auth migration, no SSO rebuild.",
+      "Sendsar maps to your existing user IDs. No parallel user directory, no auth migration, no SSO rebuild.",
   },
   {
     title: "Issue sessions from your server",
@@ -28,7 +28,7 @@ export function HowItWorks() {
             Three steps. No platform swap.
           </h2>
           <p className="mt-4 text-neutral-600 dark:text-neutral-400">
-            Most chat SDKs expect a greenfield build. Flash Chat is built for the
+            Most chat SDKs expect a greenfield build. Sendsar is built for the
             opposite — platforms that already ship.
           </p>
         </div>

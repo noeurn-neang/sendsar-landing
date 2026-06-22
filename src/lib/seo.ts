@@ -83,8 +83,8 @@ export const rootMetadata: Metadata = {
   description: siteConfig.description,
   keywords: [...siteConfig.keywords],
   applicationName: siteConfig.name,
-  authors: [{ name: "direxme" }],
-  creator: "direxme",
+  authors: [{ name: "Sendsar" }],
+  creator: "Sendsar",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },

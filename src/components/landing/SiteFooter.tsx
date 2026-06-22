@@ -84,8 +84,8 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-10 flex flex-col gap-2 border-t border-border pt-8 text-sm text-neutral-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} direxme</p>
-          <p className="font-mono text-xs">flash-chat · headless · api-first</p>
+          <p>© {new Date().getFullYear()} Sendsar</p>
+          <p className="font-mono text-xs">sendsar · headless · api-first</p>
         </div>
       </div>
     </footer>

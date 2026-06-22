@@ -6,7 +6,7 @@ import { siteConfig } from "@/lib/site";
 export const metadata = createMetadata({
   title: "Blog",
   description:
-    "Product updates, tutorials, and headless chat API comparisons from the Flash Chat team.",
+    "Product updates, tutorials, and headless chat API comparisons from the Sendsar team.",
   path: "/blog",
   keywords: [
     "chat API blog",

@@ -97,7 +97,7 @@ export const pricingFaqs = [
   },
   {
     q: "Why flat pricing instead of per-MAU?",
-    a: "Flash Chat is built for B2B platforms with predictable unit economics. Flat tiers mean you can forecast costs without surprise bills when a customer goes viral.",
+    a: "Sendsar is built for B2B platforms with predictable unit economics. Flat tiers mean you can forecast costs without surprise bills when a customer goes viral.",
   },
   {
     q: "Can I self-host on the Build plan?",
@@ -105,7 +105,7 @@ export const pricingFaqs = [
   },
   {
     q: "What counts as a monthly active user?",
-    a: "A unique user who connects to Flash Chat at least once in a calendar month via a session JWT. Inactive users don't count.",
+    a: "A unique user who connects to Sendsar at least once in a calendar month via a session JWT. Inactive users don't count.",
   },
   {
     q: "Do you include UI components?",

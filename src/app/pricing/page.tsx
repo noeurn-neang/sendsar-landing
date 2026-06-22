@@ -12,8 +12,8 @@ import { siteConfig } from "@/lib/site";
 export const metadata = createMetadata({
   title: siteMode.showPricing ? "Pricing" : "Contact us",
   description: siteMode.showPricing
-    ? "Simple, transparent Flash Chat pricing. Flat monthly tiers for headless messaging — no per-MAU surprise bills."
-    : "Get early access to Flash Chat — contact us by email or Telegram for docs, sandbox access, and pricing.",
+    ? "Simple, transparent Sendsar pricing. Flat monthly tiers for headless messaging — no per-MAU surprise bills."
+    : "Get early access to Sendsar — contact us by email or Telegram for docs, sandbox access, and pricing.",
   path: "/pricing",
   noIndex: !siteMode.showPricing,
   keywords: siteMode.showPricing
