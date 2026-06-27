@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { siteConfig } from "@/lib/site";
 
 const stacks = ["JavaScript", "React", "Flutter", "REST", "WebSocket", "Node.js"];
@@ -18,7 +20,7 @@ export function DevExperience() {
             <p className="mt-4 leading-relaxed text-hero-muted">
               Start with the API, add SDKs where they help. Docs, webhooks, and
               session flows are designed around how platform engineers actually
-              integrate — reach out when you want help wiring it up.
+              integrate.
             </p>
 
             <div className="mt-6 flex flex-wrap gap-2">
@@ -34,19 +36,19 @@ export function DevExperience() {
 
             <div className="mt-8 flex flex-wrap gap-3">
               <a
-                href={siteConfig.earlyAccessMailto}
-                className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-strong"
-              >
-                Get early access
-              </a>
-              <a
                 href={siteConfig.docsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-md border border-hero-border px-4 py-2 text-sm font-semibold text-stone-200 hover:border-brand/60"
+                className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-strong"
               >
                 Open documentation
               </a>
+              <Link
+                href="/pricing"
+                className="rounded-md border border-hero-border px-4 py-2 text-sm font-semibold text-stone-200 hover:border-brand/60"
+              >
+                View pricing
+              </Link>
             </div>
           </div>
 

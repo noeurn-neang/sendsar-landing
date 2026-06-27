@@ -10,7 +10,7 @@ export function TableOfContents({ headings, className = "" }: TableOfContentsPro
 
   return (
     <nav aria-label="Table of contents" className={className}>
-      <p className="mb-4 text-sm font-semibold text-foreground">Table of content</p>
+      <p className="mb-4 text-sm font-semibold text-foreground">Table of contents</p>
       <ul className="space-y-2 text-sm">
         {headings.map((heading) => (
           <li

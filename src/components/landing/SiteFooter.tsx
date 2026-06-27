@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { Logo } from "@/components/landing/Logo";
-import { siteMode } from "@/lib/nav";
 import { siteConfig } from "@/lib/site";
 
 const footerLinks = {
@@ -9,22 +8,16 @@ const footerLinks = {
     { label: "Platform overview", href: "/#platform" },
     { label: "How it works", href: "/#how-it-works" },
     { label: "Features", href: "/#features" },
-    ...(siteMode.showPricing
-      ? [{ label: "Pricing", href: "/pricing" }]
-      : [{ label: "Contact us", href: "/#contact" }]),
+    { label: "Pricing", href: "/pricing" },
     { label: "Use cases", href: "/#use-cases" },
   ],
-  ...(siteMode.showDevelopersMenu
-    ? {
-        Developers: [
-          { label: "Documentation", href: siteConfig.docsUrl, external: true },
-          { label: "Quickstart", href: siteConfig.quickstartUrl, external: true },
-          { label: "Telegram", href: siteConfig.contactTelegram, external: true },
-        ],
-      }
-    : {}),
+  Developers: [
+    { label: "Documentation", href: siteConfig.docsUrl, external: true },
+    { label: "Quickstart", href: siteConfig.quickstartUrl, external: true },
+    { label: "Telegram", href: siteConfig.contactTelegram, external: true },
+  ],
   Contact: [
-    { label: "Email", href: siteConfig.earlyAccessMailto, external: true },
+    { label: "Email", href: siteConfig.contactMailto, external: true },
     { label: "Telegram", href: siteConfig.contactTelegram, external: true },
   ],
   Resources: [{ label: "Blog", href: "/blog" }],
@@ -45,7 +38,7 @@ export function SiteFooter() {
               <span className="font-semibold text-brand-gradient">Instantly.</span>
             </p>
             <p className="mt-3 text-sm text-neutral-500">
-              <a href={siteConfig.earlyAccessMailto} className="hover:text-brand">
+              <a href={siteConfig.contactMailto} className="hover:text-brand">
                 {siteConfig.contactEmail}
               </a>
             </p>

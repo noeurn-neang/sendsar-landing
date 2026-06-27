@@ -12,20 +12,17 @@ export function ClosingCta() {
               <span className="text-brand-gradient">without the rebuild?</span>
             </h2>
             <p className="mt-2 max-w-md text-sm text-neutral-600 dark:text-neutral-400">
-              Email or message on Telegram — we&apos;ll set you up with docs,
-              sandbox access, and a path to production when you&apos;re ready.
+              Pick a plan above or message us on Telegram — we&apos;ll help with
+              docs, sandbox access, and production setup.
             </p>
             <p className="mt-2 text-sm text-neutral-500">
-              <a
-                href={`mailto:${siteConfig.contactEmail}`}
-                className="hover:text-brand"
-              >
+              <a href={siteConfig.contactMailto} className="hover:text-brand">
                 {siteConfig.contactEmail}
               </a>
             </p>
           </div>
           <div className="shrink-0">
-            <ContactCta variant="light" emailLabel="Contact us" />
+            <ContactCta variant="light" showPricingLink />
           </div>
         </div>
       </div>

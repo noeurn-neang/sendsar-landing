@@ -10,7 +10,6 @@ import { PricingSection } from "@/components/landing/PricingSection";
 import { TrustedStats } from "@/components/landing/TrustedStats";
 import { UseCases } from "@/components/landing/UseCases";
 import { HomeJsonLd } from "@/components/seo/HomeJsonLd";
-import { siteMode } from "@/lib/nav";
 import { createMetadata } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
@@ -41,7 +40,7 @@ export default function HomePage() {
       <DevExperience />
       <Differentiator />
       <BlogPreview />
-      {siteMode.showPricing ? <ClosingCta /> : null}
+      <ClosingCta />
     </>
   );
 }

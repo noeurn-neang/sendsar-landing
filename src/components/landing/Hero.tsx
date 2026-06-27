@@ -15,22 +15,22 @@ export function Hero() {
         <div className="mx-auto max-w-3xl text-center">
           <p className="mb-5 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-hero-muted">
             <span className="h-1.5 w-1.5 rounded-full bg-flash" />
-            Early access · Headless Chat API
+            Headless chat · Voice · Video
           </p>
           <h1 className="text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
             In-app chat for platforms{" "}
             <span className="text-brand-gradient">that already exist</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-hero-muted sm:text-lg">
-            {siteConfig.description} APIs and SDKs for your stack — your IDs,
-            your login, our real-time engine.
+            {siteConfig.description} APIs and SDKs for JavaScript, React, Flutter,
+            and more.
           </p>
 
           <div className="mt-8">
-            <ContactCta variant="hero" showDocsLink />
+            <ContactCta variant="hero" showDocsLink showPricingLink />
           </div>
           <p className="mx-auto mt-4 max-w-lg text-sm text-hero-muted">
-            {siteConfig.earlyAccessNote}
+            {siteConfig.contactNote}
           </p>
         </div>
 

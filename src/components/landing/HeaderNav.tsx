@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import {
   developerLinks,
   productLinks,
-  siteMode,
   visibleTopNavLinks,
   type NavItem,
 } from "@/lib/nav";
@@ -195,9 +194,7 @@ export function HeaderNav() {
         {visibleTopNavLinks.map((link) => (
           <NavLink key={link.label} item={link} className={linkClass} />
         ))}
-        {siteMode.showDevelopersMenu ? (
-          <DesktopDropdown label="Developers" items={developerLinks} />
-        ) : null}
+        <DesktopDropdown label="Developers" items={developerLinks} />
       </nav>
 
       <div className="hidden items-center gap-3 lg:flex">
@@ -209,12 +206,12 @@ export function HeaderNav() {
         >
           Telegram
         </a>
-        <a
-          href={siteConfig.earlyAccessMailto}
+        <Link
+          href="/pricing"
           className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-strong"
         >
-          Get early access
-        </a>
+          View pricing
+        </Link>
       </div>
 
       <button
@@ -247,9 +244,7 @@ export function HeaderNav() {
       >
         <nav className="container mx-auto max-w-6xl space-y-4 px-6 py-4" aria-label="Mobile">
           <MobileGroup title="Product" items={productLinks} onNavigate={close} />
-          {siteMode.showDevelopersMenu ? (
-            <MobileGroup title="Developers" items={developerLinks} onNavigate={close} />
-          ) : null}
+          <MobileGroup title="Developers" items={developerLinks} onNavigate={close} />
           {visibleTopNavLinks.length > 0 ? (
             <ul className="space-y-0.5 border-t border-border pt-4">
               {visibleTopNavLinks.map((link) => (
@@ -265,13 +260,13 @@ export function HeaderNav() {
           ) : null}
 
           <div className="flex flex-col gap-2 border-t border-border pt-4">
-            <a
-              href={siteConfig.earlyAccessMailto}
+            <Link
+              href="/pricing"
               className="rounded-lg bg-brand px-3 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-brand-strong"
               onClick={close}
             >
-              Get early access
-            </a>
+              View pricing
+            </Link>
             <a
               href={siteConfig.contactTelegram}
               target="_blank"

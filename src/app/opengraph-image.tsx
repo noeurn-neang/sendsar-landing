@@ -32,7 +32,7 @@ export default function OgImage() {
           <span style={{ color: "#0096c8" }}>sar</span>
         </div>
         <div style={{ fontSize: 32, color: "#94a3b8", marginTop: 20 }}>
-          Headless Chat API · Connect any two parties. Instantly.
+          Headless Chat API · Messaging, voice & video — your IDs, your UI.
         </div>
       </div>
     ),

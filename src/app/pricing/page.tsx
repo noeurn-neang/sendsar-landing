@@ -1,29 +1,26 @@
 import { ContactCta } from "@/components/landing/ContactCta";
 import { PricingCards } from "@/components/landing/PricingCards";
 import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
-import { siteMode } from "@/lib/nav";
 import {
   pricingComparisonRows,
+  pricingComparisonTitle,
   pricingFaqs,
+  pricingFaqsTitle,
+  pricingPageIntro,
 } from "@/lib/pricing";
 import { createMetadata } from "@/lib/seo";
-import { siteConfig } from "@/lib/site";
 
 export const metadata = createMetadata({
-  title: siteMode.showPricing ? "Pricing" : "Contact us",
-  description: siteMode.showPricing
-    ? "Simple, transparent Sendsar pricing. Flat monthly tiers for headless messaging — no per-MAU surprise bills."
-    : "Get early access to Sendsar — contact us by email or Telegram for docs, sandbox access, and pricing.",
+  title: "Pricing",
+  description:
+    "Simple, transparent Sendsar pricing. Free, Plus, Pro, and Enterprise plans for headless chat, voice, and video — predictable monthly tiers with usage-based calls.",
   path: "/pricing",
-  noIndex: !siteMode.showPricing,
-  keywords: siteMode.showPricing
-    ? [
-        "chat API pricing",
-        "headless chat pricing",
-        "flat rate messaging API",
-        "B2B chat pricing",
-      ]
-    : undefined,
+  keywords: [
+    "chat API pricing",
+    "headless chat pricing",
+    "flat rate messaging API",
+    "B2B chat pricing",
+  ],
 });
 
 function CellValue({ value }: { value: string | boolean }) {
@@ -37,41 +34,14 @@ function CellValue({ value }: { value: string | boolean }) {
   return <span>{value}</span>;
 }
 
-function ContactPricingPage() {
-  return (
-    <div className="bg-background">
-      <section className="border-b border-border bg-hero-gradient-subtle py-20">
-        <div className="container mx-auto max-w-6xl px-6 text-center">
-          <p className="font-mono text-xs uppercase tracking-widest text-brand">
-            Early access
-          </p>
-          <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
-            <span className="text-brand-gradient">Contact us</span> for pricing
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-neutral-600 dark:text-neutral-400">
-            Hosted tiers aren&apos;t live yet — we&apos;re onboarding early partners
-            one at a time. Reach out and we&apos;ll walk you through docs, sandbox
-            access, and a plan that fits your stage.
-          </p>
-          <div className="mt-8 flex justify-center">
-            <ContactCta variant="light" emailLabel="Get early access" />
-          </div>
-          <p className="mt-4 text-sm text-neutral-500">
-            <a href={`mailto:${siteConfig.contactEmail}`} className="hover:text-brand">
-              {siteConfig.contactEmail}
-            </a>
-          </p>
-        </div>
-      </section>
-    </div>
-  );
-}
+const planColumns = [
+  { key: "free" as const, label: "Free" },
+  { key: "plus" as const, label: "Plus" },
+  { key: "pro" as const, label: "Pro" },
+  { key: "enterprise" as const, label: "Enterprise" },
+];
 
 export default function PricingPage() {
-  if (!siteMode.showPricing) {
-    return <ContactPricingPage />;
-  }
-
   return (
     <div className="bg-background">
       <FaqJsonLd items={pricingFaqs} />
@@ -86,49 +56,44 @@ export default function PricingPage() {
             <span className="text-brand-gradient">predictable</span>
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-neutral-600 dark:text-neutral-400">
-            Know exactly what you&apos;ll pay — and why. Flat monthly tiers built
-            for B2B platforms. Hosted plans are available by request during early
-            access.
+            {pricingPageIntro}
           </p>
         </div>
       </section>
 
       <section className="py-16">
         <div className="container mx-auto max-w-6xl px-6">
-          <PricingCards />
+          <PricingCards showBillingToggle />
         </div>
       </section>
 
       <section className="border-t border-border bg-surface-muted py-16">
         <div className="container mx-auto max-w-6xl px-6">
-          <h2 className="text-2xl font-bold tracking-tight">Detailed plan comparison</h2>
+          <h2 className="text-2xl font-bold tracking-tight">{pricingComparisonTitle}</h2>
           <div className="mt-8 hidden overflow-x-auto rounded-2xl border border-border bg-surface md:block">
-            <table className="w-full min-w-[720px] text-left text-sm">
+            <table className="w-full min-w-[880px] text-left text-sm">
               <thead>
                 <tr className="border-b border-border bg-surface-muted">
                   <th className="px-4 py-3 font-semibold">Feature</th>
-                  <th className="px-4 py-3 font-semibold">Build</th>
-                  <th className="px-4 py-3 font-semibold">Platform</th>
-                  <th className="px-4 py-3 font-semibold">Scale</th>
-                  <th className="px-4 py-3 font-semibold">Enterprise</th>
+                  {planColumns.map((column) => (
+                    <th key={column.key} className="px-4 py-3 font-semibold">
+                      {column.label}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
                 {pricingComparisonRows.map((row) => (
                   <tr key={row.feature} className="border-b border-border last:border-b-0">
                     <td className="px-4 py-3 font-medium">{row.feature}</td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">
-                      <CellValue value={row.build} />
-                    </td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">
-                      <CellValue value={row.platform} />
-                    </td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">
-                      <CellValue value={row.scale} />
-                    </td>
-                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">
-                      <CellValue value={row.enterprise} />
-                    </td>
+                    {planColumns.map((column) => (
+                      <td
+                        key={column.key}
+                        className="px-4 py-3 text-neutral-600 dark:text-neutral-400"
+                      >
+                        <CellValue value={row[column.key]} />
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
@@ -143,22 +108,14 @@ export default function PricingPage() {
               >
                 <p className="font-semibold">{row.feature}</p>
                 <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
-                  <div>
-                    <dt className="text-neutral-500">Build</dt>
-                    <dd><CellValue value={row.build} /></dd>
-                  </div>
-                  <div>
-                    <dt className="text-neutral-500">Platform</dt>
-                    <dd><CellValue value={row.platform} /></dd>
-                  </div>
-                  <div>
-                    <dt className="text-neutral-500">Scale</dt>
-                    <dd><CellValue value={row.scale} /></dd>
-                  </div>
-                  <div>
-                    <dt className="text-neutral-500">Enterprise</dt>
-                    <dd><CellValue value={row.enterprise} /></dd>
-                  </div>
+                  {planColumns.map((column) => (
+                    <div key={column.key}>
+                      <dt className="text-neutral-500">{column.label}</dt>
+                      <dd>
+                        <CellValue value={row[column.key]} />
+                      </dd>
+                    </div>
+                  ))}
                 </dl>
               </div>
             ))}
@@ -169,7 +126,7 @@ export default function PricingPage() {
       <section className="border-t border-border py-16">
         <div className="container mx-auto max-w-3xl px-6">
           <h2 className="text-center text-2xl font-bold tracking-tight">
-            Got questions? We&apos;ve got answers.
+            {pricingFaqsTitle}
           </h2>
           <dl className="mt-10 space-y-6">
             {pricingFaqs.map((faq) => (
@@ -191,11 +148,11 @@ export default function PricingPage() {
             <span className="text-brand-gradient">talk</span>.
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-hero-muted">
-            Headless messaging infrastructure — reach out and we&apos;ll help you
-            ship.
+            Pick a plan above or message us on Telegram — we&apos;ll help you ship
+            chat, calls, and production infrastructure.
           </p>
           <div className="mt-8 flex justify-center">
-            <ContactCta variant="hero" showDocsLink />
+            <ContactCta variant="hero" showDocsLink showPricingLink={false} />
           </div>
         </div>
       </section>

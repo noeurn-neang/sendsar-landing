@@ -1,41 +1,9 @@
-import { ContactCta } from "@/components/landing/ContactCta";
 import Link from "next/link";
 
 import { PricingCards } from "@/components/landing/PricingCards";
-import { siteMode } from "@/lib/nav";
-import { siteConfig } from "@/lib/site";
+import { pricingSectionIntro } from "@/lib/pricing";
 
 export function PricingSection() {
-  if (!siteMode.showPricing) {
-    return (
-      <section id="contact" className="border-b border-border bg-hero-gradient-subtle py-20">
-        <div className="container mx-auto max-w-6xl px-6">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="font-mono text-xs uppercase tracking-widest text-brand">
-              Early access
-            </p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              <span className="text-brand-gradient">Contact us</span> to get started
-            </h2>
-            <p className="mt-4 text-neutral-600 dark:text-neutral-400">
-              We&apos;re onboarding early partners personally — no hosted tiers live
-              yet. Email or Telegram and we&apos;ll share docs, sandbox access, and
-              pricing when you&apos;re ready to ship.
-            </p>
-            <div className="mt-8 flex justify-center">
-              <ContactCta variant="light" emailLabel="Get early access" />
-            </div>
-            <p className="mt-4 text-sm text-neutral-500">
-              <a href={`mailto:${siteConfig.contactEmail}`} className="hover:text-brand">
-                {siteConfig.contactEmail}
-              </a>
-            </p>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   return (
     <section id="pricing" className="border-b border-border bg-surface-muted py-20">
       <div className="container mx-auto max-w-6xl px-6">
@@ -47,13 +15,12 @@ export function PricingSection() {
             Simple, transparent, predictable
           </h2>
           <p className="mt-4 text-neutral-600 dark:text-neutral-400">
-            Flat monthly tiers — know exactly what you&apos;ll pay as your platform
-            grows. No per-MAU surprise bills.
+            {pricingSectionIntro}
           </p>
         </div>
 
         <div className="mt-12">
-          <PricingCards compact />
+          <PricingCards compact showBillingToggle />
         </div>
 
         <p className="mt-8 text-center text-sm text-neutral-500">

@@ -5,7 +5,7 @@ const products = [
     description:
       "Rooms, messages, delivery, and presence — mapped to your user IDs and business objects. No parallel user directory.",
     highlights: [
-      "1:1 and group rooms",
+      "1:1 rooms · group optional",
       "Typing & read receipts",
       "Reactions & media",
       "REST + WebSocket",

@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 
 import { fetchPostSlugs } from "@/lib/posts";
-import { siteMode } from "@/lib/nav";
 import { absoluteUrl } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
@@ -13,9 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl("/"), lastModified: now, changeFrequency: "weekly", priority: 1 },
     { url: siteConfig.docsUrl.replace(/\/$/, ""), lastModified: now, changeFrequency: "weekly", priority: 0.95 },
     { url: siteConfig.quickstartUrl, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
-    ...(siteMode.showPricing
-      ? [{ url: absoluteUrl("/pricing"), lastModified: now, changeFrequency: "monthly" as const, priority: 0.9 }]
-      : []),
+    { url: absoluteUrl("/pricing"), lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: absoluteUrl("/blog"), lastModified: now, changeFrequency: "weekly", priority: 0.8 },
   ];
 

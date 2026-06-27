@@ -1,29 +1,32 @@
+import Link from "next/link";
+
 import { siteConfig } from "@/lib/site";
 
 type ContactCtaProps = {
   /** hero = dark section; light = on white/muted; inline = compact row */
   variant?: "hero" | "light" | "inline";
   showDocsLink?: boolean;
-  emailLabel?: string;
-  telegramLabel?: string;
+  showPricingLink?: boolean;
+  /** Override primary button label */
+  primaryLabel?: string;
 };
 
 export function ContactCta({
   variant = "hero",
   showDocsLink = false,
-  emailLabel = "Get early access",
-  telegramLabel = "Telegram",
+  showPricingLink = false,
+  primaryLabel,
 }: ContactCtaProps) {
   const isHero = variant === "hero";
   const isLight = variant === "light";
 
-  const emailClass = isHero
+  const primaryClass = isHero
     ? "inline-flex rounded-lg bg-brand px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-strong"
     : isLight
       ? "rounded-md bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-strong"
       : "inline-flex rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-strong";
 
-  const telegramClass = isHero
+  const secondaryClass = isHero
     ? "inline-flex rounded-lg border border-hero-border px-6 py-3 text-sm font-semibold text-stone-200 transition hover:border-brand/60 hover:text-white"
     : isLight
       ? "rounded-md border border-border px-5 py-2.5 text-sm font-semibold hover:border-brand/40 hover:text-brand"
@@ -35,17 +38,19 @@ export function ContactCta({
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-3">
-      <a href={siteConfig.earlyAccessMailto} className={emailClass}>
-        {emailLabel}
-      </a>
       <a
         href={siteConfig.contactTelegram}
         target="_blank"
         rel="noopener noreferrer"
-        className={telegramClass}
+        className={primaryClass}
       >
-        {telegramLabel}
+        {primaryLabel ?? "Talk on Telegram"}
       </a>
+      {showPricingLink ? (
+        <Link href="/pricing" className={secondaryClass}>
+          View pricing
+        </Link>
+      ) : null}
       {showDocsLink ? (
         <a
           href={siteConfig.docsUrl}

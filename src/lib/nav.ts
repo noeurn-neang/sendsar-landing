@@ -7,26 +7,12 @@ export type NavItem = {
   description?: string;
 };
 
-/**
- * Early access — flip flags when hosted pricing & full tiers are ready.
- */
-export const siteMode = {
-  /** Pricing tiers, /pricing page, and "Pricing" nav */
-  showPricing: false,
-  /** Developers dropdown in header */
-  showDevelopersMenu: true,
-} as const;
-
-export const contactNavLink: NavItem = {
-  label: "Contact us",
-  href: "/#contact",
-};
-
-const productLinksAll: NavItem[] = [
+/** Homepage sections and key pages — docs live under Developers. */
+export const productLinks: NavItem[] = [
   {
     label: "Platform overview",
     href: "/#platform",
-    description: "Headless messaging stack",
+    description: "Messaging, voice, and video",
   },
   {
     label: "How it works",
@@ -41,26 +27,19 @@ const productLinksAll: NavItem[] = [
   {
     label: "Features",
     href: "/#features",
-    description: "Rooms, webhooks, presence",
+    description: "Rooms, webhooks, calls",
   },
   {
-    label: "Documentation",
-    href: siteConfig.docsUrl,
-    external: true,
-    description: "Integration guides",
+    label: "Pricing",
+    href: "/pricing",
+    description: "Free, Plus, Pro, Enterprise",
   },
   {
     label: "Contact",
-    href: siteConfig.earlyAccessMailto,
-    external: true,
-    description: "Email for early access",
+    href: "/#contact",
+    description: "Email or Telegram",
   },
 ];
-
-/** Hide docs from Product menu when Developers dropdown is shown. */
-export const productLinks = siteMode.showDevelopersMenu
-  ? productLinksAll.filter((item) => item.label !== "Documentation")
-  : productLinksAll;
 
 export const developerLinks: NavItem[] = [
   {
@@ -68,6 +47,12 @@ export const developerLinks: NavItem[] = [
     href: siteConfig.docsUrl,
     external: true,
     description: "Integration guides",
+  },
+  {
+    label: "Quickstart",
+    href: siteConfig.quickstartUrl,
+    external: true,
+    description: "Ship your first room",
   },
   {
     label: "Telegram",
@@ -78,14 +63,6 @@ export const developerLinks: NavItem[] = [
 ];
 
 export const visibleTopNavLinks: NavItem[] = [
-  ...(siteMode.showPricing
-    ? [{ label: "Pricing", href: "/pricing" }]
-    : [contactNavLink]),
+  { label: "Pricing", href: "/pricing" },
   { label: "Blog", href: "/blog" },
 ];
-
-/** @deprecated use siteMode */
-export const navVisibility = {
-  pricing: siteMode.showPricing,
-  developers: siteMode.showDevelopersMenu,
-} as const;

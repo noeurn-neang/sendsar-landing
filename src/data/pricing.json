@@ -1,0 +1,209 @@
+{
+  "version": "1.2.0",
+  "updatedAt": "2026-06-27",
+  "currency": "USD",
+  "notes": "Single source of truth for customer-facing pricing. Base prices include chat, storage, and included voice call, video call, and call recording minutes on paid plans. Update monthly prices and billingPeriods.annual.discount — annual derives automatically unless plan.price.annual is set. Over limit, the same per-minute rates apply.",
+
+  "display": {
+    "comparisonTitle": "Detailed plan comparison",
+    "faqsTitle": "Got questions? We've got answers.",
+    "defaultBillingPeriod": "annual",
+    "schemaHighPricePlanId": "pro",
+    "textChatLabel": "Text chat",
+    "textChatMessagesLabel": "Text chat messages",
+    "textChatHistoryLabel": "Text chat history",
+    "peakTextChatUsersLabel": "Peak text chat users",
+    "voiceCallLabel": "Voice call",
+    "videoCallLabel": "Video call",
+    "recordingLabel": "Call recording",
+    "pricingSectionIntro": "Free, Plus, Pro, and Enterprise — flat monthly tiers. Text chat, voice call, video call, and call recording are metered separately so you always know what you are paying for.",
+    "pricingPageIntro": "Flat monthly tiers with separate limits for text chat, voice call, video call, and call recording. Paid plans include minutes in the base price; over limit, the same per-minute rates apply.",
+    "chatLines": {
+      "messages": "{count} text chat messages/mo",
+      "history": "{duration} text chat history",
+      "peakUsers": "Up to {count} peak text chat users",
+      "unlimitedMessages": "Unlimited text chat messages",
+      "unlimitedHistory": "Unlimited text chat history",
+      "unlimitedPeakUsers": "Unlimited peak text chat users"
+    },
+    "callLines": {
+      "voiceIncludedOverage": "{minutes} {voiceCallLabel} min/mo, then {rate}/min",
+      "videoIncludedOverage": "{minutes} {videoCallLabel} min/mo, then {rate}/min",
+      "voiceIncludedOnly": "{minutes} {voiceCallLabel} min/mo",
+      "videoIncludedOnly": "{minutes} {videoCallLabel} min/mo",
+      "noVoiceCall": "No {voiceCallLabel}",
+      "noVideoCall": "No {videoCallLabel}",
+      "voiceUnlimited": "Unlimited {voiceCallLabel}",
+      "videoUnlimited": "Unlimited {videoCallLabel}",
+      "recordingIncludedOverage": "{minutes} {recordingLabel} min/mo, then {rate}/min",
+      "recordingRate": "{recordingLabel} {rate}/min",
+      "noRecording": "No call recording",
+      "callsPauseAfterIncluded": "Voice & video calls pause after included minutes"
+    }
+  },
+
+  "billingPeriods": {
+    "monthly": {
+      "discount": 0,
+      "label": "Monthly",
+      "monthlyHint": "Switch to {annualLabel} — save {discount}% on the base plan."
+    },
+    "annual": {
+      "discount": 0.2,
+      "label": "Annual",
+      "promoHeadline": "Save {discount}% with annual billing on base plans",
+      "activeNote": "Billed once per year — save {discount}% vs paying monthly on the base plan",
+      "badge": "Save {discount}%",
+      "savingsBadge": "Save {discount}% · {yearlySavings}/yr",
+      "billingSubtext": "{annualTotal} billed annually ({monthlyYearTotal} if paid monthly)"
+    }
+  },
+
+  "plans": [
+    {
+      "id": "free",
+      "name": "Free",
+      "builtFor": "Trying it out (~1-10 people)",
+      "price": { "monthly": 0 },
+      "cta": { "label": "Get started free", "channel": "telegram" },
+      "users": { "max": 10 },
+      "chat": {
+        "messagesIncludedPerMonth": 500,
+        "messageHistoryDays": 3,
+        "peakConcurrentUsers": 3
+      },
+      "storage": {
+        "includedGB": 1,
+        "overage": null
+      },
+      "calls": {
+        "peakConcurrentCalls": null,
+        "includedVoiceCallMinutesPerMonth": 5,
+        "includedVideoCallMinutesPerMonth": 5,
+        "voiceCallPricePerMin": null,
+        "videoCallPricePerMin": null,
+        "afterIncludedMinutes": "calls_paused_until_next_month",
+        "recordingAvailable": false
+      }
+    },
+    {
+      "id": "plus",
+      "name": "Plus",
+      "builtFor": "Small teams (~10-50 people)",
+      "highlighted": true,
+      "badge": "Most popular",
+      "price": { "monthly": 16 },
+      "cta": { "label": "Start with Plus", "channel": "telegram" },
+      "users": { "max": 50 },
+      "chat": {
+        "messagesIncludedPerMonth": 50000,
+        "messageHistoryDays": 365,
+        "peakConcurrentUsers": 20
+      },
+      "storage": {
+        "includedGB": 5,
+        "overage": { "pricePerBlock": 1, "blockGB": 5 }
+      },
+      "calls": {
+        "peakConcurrentCalls": 3,
+        "includedVoiceCallMinutesPerMonth": 240,
+        "includedVideoCallMinutesPerMonth": 120,
+        "includedRecordingMinutesPerMonth": 240,
+        "voiceCallPricePerMin": 0.01,
+        "videoCallPricePerMin": 0.015,
+        "afterIncludedMinutes": "metered_monthly",
+        "recordingAvailable": true,
+        "recordingPricePerMin": 0.02
+      }
+    },
+    {
+      "id": "pro",
+      "name": "Pro",
+      "builtFor": "Growing business (~50-300 people)",
+      "price": { "monthly": 45 },
+      "cta": { "label": "Start with Pro", "channel": "telegram" },
+      "users": { "max": 300 },
+      "chat": {
+        "messagesIncludedPerMonth": 500000,
+        "messageHistoryDays": 1095,
+        "peakConcurrentUsers": 120
+      },
+      "storage": {
+        "includedGB": 25,
+        "overage": { "pricePerBlock": 1, "blockGB": 5 }
+      },
+      "calls": {
+        "peakConcurrentCalls": 8,
+        "includedVoiceCallMinutesPerMonth": 480,
+        "includedVideoCallMinutesPerMonth": 240,
+        "includedRecordingMinutesPerMonth": 480,
+        "voiceCallPricePerMin": 0.008,
+        "videoCallPricePerMin": 0.012,
+        "afterIncludedMinutes": "metered_monthly",
+        "recordingAvailable": true,
+        "recordingPricePerMin": 0.015
+      }
+    },
+    {
+      "id": "enterprise",
+      "name": "Enterprise",
+      "builtFor": "Large org (300+ people)",
+      "price": { "monthly": null, "display": "Contact us" },
+      "cta": { "label": "Contact sales", "channel": "telegram" },
+      "users": { "max": null, "display": "Unlimited" },
+      "infra": "dedicated",
+      "chat": {
+        "messagesIncludedPerMonth": null,
+        "messageHistoryDays": null,
+        "peakConcurrentUsers": null,
+        "display": "Unlimited"
+      },
+      "storage": {
+        "includedGB": null,
+        "display": "Unlimited (custom storage tier)"
+      },
+      "calls": {
+        "peakConcurrentCalls": null,
+        "includedVoiceCallMinutesPerMonth": null,
+        "includedVideoCallMinutesPerMonth": null,
+        "voiceCallPricePerMin": "custom",
+        "videoCallPricePerMin": "custom",
+        "recordingAvailable": true,
+        "recordingPricePerMin": 0,
+        "recordingDisplay": "Included, unlimited"
+      },
+      "internalNote": "Public page shows clean 'Unlimited' with no caveat. Real capacity ceilings and overage handling must be defined in the sales contract/SLA per client, matched to the dedicated infra actually provisioned for them."
+    }
+  ],
+
+  "faqs": [
+    {
+      "question": "What counts as a text chat message?",
+      "answer": "Text chat means written messages sent through the Sendsar API in channels and DMs. Each text message counts toward your monthly text chat allowance. Edits, system events, and webhooks do not. Text chat is separate from voice call and video call minutes."
+    },
+    {
+      "question": "What is the difference between text chat and calls?",
+      "answer": "Text chat is asynchronous written messaging — you send and read text. Voice call and video call are live audio or video sessions, billed by the minute. They use separate limits and rates, so a voice note or text message never counts as call time."
+    },
+    {
+      "question": "What happens if we exceed included text chat messages?",
+      "answer": "We pause new outbound text chat on that workspace until the next billing cycle or you upgrade. Storage, voice call, and video call usage follow the limits and rates shown for your plan."
+    },
+    {
+      "question": "How do voice call, video call, and call recording minutes work?",
+      "answer": "Voice call, video call, and call recording are live-session features — not text chat. Each plan includes separate monthly allowances for each type. On Plus and Pro, extra minutes are billed at the same per-minute rate shown on your plan. On Free, you get 5 voice call min/mo and 5 video call min/mo; calls pause when either allowance is used up. Call recording is not included on Free."
+    },
+    {
+      "question": "What are peak text chat users and concurrent calls?",
+      "answer": "Peak text chat users is the maximum simultaneous people actively using text chat in your workspace. Concurrent calls is the maximum active voice or video call sessions at once. Both are capacity guardrails on shared infrastructure — not separate billing meters."
+    },
+    {
+      "question": "Can we save with annual billing?",
+      "answer": "Yes. Pay annually and save {discount}% on the base plan versus monthly billing — {plusYearlySavings}/year on Plus, {proYearlySavings}/year on Pro. Included text chat, voice call, video call, and call recording allowances are part of the base plan; any overage minutes are billed month to month."
+    },
+    {
+      "question": "When should we talk to sales?",
+      "answer": "Choose Enterprise when you need dedicated infrastructure, custom voice call and video call rates, unlimited capacity, or contract terms tailored to your organization."
+    }
+  ]
+}
