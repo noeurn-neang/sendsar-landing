@@ -16,26 +16,33 @@
     "voiceCallLabel": "Voice call",
     "videoCallLabel": "Video call",
     "recordingLabel": "Call recording",
+    "priceLabels": {
+      "monthSuffix": "/month",
+      "monthCompare": "{price}/month",
+      "messagesPerMonth": "{count} text chat messages/month",
+      "storageOverage": "{price}/{blockGB} GB",
+      "concurrentCalls": "Up to {count} concurrent calls"
+    },
     "pricingSectionIntro": "Free, Plus, Pro, and Enterprise — flat monthly tiers. Text chat, voice call, video call, and call recording are metered separately so you always know what you are paying for.",
     "pricingPageIntro": "Flat monthly tiers with separate limits for text chat, voice call, video call, and call recording. Each plan includes the monthly allowances shown below.",
     "chatLines": {
-      "messages": "{count} text chat messages/mo",
+      "messages": "{count} text chat messages/month",
       "history": "{duration} text chat history",
-      "peakUsers": "Up to {count} peak text chat users",
+      "peakUsers": "Up to {count} peak text chat users at once",
       "unlimitedMessages": "Unlimited text chat messages",
       "unlimitedHistory": "Unlimited text chat history",
       "unlimitedPeakUsers": "Unlimited peak text chat users"
     },
     "callLines": {
-      "voiceIncluded": "{minutes} {voiceCallLabel} min/mo",
-      "videoIncluded": "{minutes} {videoCallLabel} min/mo",
-      "recordingIncluded": "{minutes} {recordingLabel} min/mo",
+      "voiceIncluded": "{minutes} {voiceCallLabel} minutes/month",
+      "videoIncluded": "{minutes} {videoCallLabel} minutes/month",
+      "recordingIncluded": "{minutes} {recordingLabel} minutes/month",
       "noVoiceCall": "No {voiceCallLabel}",
       "noVideoCall": "No {videoCallLabel}",
       "voiceUnlimited": "Unlimited {voiceCallLabel}",
       "videoUnlimited": "Unlimited {videoCallLabel}",
       "noRecording": "No call recording",
-      "callsPauseAfterIncluded": "Voice & video calls pause after included minutes"
+      "callsPauseAfterIncluded": "Voice and video calls pause after included minutes"
     }
   },
 
@@ -51,8 +58,8 @@
       "promoHeadline": "Save {discount}% with annual billing on base plans",
       "activeNote": "Billed once per year — save {discount}% vs paying monthly on the base plan",
       "badge": "Save {discount}%",
-      "savingsBadge": "Save {discount}% · {yearlySavings}/yr",
-      "billingSubtext": "{annualTotal} billed annually ({monthlyYearTotal} if paid monthly)"
+      "savingsBadge": "Save {discount}% · {yearlySavings}/year",
+      "billingSubtext": "{annualTotal} billed once per year ({monthlyYearTotal} if paid monthly)"
     }
   },
 
@@ -188,7 +195,7 @@
     },
     {
       "question": "How do voice call, video call, and call recording minutes work?",
-      "answer": "Voice call, video call, and call recording are live-session features — not text chat. Each plan includes separate monthly allowances for each type. On Free, you get 5 voice call min/mo and 5 video call min/mo; calls pause when either allowance is used up. Call recording is not included on Free."
+      "answer": "Voice call, video call, and call recording are live-session features — not text chat. Each plan includes separate monthly allowances for each type. On Free, you get 5 voice call minutes/month and 5 video call minutes/month; calls pause when either allowance is used up. Call recording is not included on Free."
     },
     {
       "question": "What are peak text chat users and concurrent calls?",

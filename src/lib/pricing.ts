@@ -57,6 +57,8 @@ const textChatHistoryLabel = pricingData.display.textChatHistoryLabel;
 const peakTextChatUsersLabel = pricingData.display.peakTextChatUsersLabel;
 const chatLines = pricingData.display.chatLines;
 const callLines = pricingData.display.callLines;
+const priceLabels = pricingData.display.priceLabels;
+const monthSuffix = priceLabels.monthSuffix;
 
 type PlanCalls = Plan["calls"];
 
@@ -188,16 +190,16 @@ function formatPrice(
   }
 
   if (amount === 0) {
-    return { price: formatUsd(0), priceSuffix: "/mo" };
+    return { price: formatUsd(0), priceSuffix: monthSuffix };
   }
 
   const monthlyList = priceData.monthly;
   if (monthlyList === null || monthlyList === undefined) {
-    return { price: formatUsd(amount), priceSuffix: "/mo" };
+    return { price: formatUsd(amount), priceSuffix: monthSuffix };
   }
 
   if (period === "monthly") {
-    return { price: formatUsd(amount), priceSuffix: "/mo" };
+    return { price: formatUsd(amount), priceSuffix: monthSuffix };
   }
 
   const monthlyEquivalent = amount / 12;
@@ -214,8 +216,10 @@ function formatPrice(
 
   return {
     price: formatUsd(monthlyEquivalent),
-    priceSuffix: "/mo",
-    compareAt: `${formatUsd(monthlyList)}/mo`,
+    priceSuffix: monthSuffix,
+    compareAt: renderTemplate(priceLabels.monthCompare, {
+      price: formatUsd(monthlyList),
+    }),
     savingsBadge:
       savingsAmount > 0
         ? renderTemplate(billingPeriods.annual.savingsBadge, templateVars)
@@ -230,7 +234,10 @@ function formatStorage(plan: Plan): string {
   if (includedGB === null) return "Custom";
   const overage = plan.storage.overage;
   if (overage) {
-    return `${includedGB} GB (+ ${formatUsd(overage.pricePerBlock)}/${overage.blockGB} GB overage)`;
+    return `${includedGB} GB included (+ ${renderTemplate(priceLabels.storageOverage, {
+      price: formatUsd(overage.pricePerBlock),
+      blockGB: String(overage.blockGB),
+    })} extra)`;
   }
   return `${includedGB} GB`;
 }
@@ -420,7 +427,9 @@ function chatCell(planId: string, field: "messages" | "history" | "pcu"): string
   if (field === "messages") {
     if (plan.chat.display) return plan.chat.display;
     if (plan.chat.messagesIncludedPerMonth === null) return "Custom";
-    return `${formatNumber(plan.chat.messagesIncludedPerMonth)}/mo`;
+    return renderTemplate(priceLabels.messagesPerMonth, {
+      count: formatNumber(plan.chat.messagesIncludedPerMonth),
+    });
   }
 
   if (field === "history") {
@@ -431,7 +440,9 @@ function chatCell(planId: string, field: "messages" | "history" | "pcu"): string
 
   if (plan.chat.display && plan.chat.peakConcurrentUsers === null) return plan.chat.display;
   if (plan.chat.peakConcurrentUsers === null) return "Custom";
-  return String(plan.chat.peakConcurrentUsers);
+  return renderTemplate(chatLines.peakUsers, {
+    count: formatNumber(plan.chat.peakConcurrentUsers),
+  });
 }
 
 function storageCell(planId: string): string {
@@ -446,7 +457,10 @@ function storageOverageCell(planId: string): string | boolean {
   const plan = planById[planId];
   if (!plan?.storage.overage) return false;
   const { pricePerBlock, blockGB } = plan.storage.overage;
-  return `${formatUsd(pricePerBlock)}/${blockGB} GB`;
+  return renderTemplate(priceLabels.storageOverage, {
+    price: formatUsd(pricePerBlock),
+    blockGB: String(blockGB),
+  });
 }
 
 function callsCell(planId: string): string {
@@ -457,7 +471,9 @@ function callsCell(planId: string): string {
     if (plan.calls.voiceCallPricePerMin === "custom") return "Custom";
     return "—";
   }
-  return String(plan.calls.peakConcurrentCalls);
+  return renderTemplate(priceLabels.concurrentCalls, {
+    count: String(plan.calls.peakConcurrentCalls),
+  });
 }
 
 function voiceCallMinutesCell(planId: string): string {
@@ -525,7 +541,7 @@ export const pricingComparisonRows: PricingComparisonRow[] = [
     enterprise: storageCell("enterprise"),
   },
   {
-    feature: "Storage overage",
+    feature: "Storage overage (extra)",
     free: cell("free", false),
     plus: storageOverageCell("plus"),
     pro: storageOverageCell("pro"),

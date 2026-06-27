@@ -47,7 +47,7 @@ function PriceDisplay({ tier, period }: { tier: PricingTier; period: BillingPeri
             </span>
           ) : (
             <span className="invisible text-base font-medium" aria-hidden>
-              $0/mo
+              $0/month
             </span>
           )}
         </div>
