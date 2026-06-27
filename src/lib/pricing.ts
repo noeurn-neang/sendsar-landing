@@ -239,16 +239,8 @@ function formatVoiceCallLine(calls: PlanCalls): string {
   const included = "includedVoiceCallMinutesPerMonth" in calls ? calls.includedVoiceCallMinutesPerMonth : null;
   const rate = "voiceCallPricePerMin" in calls ? calls.voiceCallPricePerMin : null;
 
-  if (included != null && included > 0 && typeof rate === "number") {
-    return renderTemplate(callLines.voiceIncludedOverage, {
-      minutes: formatNumber(included),
-      voiceCallLabel,
-      rate: formatUsd(rate),
-    });
-  }
-
-  if (included != null && included > 0 && rate == null) {
-    return renderTemplate(callLines.voiceIncludedOnly, {
+  if (included != null && included > 0) {
+    return renderTemplate(callLines.voiceIncluded, {
       minutes: formatNumber(included),
       voiceCallLabel,
     });
@@ -258,10 +250,6 @@ function formatVoiceCallLine(calls: PlanCalls): string {
     return renderTemplate(callLines.voiceUnlimited, { voiceCallLabel });
   }
 
-  if (typeof rate === "number") {
-    return `${voiceCallLabel} ${formatUsd(rate)}/min`;
-  }
-
   return renderTemplate(callLines.noVoiceCall, { voiceCallLabel });
 }
 
@@ -269,16 +257,8 @@ function formatVideoCallLine(calls: PlanCalls): string {
   const included = "includedVideoCallMinutesPerMonth" in calls ? calls.includedVideoCallMinutesPerMonth : null;
   const rate = "videoCallPricePerMin" in calls ? calls.videoCallPricePerMin : null;
 
-  if (included != null && included > 0 && typeof rate === "number") {
-    return renderTemplate(callLines.videoIncludedOverage, {
-      minutes: formatNumber(included),
-      videoCallLabel,
-      rate: formatUsd(rate),
-    });
-  }
-
-  if (included != null && included > 0 && rate == null) {
-    return renderTemplate(callLines.videoIncludedOnly, {
+  if (included != null && included > 0) {
+    return renderTemplate(callLines.videoIncluded, {
       minutes: formatNumber(included),
       videoCallLabel,
     });
@@ -286,10 +266,6 @@ function formatVideoCallLine(calls: PlanCalls): string {
 
   if (rate === "custom") {
     return renderTemplate(callLines.videoUnlimited, { videoCallLabel });
-  }
-
-  if (typeof rate === "number") {
-    return `${videoCallLabel} ${formatUsd(rate)}/min`;
   }
 
   return renderTemplate(callLines.noVideoCall, { videoCallLabel });
@@ -301,23 +277,15 @@ function formatRecordingLine(calls: PlanCalls): string {
 
   const included =
     "includedRecordingMinutesPerMonth" in calls ? calls.includedRecordingMinutesPerMonth : null;
-  const rate = calls.recordingPricePerMin;
 
-  if (included != null && included > 0 && typeof rate === "number" && rate > 0) {
-    return renderTemplate(callLines.recordingIncludedOverage, {
+  if (included != null && included > 0) {
+    return renderTemplate(callLines.recordingIncluded, {
       minutes: formatNumber(included),
       recordingLabel,
-      rate: formatUsd(rate),
     });
   }
 
-  if (typeof rate === "number") {
-    if (rate === 0) return "Included, unlimited";
-    return renderTemplate(callLines.recordingRate, {
-      recordingLabel,
-      rate: formatUsd(rate),
-    });
-  }
+  if (calls.recordingPricePerMin === 0) return "Included, unlimited";
 
   return callLines.noRecording;
 }

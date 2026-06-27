@@ -17,7 +17,7 @@
     "videoCallLabel": "Video call",
     "recordingLabel": "Call recording",
     "pricingSectionIntro": "Free, Plus, Pro, and Enterprise — flat monthly tiers. Text chat, voice call, video call, and call recording are metered separately so you always know what you are paying for.",
-    "pricingPageIntro": "Flat monthly tiers with separate limits for text chat, voice call, video call, and call recording. Paid plans include minutes in the base price; over limit, the same per-minute rates apply.",
+    "pricingPageIntro": "Flat monthly tiers with separate limits for text chat, voice call, video call, and call recording. Each plan includes the monthly allowances shown below.",
     "chatLines": {
       "messages": "{count} text chat messages/mo",
       "history": "{duration} text chat history",
@@ -27,16 +27,13 @@
       "unlimitedPeakUsers": "Unlimited peak text chat users"
     },
     "callLines": {
-      "voiceIncludedOverage": "{minutes} {voiceCallLabel} min/mo, then {rate}/min",
-      "videoIncludedOverage": "{minutes} {videoCallLabel} min/mo, then {rate}/min",
-      "voiceIncludedOnly": "{minutes} {voiceCallLabel} min/mo",
-      "videoIncludedOnly": "{minutes} {videoCallLabel} min/mo",
+      "voiceIncluded": "{minutes} {voiceCallLabel} min/mo",
+      "videoIncluded": "{minutes} {videoCallLabel} min/mo",
+      "recordingIncluded": "{minutes} {recordingLabel} min/mo",
       "noVoiceCall": "No {voiceCallLabel}",
       "noVideoCall": "No {videoCallLabel}",
       "voiceUnlimited": "Unlimited {voiceCallLabel}",
       "videoUnlimited": "Unlimited {videoCallLabel}",
-      "recordingIncludedOverage": "{minutes} {recordingLabel} min/mo, then {rate}/min",
-      "recordingRate": "{recordingLabel} {rate}/min",
       "noRecording": "No call recording",
       "callsPauseAfterIncluded": "Voice & video calls pause after included minutes"
     }
@@ -183,15 +180,15 @@
     },
     {
       "question": "What is the difference between text chat and calls?",
-      "answer": "Text chat is asynchronous written messaging — you send and read text. Voice call and video call are live audio or video sessions, billed by the minute. They use separate limits and rates, so a voice note or text message never counts as call time."
+      "answer": "Text chat is asynchronous written messaging — you send and read text. Voice call and video call are live audio or video sessions with separate monthly limits. A text message never counts as call time."
     },
     {
       "question": "What happens if we exceed included text chat messages?",
-      "answer": "We pause new outbound text chat on that workspace until the next billing cycle or you upgrade. Storage, voice call, and video call usage follow the limits and rates shown for your plan."
+      "answer": "We pause new outbound text chat on that workspace until the next billing cycle or you upgrade. Voice call, video call, and call recording follow the monthly limits shown for your plan."
     },
     {
       "question": "How do voice call, video call, and call recording minutes work?",
-      "answer": "Voice call, video call, and call recording are live-session features — not text chat. Each plan includes separate monthly allowances for each type. On Plus and Pro, extra minutes are billed at the same per-minute rate shown on your plan. On Free, you get 5 voice call min/mo and 5 video call min/mo; calls pause when either allowance is used up. Call recording is not included on Free."
+      "answer": "Voice call, video call, and call recording are live-session features — not text chat. Each plan includes separate monthly allowances for each type. On Free, you get 5 voice call min/mo and 5 video call min/mo; calls pause when either allowance is used up. Call recording is not included on Free."
     },
     {
       "question": "What are peak text chat users and concurrent calls?",
@@ -199,7 +196,7 @@
     },
     {
       "question": "Can we save with annual billing?",
-      "answer": "Yes. Pay annually and save {discount}% on the base plan versus monthly billing — {plusYearlySavings}/year on Plus, {proYearlySavings}/year on Pro. Included text chat, voice call, video call, and call recording allowances are part of the base plan; any overage minutes are billed month to month."
+      "answer": "Yes. Pay annually and save {discount}% on the base plan versus monthly billing — {plusYearlySavings}/year on Plus, {proYearlySavings}/year on Pro. Included text chat, voice call, video call, and call recording allowances are part of the base plan."
     },
     {
       "question": "When should we talk to sales?",
