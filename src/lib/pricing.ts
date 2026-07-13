@@ -35,6 +35,11 @@ export type PricingComparisonRow = {
   enterprise: string | boolean;
 };
 
+export type PricingComparisonSection = {
+  title: string;
+  rows: PricingComparisonRow[];
+};
+
 export type PricingFaq = {
   q: string;
   a: string;
@@ -54,7 +59,10 @@ const videoCallLabel = pricingData.display.videoCallLabel;
 const recordingLabel = pricingData.display.recordingLabel;
 const textChatMessagesLabel = pricingData.display.textChatMessagesLabel;
 const textChatHistoryLabel = pricingData.display.textChatHistoryLabel;
-const peakTextChatUsersLabel = pricingData.display.peakTextChatUsersLabel;
+const activeChattersLabel = pricingData.display.activeChattersLabel;
+const concurrentConnectionsLabel = pricingData.display.concurrentConnectionsLabel;
+const comparisonSectionUsage = pricingData.display.comparisonSectionUsage;
+const comparisonSectionTechnical = pricingData.display.comparisonSectionTechnical;
 const chatLines = pricingData.display.chatLines;
 const callLines = pricingData.display.callLines;
 const priceLabels = pricingData.display.priceLabels;
@@ -339,28 +347,32 @@ function formatChat(plan: Plan): string[] {
     );
   }
 
-  if (chat.display && chat.peakConcurrentUsers === null) {
-    lines.push(chatLines.unlimitedPeakUsers);
-  } else if (chat.peakConcurrentUsers !== null) {
-    lines.push(
-      renderTemplate(chatLines.peakUsers, {
-        count: formatNumber(chat.peakConcurrentUsers),
-      }),
-    );
-  }
-
   return lines;
 }
 
-function formatUsers(plan: Plan): string {
-  if (plan.users.display) return plan.users.display;
-  if (plan.users.max === null) return "Custom";
-  return `Up to ${formatNumber(plan.users.max)} users`;
+function formatActiveChatters(plan: Plan): string {
+  const { activeChatters } = plan;
+  if (activeChatters.display) return activeChatters.display;
+  if (activeChatters.maxPerMonth === null) return "Custom";
+  return renderTemplate(chatLines.activeChatters, {
+    count: formatNumber(activeChatters.maxPerMonth),
+  });
+}
+
+function formatConcurrentConnections(plan: Plan): string {
+  const { chat } = plan;
+  if (chat.display && chat.peakConcurrentConnections === null) {
+    return chatLines.unlimitedConcurrentConnections;
+  }
+  if (chat.peakConcurrentConnections === null) return "Custom";
+  return renderTemplate(chatLines.concurrentConnections, {
+    count: formatNumber(chat.peakConcurrentConnections),
+  });
 }
 
 function buildFeatures(plan: Plan): string[] {
   const features = [
-    formatUsers(plan),
+    formatActiveChatters(plan),
     ...formatChat(plan),
     formatStorage(plan),
     ...formatCallFeatures(plan),
@@ -368,6 +380,10 @@ function buildFeatures(plan: Plan): string[] {
 
   if ("infra" in plan && plan.infra === "dedicated") {
     features.push("Dedicated infrastructure");
+  }
+
+  if ("salesHighlights" in plan && Array.isArray(plan.salesHighlights)) {
+    features.push(...plan.salesHighlights);
   }
 
   return features;
@@ -420,7 +436,7 @@ function cell(planId: string, value: string | boolean): string | boolean {
   return planById[planId] ? value : "—";
 }
 
-function chatCell(planId: string, field: "messages" | "history" | "pcu"): string {
+function chatCell(planId: string, field: "messages" | "history"): string {
   const plan = planById[planId];
   if (!plan) return "—";
 
@@ -432,17 +448,9 @@ function chatCell(planId: string, field: "messages" | "history" | "pcu"): string
     });
   }
 
-  if (field === "history") {
-    if (plan.chat.display && plan.chat.messageHistoryDays === null) return plan.chat.display;
-    if (plan.chat.messageHistoryDays === null) return "Custom";
-    return formatHistoryDays(plan.chat.messageHistoryDays);
-  }
-
-  if (plan.chat.display && plan.chat.peakConcurrentUsers === null) return plan.chat.display;
-  if (plan.chat.peakConcurrentUsers === null) return "Custom";
-  return renderTemplate(chatLines.peakUsers, {
-    count: formatNumber(plan.chat.peakConcurrentUsers),
-  });
+  if (plan.chat.display && plan.chat.messageHistoryDays === null) return plan.chat.display;
+  if (plan.chat.messageHistoryDays === null) return "Custom";
+  return formatHistoryDays(plan.chat.messageHistoryDays);
 }
 
 function storageCell(planId: string): string {
@@ -497,7 +505,7 @@ function recordingCell(planId: string): string | boolean {
   return line;
 }
 
-export const pricingComparisonRows: PricingComparisonRow[] = [
+const usageComparisonRows: PricingComparisonRow[] = [
   {
     feature: "Built for",
     free: planById.free.builtFor,
@@ -506,11 +514,11 @@ export const pricingComparisonRows: PricingComparisonRow[] = [
     enterprise: planById.enterprise.builtFor,
   },
   {
-    feature: "Users",
-    free: formatUsers(planById.free),
-    plus: formatUsers(planById.plus),
-    pro: formatUsers(planById.pro),
-    enterprise: formatUsers(planById.enterprise),
+    feature: activeChattersLabel,
+    free: formatActiveChatters(planById.free),
+    plus: formatActiveChatters(planById.plus),
+    pro: formatActiveChatters(planById.pro),
+    enterprise: formatActiveChatters(planById.enterprise),
   },
   {
     feature: textChatMessagesLabel,
@@ -527,13 +535,6 @@ export const pricingComparisonRows: PricingComparisonRow[] = [
     enterprise: chatCell("enterprise", "history"),
   },
   {
-    feature: peakTextChatUsersLabel,
-    free: chatCell("free", "pcu"),
-    plus: chatCell("plus", "pcu"),
-    pro: chatCell("pro", "pcu"),
-    enterprise: chatCell("enterprise", "pcu"),
-  },
-  {
     feature: "Storage",
     free: storageCell("free"),
     plus: storageCell("plus"),
@@ -546,13 +547,6 @@ export const pricingComparisonRows: PricingComparisonRow[] = [
     plus: storageOverageCell("plus"),
     pro: storageOverageCell("pro"),
     enterprise: cell("enterprise", "Custom"),
-  },
-  {
-    feature: "Concurrent voice/video calls",
-    free: callsCell("free"),
-    plus: callsCell("plus"),
-    pro: callsCell("pro"),
-    enterprise: callsCell("enterprise"),
   },
   {
     feature: voiceCallLabel,
@@ -575,6 +569,33 @@ export const pricingComparisonRows: PricingComparisonRow[] = [
     pro: recordingCell("pro"),
     enterprise: recordingCell("enterprise"),
   },
+];
+
+const technicalComparisonRows: PricingComparisonRow[] = [
+  {
+    feature: concurrentConnectionsLabel,
+    free: formatConcurrentConnections(planById.free),
+    plus: formatConcurrentConnections(planById.plus),
+    pro: formatConcurrentConnections(planById.pro),
+    enterprise: formatConcurrentConnections(planById.enterprise),
+  },
+  {
+    feature: "Concurrent voice/video calls",
+    free: callsCell("free"),
+    plus: callsCell("plus"),
+    pro: callsCell("pro"),
+    enterprise: callsCell("enterprise"),
+  },
+];
+
+export const pricingComparisonSections: PricingComparisonSection[] = [
+  { title: comparisonSectionUsage, rows: usageComparisonRows },
+  { title: comparisonSectionTechnical, rows: technicalComparisonRows },
+];
+
+export const pricingComparisonRows: PricingComparisonRow[] = [
+  ...usageComparisonRows,
+  ...technicalComparisonRows,
 ];
 
 export const pricingFaqs: PricingFaq[] = pricingData.faqs.map((faq) => ({

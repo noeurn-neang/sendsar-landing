@@ -1,8 +1,10 @@
+import { Fragment } from "react";
+
 import { ContactCta } from "@/components/landing/ContactCta";
 import { PricingCards } from "@/components/landing/PricingCards";
 import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
 import {
-  pricingComparisonRows,
+  pricingComparisonSections,
   pricingComparisonTitle,
   pricingFaqs,
   pricingFaqsTitle,
@@ -13,7 +15,7 @@ import { createMetadata } from "@/lib/seo";
 export const metadata = createMetadata({
   title: "Pricing",
   description:
-    "Simple, transparent Sendsar pricing. Free, Plus, Pro, and Enterprise plans for headless chat, voice, and video — predictable monthly tiers with usage-based calls.",
+    "Simple, transparent Sendsar pricing. Free, Plus, Pro, and Enterprise plans for consumer apps and teams — limits based on active chatters, not total registered users.",
   path: "/pricing",
   keywords: [
     "chat API pricing",
@@ -40,6 +42,86 @@ const planColumns = [
   { key: "pro" as const, label: "Pro" },
   { key: "enterprise" as const, label: "Enterprise" },
 ];
+
+function ComparisonTable() {
+  return (
+    <div className="hidden overflow-x-auto rounded-2xl border border-border bg-surface md:block">
+      <table className="w-full min-w-[880px] text-left text-sm">
+        <thead>
+          <tr className="border-b border-border bg-surface-muted">
+            <th className="px-4 py-3 font-semibold">Feature</th>
+            {planColumns.map((column) => (
+              <th key={column.key} className="px-4 py-3 font-semibold">
+                {column.label}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {pricingComparisonSections.map((section) => (
+            <Fragment key={section.title}>
+              <tr className="border-b border-border bg-surface-muted/60">
+                <td
+                  colSpan={planColumns.length + 1}
+                  className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-neutral-500"
+                >
+                  {section.title}
+                </td>
+              </tr>
+              {section.rows.map((row) => (
+                <tr key={row.feature} className="border-b border-border last:border-b-0">
+                  <td className="px-4 py-3 font-medium">{row.feature}</td>
+                  {planColumns.map((column) => (
+                    <td
+                      key={column.key}
+                      className="px-4 py-3 text-neutral-600 dark:text-neutral-400"
+                    >
+                      <CellValue value={row[column.key]} />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </Fragment>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function ComparisonCards() {
+  return (
+    <div className="space-y-8 md:hidden">
+      {pricingComparisonSections.map((section) => (
+        <div key={section.title}>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-neutral-500">
+            {section.title}
+          </h3>
+          <div className="mt-4 space-y-4">
+            {section.rows.map((row) => (
+              <div
+                key={row.feature}
+                className="rounded-xl border border-border bg-surface p-4"
+              >
+                <p className="font-semibold">{row.feature}</p>
+                <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
+                  {planColumns.map((column) => (
+                    <div key={column.key}>
+                      <dt className="text-neutral-500">{column.label}</dt>
+                      <dd>
+                        <CellValue value={row[column.key]} />
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function PricingPage() {
   return (
@@ -70,55 +152,9 @@ export default function PricingPage() {
       <section className="border-t border-border bg-surface-muted py-16">
         <div className="container mx-auto max-w-6xl px-6">
           <h2 className="text-2xl font-bold tracking-tight">{pricingComparisonTitle}</h2>
-          <div className="mt-8 hidden overflow-x-auto rounded-2xl border border-border bg-surface md:block">
-            <table className="w-full min-w-[880px] text-left text-sm">
-              <thead>
-                <tr className="border-b border-border bg-surface-muted">
-                  <th className="px-4 py-3 font-semibold">Feature</th>
-                  {planColumns.map((column) => (
-                    <th key={column.key} className="px-4 py-3 font-semibold">
-                      {column.label}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {pricingComparisonRows.map((row) => (
-                  <tr key={row.feature} className="border-b border-border last:border-b-0">
-                    <td className="px-4 py-3 font-medium">{row.feature}</td>
-                    {planColumns.map((column) => (
-                      <td
-                        key={column.key}
-                        className="px-4 py-3 text-neutral-600 dark:text-neutral-400"
-                      >
-                        <CellValue value={row[column.key]} />
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="mt-8 space-y-4 md:hidden">
-            {pricingComparisonRows.map((row) => (
-              <div
-                key={row.feature}
-                className="rounded-xl border border-border bg-surface p-4"
-              >
-                <p className="font-semibold">{row.feature}</p>
-                <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
-                  {planColumns.map((column) => (
-                    <div key={column.key}>
-                      <dt className="text-neutral-500">{column.label}</dt>
-                      <dd>
-                        <CellValue value={row[column.key]} />
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            ))}
+          <div className="mt-8">
+            <ComparisonTable />
+            <ComparisonCards />
           </div>
         </div>
       </section>
