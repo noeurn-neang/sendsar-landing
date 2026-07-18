@@ -9,7 +9,6 @@ import {
   visibleTopNavLinks,
   type NavItem,
 } from "@/lib/nav";
-import { siteConfig } from "@/lib/site";
 
 function Chevron() {
   return (
@@ -198,19 +197,11 @@ export function HeaderNav() {
       </nav>
 
       <div className="hidden items-center gap-3 lg:flex">
-        <a
-          href={siteConfig.contactTelegram}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="rounded-lg border border-border px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-brand/40 hover:text-brand dark:text-neutral-300"
-        >
-          Telegram
-        </a>
         <Link
-          href="/pricing"
+          href="/start"
           className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-strong"
         >
-          View pricing
+          Get started
         </Link>
       </div>
 
@@ -261,21 +252,12 @@ export function HeaderNav() {
 
           <div className="flex flex-col gap-2 border-t border-border pt-4">
             <Link
-              href="/pricing"
+              href="/start"
               className="rounded-lg bg-brand px-3 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-brand-strong"
               onClick={close}
             >
-              View pricing
+              Get started
             </Link>
-            <a
-              href={siteConfig.contactTelegram}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-lg border border-border px-3 py-2.5 text-center text-sm font-semibold transition hover:border-brand/40 hover:text-brand"
-              onClick={close}
-            >
-              Telegram
-            </a>
           </div>
         </nav>
       </div>

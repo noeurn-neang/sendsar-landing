@@ -20,7 +20,11 @@ const footerLinks = {
     { label: "Email", href: siteConfig.contactMailto, external: true },
     { label: "Telegram", href: siteConfig.contactTelegram, external: true },
   ],
-  Resources: [{ label: "Blog", href: "/blog" }],
+  Resources: [
+    { label: "Blog", href: "/blog" },
+    { label: "Privacy", href: "/privacy" },
+    { label: "Terms", href: "/terms" },
+  ],
 };
 
 export function SiteFooter() {

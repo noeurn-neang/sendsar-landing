@@ -9,6 +9,8 @@ type ContactCtaProps = {
   showPricingLink?: boolean;
   /** Override primary button label */
   primaryLabel?: string;
+  /** Override primary button href — defaults to console start */
+  primaryHref?: string;
 };
 
 export function ContactCta({
@@ -16,6 +18,7 @@ export function ContactCta({
   showDocsLink = false,
   showPricingLink = false,
   primaryLabel,
+  primaryHref = "/start",
 }: ContactCtaProps) {
   const isHero = variant === "hero";
   const isLight = variant === "light";
@@ -38,14 +41,20 @@ export function ContactCta({
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-3">
-      <a
-        href={siteConfig.contactTelegram}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={primaryClass}
-      >
-        {primaryLabel ?? "Talk on Telegram"}
-      </a>
+      {primaryHref.startsWith("http") || primaryHref.startsWith("mailto") ? (
+        <a
+          href={primaryHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={primaryClass}
+        >
+          {primaryLabel ?? "Talk on Telegram"}
+        </a>
+      ) : (
+        <Link href={primaryHref} className={primaryClass}>
+          {primaryLabel ?? "Get started"}
+        </Link>
+      )}
       {showPricingLink ? (
         <Link href="/pricing" className={secondaryClass}>
           View pricing

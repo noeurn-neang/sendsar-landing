@@ -75,7 +75,7 @@
       "name": "Free",
       "builtFor": "Hackathons & MVPs",
       "price": { "monthly": 0 },
-      "cta": { "label": "Get started free", "channel": "telegram" },
+      "cta": { "label": "Get started", "channel": "start" },
       "activeChatters": { "maxPerMonth": 200 },
       "chat": {
         "messagesIncludedPerMonth": 500,

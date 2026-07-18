@@ -16,6 +16,14 @@ export const siteConfig = {
   contactMailto: "mailto:noeurnnneang@gmail.com?subject=Sendsar",
   contactNote:
     "Start on the Free plan or message us on Telegram — we'll help you wire up chat, calls, and production.",
+  /** Solo operator of the Sendsar service (not a registered company). */
+  legal: {
+    operatorName: "Noeurn Neang",
+    governingLaw: "Cambodia",
+    hostingRegion: "Singapore (Contabo)",
+    fileStorage: "Cloudflare R2",
+    lastUpdated: "2026-07-18",
+  },
   keywords: [
     "Sendsar",
     "headless chat API",

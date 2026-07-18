@@ -391,6 +391,8 @@ function buildFeatures(plan: Plan): string[] {
 
 function resolveCtaHref(channel: string | undefined): string {
   switch (channel) {
+    case "start":
+      return "/start";
     case "email":
       return siteConfig.contactMailto;
     case "telegram":
@@ -602,3 +604,27 @@ export const pricingFaqs: PricingFaq[] = pricingData.faqs.map((faq) => ({
   q: faq.question,
   a: renderTemplate(faq.answer, getGlobalTemplateVars()),
 }));
+
+export function getPlanDisplayName(planId: string): string {
+  return planById[planId]?.name ?? "Free";
+}
+
+export type PlanUsageLimits = {
+  activeChatters: number;
+  messages: number;
+  storageGB: number;
+  voiceMinutes: number;
+  videoMinutes: number;
+};
+
+export function getPlanUsageLimits(planId: string): PlanUsageLimits {
+  const plan = planById[planId] ?? planById.free;
+
+  return {
+    activeChatters: plan.activeChatters.maxPerMonth ?? 0,
+    messages: plan.chat.messagesIncludedPerMonth ?? 0,
+    storageGB: plan.storage.includedGB ?? 0,
+    voiceMinutes: plan.calls.includedVoiceCallMinutesPerMonth ?? 0,
+    videoMinutes: plan.calls.includedVideoCallMinutesPerMonth ?? 0,
+  };
+}

@@ -12,16 +12,18 @@ export function Logo({
   className = "",
   variant = "default",
   size = "md",
+  href = "/",
 }: {
   className?: string;
   variant?: "default" | "inverse";
   size?: keyof typeof sizes;
+  href?: string;
 }) {
   const { mark, text, gap } = sizes[size];
   const isInverse = variant === "inverse";
 
   return (
-    <Link href="/" className={`inline-flex items-center ${gap} ${className}`}>
+    <Link href={href} className={`inline-flex items-center ${gap} ${className}`}>
       <LogoMark
         className={`shrink-0 ${mark}`}
         tone={isInverse ? "dark" : "light"}
