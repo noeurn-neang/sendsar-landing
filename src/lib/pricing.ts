@@ -61,6 +61,8 @@ const textChatMessagesLabel = pricingData.display.textChatMessagesLabel;
 const textChatHistoryLabel = pricingData.display.textChatHistoryLabel;
 const activeChattersLabel = pricingData.display.activeChattersLabel;
 const concurrentConnectionsLabel = pricingData.display.concurrentConnectionsLabel;
+const messageOverageLabel = pricingData.display.messageOverageLabel;
+const recordingRetentionLabel = pricingData.display.recordingRetentionLabel;
 const comparisonSectionUsage = pricingData.display.comparisonSectionUsage;
 const comparisonSectionTechnical = pricingData.display.comparisonSectionTechnical;
 const chatLines = pricingData.display.chatLines;
@@ -337,6 +339,15 @@ function formatChat(plan: Plan): string[] {
     );
   }
 
+  if ("messageOverage" in chat && chat.messageOverage) {
+    lines.push(
+      renderTemplate(chatLines.messageOverage, {
+        price: formatUsd(chat.messageOverage.pricePerBlock),
+        blockMessages: formatNumber(chat.messageOverage.blockMessages),
+      }),
+    );
+  }
+
   if (chat.display && chat.messageHistoryDays === null) {
     lines.push(chatLines.unlimitedHistory);
   } else if (chat.messageHistoryDays !== null) {
@@ -473,17 +484,31 @@ function storageOverageCell(planId: string): string | boolean {
   });
 }
 
-function callsCell(planId: string): string {
+function messageOverageCell(planId: string): string | boolean {
   const plan = planById[planId];
   if (!plan) return "—";
-  if (plan.calls.peakConcurrentCalls === null) {
-    if (plan.id === "free") return "—";
-    if (plan.calls.voiceCallPricePerMin === "custom") return "Custom";
-    return "—";
+  const overage =
+    "messageOverage" in plan.chat ? plan.chat.messageOverage : null;
+  if (!overage) {
+    return plan.id === "free" ? "Paused at limit" : false;
   }
-  return renderTemplate(priceLabels.concurrentCalls, {
-    count: String(plan.calls.peakConcurrentCalls),
+  return renderTemplate(priceLabels.messageOverage, {
+    price: formatUsd(overage.pricePerBlock),
+    blockMessages: formatNumber(overage.blockMessages),
   });
+}
+
+function recordingRetentionCell(planId: string): string | boolean {
+  const plan = planById[planId];
+  if (!plan) return "—";
+  const calls = plan.calls;
+  if ("recordingRetentionDisplay" in calls && calls.recordingRetentionDisplay) {
+    return calls.recordingRetentionDisplay;
+  }
+  if ("recordingRetentionDays" in calls && calls.recordingRetentionDays) {
+    return `${calls.recordingRetentionDays} days`;
+  }
+  return false;
 }
 
 function voiceCallMinutesCell(planId: string): string {
@@ -528,6 +553,13 @@ const usageComparisonRows: PricingComparisonRow[] = [
     plus: chatCell("plus", "messages"),
     pro: chatCell("pro", "messages"),
     enterprise: chatCell("enterprise", "messages"),
+  },
+  {
+    feature: messageOverageLabel,
+    free: messageOverageCell("free"),
+    plus: messageOverageCell("plus"),
+    pro: messageOverageCell("pro"),
+    enterprise: messageOverageCell("enterprise"),
   },
   {
     feature: textChatHistoryLabel,
@@ -582,11 +614,11 @@ const technicalComparisonRows: PricingComparisonRow[] = [
     enterprise: formatConcurrentConnections(planById.enterprise),
   },
   {
-    feature: "Concurrent voice/video calls",
-    free: callsCell("free"),
-    plus: callsCell("plus"),
-    pro: callsCell("pro"),
-    enterprise: callsCell("enterprise"),
+    feature: recordingRetentionLabel,
+    free: recordingRetentionCell("free"),
+    plus: recordingRetentionCell("plus"),
+    pro: recordingRetentionCell("pro"),
+    enterprise: recordingRetentionCell("enterprise"),
   },
 ];
 

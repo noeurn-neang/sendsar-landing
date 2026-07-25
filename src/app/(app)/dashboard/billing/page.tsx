@@ -43,8 +43,8 @@ export default async function DashboardBillingPage() {
   const meters = [
     { label: "Active chatters", meter: usage.activeChatters, format: formatCount },
     { label: "Messages", meter: usage.messages, format: formatCount },
-    { label: "Voice minutes", meter: usage.voiceMinutes, format: formatMinutes },
-    { label: "Video minutes", meter: usage.videoMinutes, format: formatMinutes },
+    { label: "Voice participant-min", meter: usage.voiceMinutes, format: formatMinutes },
+    { label: "Video participant-min", meter: usage.videoMinutes, format: formatMinutes },
     {
       label: "Storage (GB)",
       meter: usage.storageGB,

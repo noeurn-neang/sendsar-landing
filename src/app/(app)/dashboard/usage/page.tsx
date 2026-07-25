@@ -60,13 +60,13 @@ export default async function DashboardUsagePage() {
           progress={usagePercent(usage.messages.used, usage.messages.limit)}
         />
         <MetricCard
-          label="Voice call minutes"
+          label="Voice participant-minutes"
           value={formatMinutes(usage.voiceMinutes.used)}
           hint={`Limit ${formatCount(usage.voiceMinutes.limit)}`}
           progress={usagePercent(usage.voiceMinutes.used, usage.voiceMinutes.limit)}
         />
         <MetricCard
-          label="Video call minutes"
+          label="Video participant-minutes"
           value={formatMinutes(usage.videoMinutes.used)}
           hint={`Limit ${formatCount(usage.videoMinutes.limit)}`}
           progress={usagePercent(usage.videoMinutes.used, usage.videoMinutes.limit)}

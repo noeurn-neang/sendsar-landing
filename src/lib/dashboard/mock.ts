@@ -54,14 +54,14 @@ export const demoKeys = [
 
 export const demoBilling = {
   planName: "Plus",
-  priceMonthly: 16,
+  priceMonthly: 19,
   billingPeriod: "annual" as const,
   nextInvoiceAt: "2027-03-12",
-  annualTotal: 154,
+  annualTotal: 182,
   paymentMethod: "Visa •••• 4242",
   invoices: [
-    { id: "inv_2026_03", date: "2026-03-12", amount: 154, status: "paid" as const },
-    { id: "inv_2025_03", date: "2025-03-12", amount: 154, status: "paid" as const },
+    { id: "inv_2026_03", date: "2026-03-12", amount: 182, status: "paid" as const },
+    { id: "inv_2025_03", date: "2025-03-12", amount: 182, status: "paid" as const },
   ],
 };
 

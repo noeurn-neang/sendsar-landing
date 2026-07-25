@@ -1,8 +1,8 @@
 {
-  "version": "1.3.0",
-  "updatedAt": "2026-07-13",
+  "version": "1.4.0",
+  "updatedAt": "2026-07-21",
   "currency": "USD",
-  "notes": "Single source of truth for customer-facing pricing. Active chatters = unique user IDs that sent or received a text chat message in the billing month (not total registered users). Base prices include chat, storage, and included voice call, video call, and call recording minutes on paid plans. Update monthly prices and billingPeriods.annual.discount — annual derives automatically unless plan.price.annual is set. Over limit, the same per-minute rates apply.",
+  "notes": "Single source of truth for customer-facing pricing. Locked definitions: (1) Active chatter = unique user ID that SENT a message, or received one in a 1:1/DM, during the billing month — broadcast/announcement recipients never count. (2) Messages are counted per send, never per recipient (a group message = 1 message). (3) All call allowances and rates are PARTICIPANT-minutes (a 3-person call for 10 minutes = 30 minutes), matching how LiveKit bills us. (4) Chatter limits are soft on paid plans (never block end-users mid-month; we notify and prompt upgrade); Free is hard-capped. (5) Message overage on paid plans is $1 per 10,000 — priced above the Pro upgrade path on purpose. (6) Recordings count toward the storage quota and auto-expire per plan retention unless downloaded. Update monthly prices and billingPeriods.annual.discount — annual derives automatically unless plan.price.annual is set.",
 
   "display": {
     "comparisonTitle": "Detailed plan comparison",
@@ -16,6 +16,8 @@
     "textChatHistoryLabel": "Text chat history",
     "activeChattersLabel": "Active chatters / mo",
     "concurrentConnectionsLabel": "Concurrent connections",
+    "messageOverageLabel": "Message overage (extra)",
+    "recordingRetentionLabel": "Recording retention",
     "voiceCallLabel": "Voice call",
     "videoCallLabel": "Video call",
     "recordingLabel": "Call recording",
@@ -24,13 +26,14 @@
       "monthCompare": "{price}/month",
       "messagesPerMonth": "{count} text chat messages/month",
       "storageOverage": "{price}/{blockGB} GB",
-      "concurrentCalls": "Up to {count} concurrent calls",
+      "messageOverage": "{price} per {blockMessages} extra messages",
       "concurrentConnections": "Up to {count} concurrent connections"
     },
     "pricingSectionIntro": "Free, Plus, Pro, and Enterprise — flat monthly tiers for apps of any size. Limits are based on active chatters (people who actually message), not total registered users. Text chat, voice call, video call, and call recording are metered separately.",
     "pricingPageIntro": "Flat monthly tiers sized for consumer apps, marketplaces, and teams. Each plan includes monthly allowances for active chatters, text chat messages, voice call, video call, and call recording.",
     "chatLines": {
       "messages": "{count} text chat messages/month",
+      "messageOverage": "Then {price} per {blockMessages} extra messages",
       "history": "{duration} text chat history",
       "activeChatters": "Up to {count} active chatters / mo",
       "concurrentConnections": "Up to {count} concurrent connections",
@@ -40,8 +43,8 @@
       "unlimitedConcurrentConnections": "Unlimited concurrent connections"
     },
     "callLines": {
-      "voiceIncluded": "{minutes} {voiceCallLabel} minutes/month",
-      "videoIncluded": "{minutes} {videoCallLabel} minutes/month",
+      "voiceIncluded": "{minutes} {voiceCallLabel} participant-minutes/month",
+      "videoIncluded": "{minutes} {videoCallLabel} participant-minutes/month",
       "recordingIncluded": "{minutes} {recordingLabel} minutes/month",
       "noVoiceCall": "No {voiceCallLabel}",
       "noVideoCall": "No {videoCallLabel}",
@@ -78,7 +81,7 @@
       "cta": { "label": "Get started", "channel": "start" },
       "activeChatters": { "maxPerMonth": 200 },
       "chat": {
-        "messagesIncludedPerMonth": 500,
+        "messagesIncludedPerMonth": 2500,
         "messageHistoryDays": 3,
         "peakConcurrentConnections": 50
       },
@@ -87,14 +90,14 @@
         "overage": null
       },
       "calls": {
-        "peakConcurrentCalls": null,
-        "includedVoiceCallMinutesPerMonth": 5,
-        "includedVideoCallMinutesPerMonth": 5,
+        "includedVoiceCallMinutesPerMonth": 30,
+        "includedVideoCallMinutesPerMonth": 15,
         "voiceCallPricePerMin": null,
         "videoCallPricePerMin": null,
         "afterIncludedMinutes": "calls_paused_until_next_month",
         "recordingAvailable": false
-      }
+      },
+      "internalNote": "Free is hard-capped everywhere: chat pauses at message limit, chatters hard-capped at 200, calls pause at included participant-minutes. Free-tier calls draw from our shared LiveKit Cloud quota — global kill-switch pauses Free calls first if aggregate quota nears its limit."
     },
     {
       "id": "plus",
@@ -102,11 +105,12 @@
       "builtFor": "Local shops & startups",
       "highlighted": true,
       "badge": "Most popular",
-      "price": { "monthly": 16 },
+      "price": { "monthly": 19 },
       "cta": { "label": "Start with Plus", "channel": "telegram" },
       "activeChatters": { "maxPerMonth": 2500 },
       "chat": {
         "messagesIncludedPerMonth": 50000,
+        "messageOverage": { "pricePerBlock": 1, "blockMessages": 10000 },
         "messageHistoryDays": 365,
         "peakConcurrentConnections": 250
       },
@@ -115,7 +119,6 @@
         "overage": { "pricePerBlock": 1, "blockGB": 5 }
       },
       "calls": {
-        "peakConcurrentCalls": 3,
         "includedVoiceCallMinutesPerMonth": 240,
         "includedVideoCallMinutesPerMonth": 120,
         "includedRecordingMinutesPerMonth": 240,
@@ -123,18 +126,21 @@
         "videoCallPricePerMin": 0.015,
         "afterIncludedMinutes": "metered_monthly",
         "recordingAvailable": true,
-        "recordingPricePerMin": 0.02
-      }
+        "recordingPricePerMin": 0.02,
+        "recordingRetentionDays": 30
+      },
+      "internalNote": "Internal fair-use guardrail (not published): ~3 concurrent call sessions before soft throttle. Chatter limit is soft — never block end-users mid-month; notify tenant and prompt upgrade. Recordings count toward the 5 GB storage quota and expire after 30 days unless downloaded."
     },
     {
       "id": "pro",
       "name": "Pro",
       "builtFor": "High-traffic marketplaces & apps",
-      "price": { "monthly": 45 },
+      "price": { "monthly": 49 },
       "cta": { "label": "Start with Pro", "channel": "telegram" },
       "activeChatters": { "maxPerMonth": 15000 },
       "chat": {
         "messagesIncludedPerMonth": 500000,
+        "messageOverage": { "pricePerBlock": 1, "blockMessages": 10000 },
         "messageHistoryDays": 1095,
         "peakConcurrentConnections": 1000
       },
@@ -143,7 +149,6 @@
         "overage": { "pricePerBlock": 1, "blockGB": 5 }
       },
       "calls": {
-        "peakConcurrentCalls": 8,
         "includedVoiceCallMinutesPerMonth": 480,
         "includedVideoCallMinutesPerMonth": 240,
         "includedRecordingMinutesPerMonth": 480,
@@ -151,8 +156,10 @@
         "videoCallPricePerMin": 0.012,
         "afterIncludedMinutes": "metered_monthly",
         "recordingAvailable": true,
-        "recordingPricePerMin": 0.015
-      }
+        "recordingPricePerMin": 0.015,
+        "recordingRetentionDays": 90
+      },
+      "internalNote": "Internal fair-use guardrail (not published): ~8 concurrent call sessions before soft throttle. Chatter limit is soft — never block end-users mid-month; notify tenant and prompt upgrade. Recordings count toward the 25 GB storage quota and expire after 90 days unless downloaded."
     },
     {
       "id": "enterprise",
@@ -177,43 +184,47 @@
         "display": "Unlimited (custom storage tier)"
       },
       "calls": {
-        "peakConcurrentCalls": null,
         "includedVoiceCallMinutesPerMonth": null,
         "includedVideoCallMinutesPerMonth": null,
         "voiceCallPricePerMin": "custom",
         "videoCallPricePerMin": "custom",
         "recordingAvailable": true,
         "recordingPricePerMin": 0,
-        "recordingDisplay": "Included, unlimited"
+        "recordingDisplay": "Included, unlimited",
+        "recordingRetentionDisplay": "Custom"
       },
-      "internalNote": "Public page shows clean 'Unlimited' with no caveat. Real capacity ceilings and overage handling must be defined in the sales contract/SLA per client, matched to the dedicated infra actually provisioned for them."
+      "internalNote": "Public page shows clean 'Unlimited' with no caveat. Real capacity ceilings, overage handling, and recording retention must be defined in the sales contract/SLA per client, matched to the dedicated infra actually provisioned for them."
     }
   ],
 
   "faqs": [
     {
       "question": "What counts as an active chatter?",
-      "answer": "An active chatter is a unique user ID that sent or received at least one text chat message in your workspace during the billing month. Registered users who never open chat do not count. This lets consumer apps, marketplaces, and delivery platforms scale without being priced like internal team tools."
+      "answer": "An active chatter is a unique user ID that sent at least one text chat message, or received one in a 1:1 direct conversation, during the billing month. Recipients of broadcast or announcement channels never count — one marketing blast to 10,000 users adds zero active chatters. Registered users who never chat also do not count. This keeps pricing predictable for consumer apps, marketplaces, and delivery platforms."
     },
     {
       "question": "What counts as a text chat message?",
-      "answer": "Text chat means written messages sent through the Sendsar API in channels and DMs. Each text message counts toward your monthly text chat allowance. Edits, system events, and webhooks do not. Text chat is separate from voice call and video call minutes."
+      "answer": "Text chat means written messages sent through the Sendsar API in channels and DMs. Every message is counted once per send, never per recipient — a message to a 50-person group counts as 1 message, not 50. Edits, system events, and webhooks do not count. Text chat is separate from voice call and video call minutes."
     },
     {
-      "question": "What is the difference between text chat and calls?",
-      "answer": "Text chat is asynchronous written messaging — you send and read text. Voice call and video call are live audio or video sessions with separate monthly limits. A text message never counts as call time."
+      "question": "How are voice and video call minutes counted?",
+      "answer": "Call allowances are participant-minutes, the industry-standard way real-time infrastructure is measured. Each person in a call consumes minutes for the time they are connected: a 3-person voice call that lasts 10 minutes uses 30 voice participant-minutes. On Free, you get 30 voice and 15 video participant-minutes per month, and calls pause when an allowance is used up. On paid plans, extra participant-minutes are billed at the per-minute rates shown for your plan."
     },
     {
       "question": "What happens if we exceed included text chat messages?",
-      "answer": "We pause new outbound text chat on that workspace until the next billing cycle or you upgrade. Voice call, video call, and call recording follow the monthly limits shown for your plan."
+      "answer": "On Plus and Pro, conversations never stop: extra messages are billed automatically at $1 per 10,000 additional messages. On Free, new outbound text chat is paused until the next billing cycle or an upgrade — Free has no overage billing."
     },
     {
-      "question": "How do voice call, video call, and call recording minutes work?",
-      "answer": "Voice call, video call, and call recording are live-session features — not text chat. Each plan includes separate monthly allowances for each type. On Free, you get 5 voice call minutes/month and 5 video call minutes/month; calls pause when either allowance is used up. Call recording is not included on Free."
+      "question": "What happens if we exceed our active chatter limit?",
+      "answer": "On paid plans, we never block your end-users mid-month. If you exceed your active chatter allowance, chat keeps working — we notify you and work out an upgrade to the right plan. On Free, the 200-chatter limit is a hard cap."
     },
     {
-      "question": "What are concurrent connections and concurrent calls?",
-      "answer": "Concurrent connections is the maximum simultaneous WebSocket connections for text chat in your workspace — an infrastructure guardrail, not a billing meter. Concurrent calls is the maximum active voice or video call sessions at once. Both protect shared infrastructure during peak traffic."
+      "question": "How does call recording work?",
+      "answer": "Call recording is available on Plus and Pro with a monthly allowance of recording minutes; extra minutes are billed at your plan's per-minute rate. Recording files count toward your plan's storage quota and are kept for 30 days on Plus and 90 days on Pro — download them to keep them longer. Enterprise retention is custom."
+    },
+    {
+      "question": "What are concurrent connections?",
+      "answer": "Concurrent connections is the maximum simultaneous WebSocket connections for text chat in your workspace — an infrastructure guardrail on shared infrastructure, not a billing meter. Voice and video calls are tracked by participant-minutes, not by a concurrent call cap."
     },
     {
       "question": "Can we save with annual billing?",

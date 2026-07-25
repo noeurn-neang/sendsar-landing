@@ -9,11 +9,9 @@ export const siteConfig = {
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://sendsar.com",
   docsUrl,
   quickstartUrl: `${docsUrl.replace(/\/$/, "")}/setup/quickstart`,
-  demoUrl:
-    process.env.NEXT_PUBLIC_DEMO_URL ?? "https://demo.sendsar.com",
-  contactEmail: "noeurnnneang@gmail.com",
-  contactTelegram: "https://t.me/noeurn_neang",
-  contactMailto: "mailto:noeurnnneang@gmail.com?subject=Sendsar",
+  contactEmail: "support@sendsar.com",
+  contactTelegram: "https://t.me/sendsar_support",
+  contactMailto: "mailto:support@sendsar.com?subject=Sendsar",
   contactNote:
     "Start on the Free plan or message us on Telegram — we'll help you wire up chat, calls, and production.",
   /** Solo operator of the Sendsar service (not a registered company). */
@@ -22,7 +20,7 @@ export const siteConfig = {
     governingLaw: "Cambodia",
     hostingRegion: "Singapore (Contabo)",
     fileStorage: "Cloudflare R2",
-    lastUpdated: "2026-07-18",
+    lastUpdated: "2026-07-21",
   },
   keywords: [
     "Sendsar",

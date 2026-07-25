@@ -98,7 +98,7 @@ export default async function DashboardOverviewPage() {
           progress={usagePercent(usage.messages.used, usage.messages.limit)}
         />
         <MetricCard
-          label="Voice minutes"
+          label="Voice participant-min"
           value={formatMinutes(usage.voiceMinutes.used)}
           hint={`${usagePercent(usage.voiceMinutes.used, usage.voiceMinutes.limit)}% of ${formatCount(usage.voiceMinutes.limit)} / mo`}
           progress={usagePercent(usage.voiceMinutes.used, usage.voiceMinutes.limit)}
@@ -152,7 +152,7 @@ export default async function DashboardOverviewPage() {
         >
           <ul className="space-y-3 text-sm">
             <li className="flex justify-between gap-4">
-              <span className="text-console-muted">Video minutes</span>
+              <span className="text-console-muted">Video participant-min</span>
               <span className="font-mono text-console-fg">
                 {formatMinutes(usage.videoMinutes.used)} / {formatCount(usage.videoMinutes.limit)}
               </span>

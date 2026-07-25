@@ -1,5 +1,5 @@
 const stats = [
-  { value: "Flat pricing", label: "No per-MAU bills" },
+  { value: "Flat pricing", label: "Pay for chatters, not signups" },
   { value: "Headless", label: "Your UI, our engine" },
   { value: "2-party", label: "Native room model" },
   { value: "Calls", label: "Voice & video optional" },

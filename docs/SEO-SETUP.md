@@ -77,7 +77,6 @@ NEXT_PUBLIC_SITE_URL=https://sendsar.com
 
 # Cross-links (already have sensible defaults)
 NEXT_PUBLIC_DOCS_URL=https://docs.sendsar.com
-NEXT_PUBLIC_DEMO_URL=https://demo.sendsar.com
 ```
 
 **Important:** If `NEXT_PUBLIC_SITE_URL` is missing in production, the app still defaults to `https://sendsar.com`, but always set it explicitly on staging/preview so preview URLs are not indexed with wrong canonicals.

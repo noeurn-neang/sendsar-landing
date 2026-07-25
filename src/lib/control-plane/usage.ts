@@ -58,42 +58,53 @@ async function fetchTenantUsageSnapshot(
   const params = [input.tenantId, start.toISOString(), end.toISOString()] as const;
 
   const [chattersRow, callsRow, storageRow, countsRow, messagesOrSeries] = await Promise.all([
+    // Active chatters per the pricing definition: users who sent a message
+    // this month, plus recipients in 1:1/DM rooms (2 participants) that had a
+    // message this month. Group/broadcast recipients are excluded.
     query<{ count: string }>(
       `WITH month_rooms AS (
          SELECT DISTINCT m."roomId"
          FROM messages m
          INNER JOIN rooms r ON r.id = m."roomId"
          WHERE r."tenantId" = $1
-           AND m."deletedAt" IS NULL
            AND m."createdAt" >= $2
            AND m."createdAt" < $3
+       ),
+       dm_rooms AS (
+         SELECT mr."roomId"
+         FROM month_rooms mr
+         INNER JOIN participants p ON p."roomId" = mr."roomId"
+         GROUP BY mr."roomId"
+         HAVING COUNT(*) = 2
        )
        SELECT COUNT(DISTINCT u.uid)::text AS count
        FROM (
          SELECT m."senderId" AS uid
          FROM messages m
          INNER JOIN month_rooms mr ON mr."roomId" = m."roomId"
-         WHERE m."deletedAt" IS NULL
-           AND m."createdAt" >= $2
+         WHERE m."createdAt" >= $2
            AND m."createdAt" < $3
          UNION
          SELECT p."userId" AS uid
          FROM participants p
-         INNER JOIN month_rooms mr ON mr."roomId" = p."roomId"
+         INNER JOIN dm_rooms dr ON dr."roomId" = p."roomId"
          WHERE p."tenantId" = $1
        ) u`,
       [...params],
     ),
+    // Participant-minutes (matches billing and LiveKit's cost model): each
+    // participant's join..leave time, attributed to the month the session
+    // ended in. Sessions are written by the gateway's LiveKit webhooks.
     query<{ type: string; minutes: string }>(
-      `SELECT type::text AS type,
-              COALESCE(SUM(EXTRACT(EPOCH FROM ("endedAt" - "startedAt")) / 60.0), 0)::text AS minutes
-       FROM calls
-       WHERE "tenantId" = $1
-         AND "startedAt" IS NOT NULL
-         AND "endedAt" IS NOT NULL
-         AND "endedAt" >= $2
-         AND "endedAt" < $3
-       GROUP BY type`,
+      `SELECT c.type::text AS type,
+              COALESCE(SUM(EXTRACT(EPOCH FROM (s."leftAt" - s."joinedAt")) / 60.0), 0)::text AS minutes
+       FROM call_participant_sessions s
+       INNER JOIN calls c ON c.id = s."callId"
+       WHERE s."tenantId" = $1
+         AND s."leftAt" IS NOT NULL
+         AND s."leftAt" >= $2
+         AND s."leftAt" < $3
+       GROUP BY c.type`,
       [...params],
     ),
     query<{ bytes: string }>(
@@ -108,6 +119,8 @@ async function fetchTenantUsageSnapshot(
          (SELECT COUNT(*)::text FROM users WHERE "tenantId" = $1) AS users`,
       [input.tenantId],
     ),
+    // Billing counts messages per send — deleting a message later does not
+    // refund it, so deleted messages stay counted.
     includeSeries
       ? query<{ day: Date | string; messages: string }>(
           `SELECT date_trunc('day', m."createdAt") AS day,
@@ -115,7 +128,6 @@ async function fetchTenantUsageSnapshot(
            FROM messages m
            INNER JOIN rooms r ON r.id = m."roomId"
            WHERE r."tenantId" = $1
-             AND m."deletedAt" IS NULL
              AND m."createdAt" >= $2
              AND m."createdAt" < $3
            GROUP BY 1
@@ -127,7 +139,6 @@ async function fetchTenantUsageSnapshot(
            FROM messages m
            INNER JOIN rooms r ON r.id = m."roomId"
            WHERE r."tenantId" = $1
-             AND m."deletedAt" IS NULL
              AND m."createdAt" >= $2
              AND m."createdAt" < $3`,
           [...params],
@@ -183,7 +194,7 @@ async function fetchTenantUsageSnapshot(
     userCount: Number(countsRow.rows[0]?.users ?? 0),
     series,
     approxNote:
-      "Active chatters approximate unique senders and participants in rooms with messages this month. Recording minutes are not metered yet.",
+      "Active chatters count users who sent a message this month, plus recipients in 1:1 rooms with messages. Call minutes are participant-minutes (each participant's time on the call). Recording minutes are not metered yet.",
   };
 }
 
@@ -197,7 +208,7 @@ export const getTenantUsageSnapshot = cache(async (input: GetTenantUsageOptions)
 
   return unstable_cache(
     () => fetchTenantUsageSnapshot({ ...input, includeSeries }),
-    ["tenant-usage-v2", input.tenantId, input.planId, periodKey, includeSeries ? "series" : "summary"],
+    ["tenant-usage-v3", input.tenantId, input.planId, periodKey, includeSeries ? "series" : "summary"],
     {
       revalidate: 30,
       tags: [`usage:${input.tenantId}`],

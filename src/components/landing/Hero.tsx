@@ -15,19 +15,26 @@ export function Hero() {
         <div className="mx-auto max-w-3xl text-center">
           <p className="mb-5 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-hero-muted">
             <span className="h-1.5 w-1.5 rounded-full bg-flash" />
-            Headless chat · Voice · Video
+            Headless Chat · Voice · Video API
           </p>
           <h1 className="text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
-            In-app chat for platforms{" "}
-            <span className="text-brand-gradient">that already exist</span>
+            Add 1-on-1 chat, voice &amp; video to your app{" "}
+            <span className="text-brand-gradient">in minutes</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-hero-muted sm:text-lg">
-            {siteConfig.description} APIs and SDKs for JavaScript, React, Flutter,
-            and more.
+            Pay for people who chat — not your whole user base. Mapped to your
+            existing user IDs and auth, no parallel user database. Built for
+            marketplaces, delivery apps, and SaaS, with SDKs for JavaScript,
+            React, Flutter, and more.
           </p>
 
           <div className="mt-8">
-            <ContactCta variant="hero" showDocsLink showPricingLink />
+            <ContactCta
+              variant="hero"
+              showDocsLink
+              showPricingLink
+              primaryLabel="Start free — no credit card"
+            />
           </div>
           <p className="mx-auto mt-4 max-w-lg text-sm text-hero-muted">
             {siteConfig.contactNote}

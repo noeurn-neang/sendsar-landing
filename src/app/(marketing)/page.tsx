@@ -21,8 +21,11 @@ export const metadata = createMetadata({
   keywords: [
     ...siteConfig.keywords,
     "CometChat alternative",
+    "Sendbird alternative",
     "headless messaging API",
     "platform chat integration",
+    "marketplace chat API",
+    "delivery app chat",
   ],
 });
 
