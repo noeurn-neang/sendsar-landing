@@ -4,9 +4,15 @@ import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  // Auth.js uses `__Secure-authjs.session-token` on HTTPS. getToken defaults to
+  // the non-secure name, so production looked "logged out" after a successful OAuth.
+  const secureCookie =
+    request.nextUrl.protocol === "https:" ||
+    request.headers.get("x-forwarded-proto") === "https";
   const token = await getToken({
     req: request,
     secret: process.env.AUTH_SECRET,
+    secureCookie,
   });
 
   const isLoggedIn = Boolean(token);
