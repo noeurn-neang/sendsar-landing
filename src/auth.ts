@@ -1,7 +1,11 @@
 import NextAuth from "next-auth";
 
 import { authConfig } from "@/auth.config";
-import { getAccountById, upsertPlatformAccount } from "@/lib/control-plane/accounts";
+import {
+  getAccountById,
+  getTenantBrief,
+  upsertPlatformAccount,
+} from "@/lib/control-plane/accounts";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -31,7 +35,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.keysRevealed = result.keysRevealed;
       }
 
-      // Client called session.update(...) — merge payload and refresh from DB.
+      // Client called session.update(...) — merge payload and refresh from console API.
       if (trigger === "update" && token.accountId) {
         if (session && typeof session === "object") {
           const patch = session as {
@@ -62,13 +66,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (accountRow) {
           token.onboardingCompleted = accountRow.onboardingCompleted;
           token.keysRevealed = accountRow.keysRevealed;
-          const { query } = await import("@/lib/db");
-          const tenantResult = await query<{
-            name: string;
-            slug: string | null;
-            plan: string;
-          }>(`SELECT name, slug, plan FROM tenants WHERE id = $1`, [accountRow.tenantId]);
-          const tenant = tenantResult.rows[0];
+          const tenant = await getTenantBrief(accountRow.tenantId);
           if (tenant) {
             token.tenantName = tenant.name;
             token.tenantSlug = tenant.slug;

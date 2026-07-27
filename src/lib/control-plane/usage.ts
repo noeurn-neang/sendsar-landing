@@ -3,11 +3,12 @@ import "server-only";
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 
+import { consoleFetch } from "@/lib/console-api";
 import {
   currentPeriodLabel,
   formatStorageGB,
 } from "@/lib/dashboard/format";
-import { getPlanUsageLimits, type PlanUsageLimits } from "@/lib/pricing";
+import { getPlanUsageLimits } from "@/lib/pricing";
 
 export type UsageMeter = {
   used: number;
@@ -42,159 +43,61 @@ export type GetTenantUsageOptions = {
   includeSeries?: boolean;
 };
 
-function monthBounds(now = new Date()) {
-  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
-  return { start, end };
-}
+type ConsoleUsageRaw = {
+  periodLabel: string;
+  periodStart: string;
+  periodEnd: string;
+  activeChattersUsed: number;
+  messagesUsed: number;
+  voiceMinutesUsed: number;
+  videoMinutesUsed: number;
+  storageBytes: number;
+  roomCount: number;
+  userCount: number;
+  series: UsageSeriesPoint[];
+  approxNote: string;
+};
 
 async function fetchTenantUsageSnapshot(
   input: GetTenantUsageOptions,
 ): Promise<TenantUsageSnapshot> {
   const includeSeries = Boolean(input.includeSeries);
   const limits = getPlanUsageLimits(input.planId);
-  const { start, end } = monthBounds();
-  const { query } = await import("@/lib/db");
-  const params = [input.tenantId, start.toISOString(), end.toISOString()] as const;
-
-  const [chattersRow, callsRow, storageRow, countsRow, messagesOrSeries] = await Promise.all([
-    // Active chatters per the pricing definition: users who sent a message
-    // this month, plus recipients in 1:1/DM rooms (2 participants) that had a
-    // message this month. Group/broadcast recipients are excluded.
-    query<{ count: string }>(
-      `WITH month_rooms AS (
-         SELECT DISTINCT m."roomId"
-         FROM messages m
-         INNER JOIN rooms r ON r.id = m."roomId"
-         WHERE r."tenantId" = $1
-           AND m."createdAt" >= $2
-           AND m."createdAt" < $3
-       ),
-       dm_rooms AS (
-         SELECT mr."roomId"
-         FROM month_rooms mr
-         INNER JOIN participants p ON p."roomId" = mr."roomId"
-         GROUP BY mr."roomId"
-         HAVING COUNT(*) = 2
-       )
-       SELECT COUNT(DISTINCT u.uid)::text AS count
-       FROM (
-         SELECT m."senderId" AS uid
-         FROM messages m
-         INNER JOIN month_rooms mr ON mr."roomId" = m."roomId"
-         WHERE m."createdAt" >= $2
-           AND m."createdAt" < $3
-         UNION
-         SELECT p."userId" AS uid
-         FROM participants p
-         INNER JOIN dm_rooms dr ON dr."roomId" = p."roomId"
-         WHERE p."tenantId" = $1
-       ) u`,
-      [...params],
-    ),
-    // Participant-minutes (matches billing and LiveKit's cost model): each
-    // participant's join..leave time, attributed to the month the session
-    // ended in. Sessions are written by the gateway's LiveKit webhooks.
-    query<{ type: string; minutes: string }>(
-      `SELECT c.type::text AS type,
-              COALESCE(SUM(EXTRACT(EPOCH FROM (s."leftAt" - s."joinedAt")) / 60.0), 0)::text AS minutes
-       FROM call_participant_sessions s
-       INNER JOIN calls c ON c.id = s."callId"
-       WHERE s."tenantId" = $1
-         AND s."leftAt" IS NOT NULL
-         AND s."leftAt" >= $2
-         AND s."leftAt" < $3
-       GROUP BY c.type`,
-      [...params],
-    ),
-    query<{ bytes: string }>(
-      `SELECT COALESCE(SUM("sizeBytes"), 0)::text AS bytes
-       FROM uploads
-       WHERE "tenantId" = $1 AND status = 'completed'`,
-      [input.tenantId],
-    ),
-    query<{ rooms: string; users: string }>(
-      `SELECT
-         (SELECT COUNT(*)::text FROM rooms WHERE "tenantId" = $1) AS rooms,
-         (SELECT COUNT(*)::text FROM users WHERE "tenantId" = $1) AS users`,
-      [input.tenantId],
-    ),
-    // Billing counts messages per send — deleting a message later does not
-    // refund it, so deleted messages stay counted.
-    includeSeries
-      ? query<{ day: Date | string; messages: string }>(
-          `SELECT date_trunc('day', m."createdAt") AS day,
-                  COUNT(*)::text AS messages
-           FROM messages m
-           INNER JOIN rooms r ON r.id = m."roomId"
-           WHERE r."tenantId" = $1
-             AND m."createdAt" >= $2
-             AND m."createdAt" < $3
-           GROUP BY 1
-           ORDER BY 1 ASC`,
-          [...params],
-        )
-      : query<{ count: string }>(
-          `SELECT COUNT(*)::text AS count
-           FROM messages m
-           INNER JOIN rooms r ON r.id = m."roomId"
-           WHERE r."tenantId" = $1
-             AND m."createdAt" >= $2
-             AND m."createdAt" < $3`,
-          [...params],
-        ),
-  ]);
-
-  let voiceMinutes = 0;
-  let videoMinutes = 0;
-  for (const row of callsRow.rows) {
-    const minutes = Number(row.minutes) || 0;
-    if (row.type === "AUDIO") voiceMinutes = minutes;
-    if (row.type === "VIDEO") videoMinutes = minutes;
-  }
-
-  const series: UsageSeriesPoint[] = includeSeries
-    ? (messagesOrSeries.rows as { day: Date | string; messages: string }[]).map((row) => {
-        const day = new Date(row.day);
-        return {
-          day: day.toISOString(),
-          label: new Intl.DateTimeFormat("en-US", {
-            month: "short",
-            day: "numeric",
-            timeZone: "UTC",
-          }).format(day),
-          messages: Number(row.messages) || 0,
-        };
-      })
-    : [];
-
-  const messageCount = includeSeries
-    ? series.reduce((sum, point) => sum + point.messages, 0)
-    : Number((messagesOrSeries.rows[0] as { count?: string } | undefined)?.count ?? 0);
+  const raw = await consoleFetch<ConsoleUsageRaw>(
+    `/v1/console/tenants/${input.tenantId}/usage`,
+    {
+      query: { includeSeries: includeSeries ? "true" : "false" },
+    },
+  );
 
   return {
-    periodLabel: currentPeriodLabel(),
-    periodStart: start.toISOString(),
-    periodEnd: end.toISOString(),
+    periodLabel: raw.periodLabel || currentPeriodLabel(),
+    periodStart: raw.periodStart,
+    periodEnd: raw.periodEnd,
     activeChatters: {
-      used: Number(chattersRow.rows[0]?.count ?? 0),
+      used: Number(raw.activeChattersUsed) || 0,
       limit: limits.activeChatters,
     },
     messages: {
-      used: messageCount,
+      used: Number(raw.messagesUsed) || 0,
       limit: limits.messages,
     },
-    voiceMinutes: { used: voiceMinutes, limit: limits.voiceMinutes },
-    videoMinutes: { used: videoMinutes, limit: limits.videoMinutes },
+    voiceMinutes: {
+      used: Number(raw.voiceMinutesUsed) || 0,
+      limit: limits.voiceMinutes,
+    },
+    videoMinutes: {
+      used: Number(raw.videoMinutesUsed) || 0,
+      limit: limits.videoMinutes,
+    },
     storageGB: {
-      used: formatStorageGB(Number(storageRow.rows[0]?.bytes ?? 0)),
+      used: formatStorageGB(Number(raw.storageBytes) || 0),
       limit: limits.storageGB,
     },
-    roomCount: Number(countsRow.rows[0]?.rooms ?? 0),
-    userCount: Number(countsRow.rows[0]?.users ?? 0),
-    series,
-    approxNote:
-      "Active chatters count users who sent a message this month, plus recipients in 1:1 rooms with messages. Call minutes are participant-minutes (each participant's time on the call). Recording minutes are not metered yet.",
+    roomCount: Number(raw.roomCount) || 0,
+    userCount: Number(raw.userCount) || 0,
+    series: Array.isArray(raw.series) ? raw.series : [],
+    approxNote: raw.approxNote,
   };
 }
 
@@ -208,7 +111,7 @@ export const getTenantUsageSnapshot = cache(async (input: GetTenantUsageOptions)
 
   return unstable_cache(
     () => fetchTenantUsageSnapshot({ ...input, includeSeries }),
-    ["tenant-usage-v3", input.tenantId, input.planId, periodKey, includeSeries ? "series" : "summary"],
+    ["tenant-usage-v4-console", input.tenantId, input.planId, periodKey, includeSeries ? "series" : "summary"],
     {
       revalidate: 30,
       tags: [`usage:${input.tenantId}`],
@@ -228,5 +131,3 @@ function usagePercentOf(meter: UsageMeter): number {
   if (meter.limit <= 0) return 0;
   return Math.min(100, Math.round((meter.used / meter.limit) * 100));
 }
-
-export type { PlanUsageLimits };
