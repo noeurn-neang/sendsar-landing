@@ -25,7 +25,7 @@ export function DashboardNavLink({
     <Link
       href={href}
       title={label}
-      prefetch
+      prefetch={false}
       onClick={(event) => {
         if (
           event.metaKey ||

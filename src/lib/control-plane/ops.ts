@@ -1,6 +1,10 @@
 import "server-only";
 
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
+
 import { consoleFetch } from "@/lib/console-api";
+import { consoleFetchSoft } from "@/lib/console-api-soft";
 import type { WebhookTestResult } from "@/lib/dashboard/webhook";
 
 export type { WebhookTestResult };
@@ -25,10 +29,24 @@ export async function sendWebhookTest(input: {
   });
 }
 
-export async function getLastWebhookTest(
+async function fetchLastWebhookTest(
+  accountId: string,
   tenantId: string,
 ): Promise<WebhookTestResult | null> {
-  return consoleFetch(`/v1/console/tenants/${tenantId}/webhooks/last-test`, {
-    allowEmpty: true,
-  });
+  return consoleFetchSoft<WebhookTestResult>(
+    `/v1/console/tenants/${tenantId}/webhooks/last-test`,
+    { query: { accountId } },
+  );
 }
+
+/** Short-lived cache — overview polls this on every visit. */
+export const getLastWebhookTest = cache(async (accountId: string, tenantId: string) => {
+  return unstable_cache(
+    () => fetchLastWebhookTest(accountId, tenantId),
+    ["webhook-last-test-v2", accountId, tenantId],
+    {
+      revalidate: 30,
+      tags: [`webhook-test:${tenantId}`],
+    },
+  )();
+});

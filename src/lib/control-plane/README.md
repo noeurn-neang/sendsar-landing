@@ -19,8 +19,11 @@ Landing is a BFF UI. All console data access goes through the gateway
 - Server-only modules: `import "server-only"`.
 - Transport: `@/lib/console-api` (`CONSOLE_API_URL` + `CONSOLE_INTERNAL_SECRET`).
 - Heavy reads: React `cache()` + `unstable_cache` (see `usage.ts`). Tag: `usage:{tenantId}`.
+- After mutate routes succeed, call `revalidateConsoleTags(tenantId)` from `revalidate.ts`.
+- Tenant-scoped console GETs pass `accountId` (ownership enforced on gateway).
 - Client pending UI: `LoadingButton` from `@/components/dashboard/ui`.
 - Route UX: `dashboard/loading.tsx` + `dashboard/error.tsx`.
+- Soft-fail usage returns `available: false` — UI must not treat meters as real zeros.
 
 ## Hosting notes
 

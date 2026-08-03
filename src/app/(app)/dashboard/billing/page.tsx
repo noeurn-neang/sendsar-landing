@@ -30,7 +30,7 @@ function upgradeMailto(tenantId: string, slug: string | null, plan: string) {
 
 export default async function DashboardBillingPage() {
   const session = await auth();
-  if (!session?.user?.tenantId) {
+  if (!session?.user?.tenantId || !session.user.accountId) {
     redirect("/start");
   }
 
@@ -38,7 +38,11 @@ export default async function DashboardBillingPage() {
   const planName = getPlanDisplayName(planId);
   const tenantId = session.user.tenantId;
   const slug = session.user.tenantSlug ?? null;
-  const usage = await getTenantUsageSnapshot({ tenantId, planId });
+  const usage = await getTenantUsageSnapshot({
+    accountId: session.user.accountId,
+    tenantId,
+    planId,
+  });
 
   const meters = [
     { label: "Active chatters", meter: usage.activeChatters, format: formatCount },
@@ -53,8 +57,9 @@ export default async function DashboardBillingPage() {
   ];
 
   const needsUpgrade =
-    meters.some((row) => approachingLimit(row.meter)) ||
-    meters.some((row) => atLimit(row.meter));
+    usage.available &&
+    (meters.some((row) => approachingLimit(row.meter)) ||
+      meters.some((row) => atLimit(row.meter)));
 
   return (
     <div className="space-y-8">
@@ -72,6 +77,12 @@ export default async function DashboardBillingPage() {
         <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-5 py-4 text-sm text-console-fg">
           You&apos;re approaching or at a plan limit for {usage.periodLabel}. Request an upgrade and
           we&apos;ll flip your tenant plan manually.
+        </div>
+      ) : null}
+
+      {!usage.available ? (
+        <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-5 py-4 text-sm text-console-fg">
+          Usage is temporarily unavailable — meters below are placeholders, not live zeros.
         </div>
       ) : null}
 
@@ -110,13 +121,22 @@ export default async function DashboardBillingPage() {
         <Panel title="Usage vs limits" description={`Live for ${usage.periodLabel}`}>
           <ul className="divide-y divide-console-border text-sm">
             {meters.map((row) => {
-              const pct = usagePercent(row.meter.used, row.meter.limit);
-              const warn = approachingLimit(row.meter) || atLimit(row.meter);
+              const pct = usage.available
+                ? usagePercent(row.meter.used, row.meter.limit)
+                : 0;
+              const warn =
+                usage.available &&
+                (approachingLimit(row.meter) || atLimit(row.meter));
               return (
-                <li key={row.label} className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
+                <li
+                  key={row.label}
+                  className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0"
+                >
                   <div>
                     <p className="font-medium text-console-fg">{row.label}</p>
-                    <p className="text-xs text-console-muted">{pct}% of allowance</p>
+                    <p className="text-xs text-console-muted">
+                      {usage.available ? `${pct}% of allowance` : "Unavailable"}
+                    </p>
                   </div>
                   <span
                     className={`font-mono text-xs ${
@@ -125,7 +145,9 @@ export default async function DashboardBillingPage() {
                         : "text-console-fg"
                     }`}
                   >
-                    {row.format(row.meter.used)} / {formatCount(row.meter.limit)}
+                    {usage.available
+                      ? `${row.format(row.meter.used)} / ${formatCount(row.meter.limit)}`
+                      : "—"}
                   </span>
                 </li>
               );

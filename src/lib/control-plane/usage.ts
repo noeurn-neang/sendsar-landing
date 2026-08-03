@@ -3,7 +3,7 @@ import "server-only";
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 
-import { consoleFetch } from "@/lib/console-api";
+import { consoleFetchSoft } from "@/lib/console-api-soft";
 import {
   currentPeriodLabel,
   formatStorageGB,
@@ -34,9 +34,12 @@ export type TenantUsageSnapshot = {
   userCount: number;
   series: UsageSeriesPoint[];
   approxNote: string;
+  /** False when the console API soft-failed — meters are placeholders, not real zeros. */
+  available: boolean;
 };
 
 export type GetTenantUsageOptions = {
+  accountId: string;
   tenantId: string;
   planId: string;
   /** Daily series is expensive — only load on the Usage page. */
@@ -63,12 +66,19 @@ async function fetchTenantUsageSnapshot(
 ): Promise<TenantUsageSnapshot> {
   const includeSeries = Boolean(input.includeSeries);
   const limits = getPlanUsageLimits(input.planId);
-  const raw = await consoleFetch<ConsoleUsageRaw>(
+  const raw = await consoleFetchSoft<ConsoleUsageRaw>(
     `/v1/console/tenants/${input.tenantId}/usage`,
     {
-      query: { includeSeries: includeSeries ? "true" : "false" },
+      query: {
+        accountId: input.accountId,
+        includeSeries: includeSeries ? "true" : "false",
+      },
     },
   );
+
+  if (!raw) {
+    return unavailableUsageSnapshot(limits);
+  }
 
   return {
     periodLabel: raw.periodLabel || currentPeriodLabel(),
@@ -97,7 +107,28 @@ async function fetchTenantUsageSnapshot(
     roomCount: Number(raw.roomCount) || 0,
     userCount: Number(raw.userCount) || 0,
     series: Array.isArray(raw.series) ? raw.series : [],
-    approxNote: raw.approxNote,
+    approxNote: raw.approxNote || "",
+    available: true,
+  };
+}
+
+function unavailableUsageSnapshot(
+  limits: ReturnType<typeof getPlanUsageLimits>,
+): TenantUsageSnapshot {
+  return {
+    periodLabel: currentPeriodLabel(),
+    periodStart: "",
+    periodEnd: "",
+    activeChatters: { used: 0, limit: limits.activeChatters },
+    messages: { used: 0, limit: limits.messages },
+    voiceMinutes: { used: 0, limit: limits.voiceMinutes },
+    videoMinutes: { used: 0, limit: limits.videoMinutes },
+    storageGB: { used: 0, limit: limits.storageGB },
+    roomCount: 0,
+    userCount: 0,
+    series: [],
+    approxNote: "Usage is temporarily unavailable. Retry in a moment.",
+    available: false,
   };
 }
 
@@ -111,7 +142,14 @@ export const getTenantUsageSnapshot = cache(async (input: GetTenantUsageOptions)
 
   return unstable_cache(
     () => fetchTenantUsageSnapshot({ ...input, includeSeries }),
-    ["tenant-usage-v4-console", input.tenantId, input.planId, periodKey, includeSeries ? "series" : "summary"],
+    [
+      "tenant-usage-v5-console",
+      input.accountId,
+      input.tenantId,
+      input.planId,
+      periodKey,
+      includeSeries ? "series" : "summary",
+    ],
     {
       revalidate: 30,
       tags: [`usage:${input.tenantId}`],

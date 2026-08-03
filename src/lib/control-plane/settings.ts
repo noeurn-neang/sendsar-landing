@@ -1,6 +1,11 @@
 import "server-only";
 
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
+
 import { consoleFetch } from "@/lib/console-api";
+import { consoleFetchSoft } from "@/lib/console-api-soft";
+import type { WebhookTestResult } from "@/lib/dashboard/webhook";
 
 export type ChatSettings = {
   deletedMessageDisplay: "placeholder" | "hidden";
@@ -48,20 +53,34 @@ export type SettingsPageData = {
   tenant: TenantSettingsView;
   account: AccountSettingsView;
   apps: TenantAppView[];
+  lastWebhookTest: WebhookTestResult | null;
 };
 
-export async function getSettingsPageData(input: {
+async function fetchSettingsPageData(input: {
   accountId: string;
   tenantId: string;
 }): Promise<SettingsPageData | null> {
-  return consoleFetch<SettingsPageData | null>(
+  return consoleFetchSoft<SettingsPageData | null>(
     `/v1/console/tenants/${input.tenantId}/settings`,
     {
       query: { accountId: input.accountId },
-      allowEmpty: true,
     },
   );
 }
+
+/** Request-deduped + short-lived cache for rapid Settings nav. */
+export const getSettingsPageData = cache(
+  async (input: { accountId: string; tenantId: string }) => {
+    return unstable_cache(
+      () => fetchSettingsPageData(input),
+      ["settings-page-v1", input.tenantId, input.accountId],
+      {
+        revalidate: 30,
+        tags: [`settings:${input.tenantId}`],
+      },
+    )();
+  },
+);
 
 export type UpdateSettingsInput = {
   accountId: string;

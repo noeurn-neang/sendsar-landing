@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
 import { sendWebhookTest } from "@/lib/control-plane/ops";
+import { revalidateConsoleTags } from "@/lib/control-plane/revalidate";
 
 export async function POST() {
   const session = await auth();
@@ -14,10 +15,13 @@ export async function POST() {
       accountId: session.user.accountId,
       tenantId: session.user.tenantId,
     });
+    revalidateConsoleTags(session.user.tenantId);
     return NextResponse.json({ ok: true, result });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Webhook test failed";
-    const status = message.includes("Configure") ? 400 : 500;
+    const status = message.includes("Configure") || message.includes("Webhook URL")
+      ? 400
+      : 500;
     return NextResponse.json({ error: message }, { status });
   }
 }

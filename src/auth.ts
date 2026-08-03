@@ -16,7 +16,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       return true;
     },
-    async jwt({ token, account, user, trigger, session }) {
+    async jwt({ token, account, user, trigger }) {
       if (account?.provider && account.providerAccountId && user?.email) {
         const result = await upsertPlatformAccount({
           provider: account.provider,
@@ -35,38 +35,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.keysRevealed = result.keysRevealed;
       }
 
-      // Client called session.update(...) — merge payload and refresh from console API.
+      // Client called session.update(...) — refresh only from console API.
+      // Never trust client-supplied privilege fields (onboardingCompleted, plan, etc.).
       if (trigger === "update" && token.accountId) {
-        if (session && typeof session === "object") {
-          const patch = session as {
-            onboardingCompleted?: boolean;
-            keysRevealed?: boolean;
-            tenantName?: string;
-            tenantSlug?: string | null;
-            plan?: string;
-          };
-          if (typeof patch.onboardingCompleted === "boolean") {
-            token.onboardingCompleted = patch.onboardingCompleted;
-          }
-          if (typeof patch.keysRevealed === "boolean") {
-            token.keysRevealed = patch.keysRevealed;
-          }
-          if (typeof patch.tenantName === "string") {
-            token.tenantName = patch.tenantName;
-          }
-          if ("tenantSlug" in patch) {
-            token.tenantSlug = patch.tenantSlug ?? null;
-          }
-          if (typeof patch.plan === "string") {
-            token.plan = patch.plan;
-          }
-        }
-
         const accountRow = await getAccountById(token.accountId);
         if (accountRow) {
           token.onboardingCompleted = accountRow.onboardingCompleted;
           token.keysRevealed = accountRow.keysRevealed;
-          const tenant = await getTenantBrief(accountRow.tenantId);
+          token.tenantId = accountRow.tenantId;
+          const tenant = await getTenantBrief(accountRow.id, accountRow.tenantId);
           if (tenant) {
             token.tenantName = tenant.name;
             token.tenantSlug = tenant.slug;

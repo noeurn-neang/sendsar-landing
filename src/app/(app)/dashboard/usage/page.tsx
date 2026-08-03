@@ -18,13 +18,14 @@ import { getPlanDisplayName } from "@/lib/pricing";
 
 export default async function DashboardUsagePage() {
   const session = await auth();
-  if (!session?.user?.tenantId) {
+  if (!session?.user?.tenantId || !session.user.accountId) {
     redirect("/start");
   }
 
   const planId = session.user.plan ?? "free";
   const planName = getPlanDisplayName(planId);
   const usage = await getTenantUsageSnapshot({
+    accountId: session.user.accountId,
     tenantId: session.user.tenantId,
     planId,
     includeSeries: true,
@@ -44,7 +45,11 @@ export default async function DashboardUsagePage() {
         }
       />
 
-      <EmptyHint>{usage.approxNote}</EmptyHint>
+      <EmptyHint>
+        {usage.available
+          ? usage.approxNote
+          : "Usage is temporarily unavailable — meters below are placeholders, not live zeros."}
+      </EmptyHint>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <MetricCard

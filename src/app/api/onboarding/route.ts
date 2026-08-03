@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
+import { asTrimmedString } from "@/lib/bff-validate";
 import { completeOnboarding } from "@/lib/control-plane/accounts";
+import { revalidateConsoleTags } from "@/lib/control-plane/revalidate";
 
 export async function POST(request: Request) {
   const session = await auth();
@@ -9,15 +11,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let body: { workspaceName?: string; workspaceSlug?: string };
+  let body: unknown;
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const workspaceName = body.workspaceName?.trim();
-  const workspaceSlug = body.workspaceSlug?.trim();
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const record = body as Record<string, unknown>;
+  const workspaceName = asTrimmedString(record.workspaceName, 80);
+  const workspaceSlug =
+    asTrimmedString(record.workspaceSlug, 80) ?? workspaceName;
 
   if (!workspaceName) {
     return NextResponse.json({ error: "Workspace name is required" }, { status: 400 });
@@ -30,6 +38,8 @@ export async function POST(request: Request) {
       workspaceName,
       workspaceSlug: workspaceSlug || workspaceName,
     });
+
+    revalidateConsoleTags(session.user.tenantId);
 
     return NextResponse.json({
       ok: true,

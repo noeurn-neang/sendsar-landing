@@ -32,6 +32,8 @@ type RequestOptions = {
   query?: Record<string, string | undefined>;
   /** When true, 204/404 return null instead of throwing. */
   allowEmpty?: boolean;
+  /** Override default 60s abort. Soft dashboard reads use a shorter budget. */
+  timeoutMs?: number;
 };
 
 export async function consoleFetch<T>(
@@ -47,6 +49,7 @@ export async function consoleFetch<T>(
     }
   }
 
+  const timeoutMs = options.timeoutMs ?? 60_000;
   const response = await fetch(url, {
     method: options.method ?? (options.body !== undefined ? "POST" : "GET"),
     headers: {
@@ -55,6 +58,13 @@ export async function consoleFetch<T>(
     },
     body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
     cache: "no-store",
+    signal: AbortSignal.timeout(timeoutMs),
+  }).catch((cause: unknown) => {
+    const hint =
+      cause instanceof Error && cause.name === "TimeoutError"
+        ? `Console API timed out after ${timeoutMs}ms (check gateway logs — slow DB queries?)`
+        : `Console API unreachable at ${url.origin} (is gateway-go running on CONSOLE_API_URL?)`;
+    throw new ConsoleApiError(0, hint);
   });
 
   if (options.allowEmpty && (response.status === 204 || response.status === 404)) {

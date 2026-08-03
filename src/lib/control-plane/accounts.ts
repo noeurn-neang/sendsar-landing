@@ -1,6 +1,10 @@
 import "server-only";
 
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
+
 import { consoleFetch } from "@/lib/console-api";
+import { consoleFetchSoft } from "@/lib/console-api-soft";
 import { slugify } from "@/lib/control-plane/slug";
 
 export type PlatformAccountRow = {
@@ -36,6 +40,12 @@ export type UpsertPlatformAccountResult = {
   isNew: boolean;
 };
 
+export type TenantCredentials = {
+  apiKey: string;
+  secretKey: string;
+  keysRevealed: boolean;
+};
+
 export async function upsertPlatformAccount(input: {
   provider: string;
   providerAccountId: string;
@@ -67,15 +77,27 @@ export async function completeOnboarding(input: {
   });
 }
 
-export async function getTenantCredentials(tenantId: string): Promise<{
-  apiKey: string;
-  secretKey: string;
-  keysRevealed: boolean;
-} | null> {
-  return consoleFetch(`/v1/console/tenants/${tenantId}/credentials`, {
-    allowEmpty: true,
-  });
+async function fetchTenantCredentials(
+  accountId: string,
+  tenantId: string,
+): Promise<TenantCredentials | null> {
+  return consoleFetchSoft<TenantCredentials>(
+    `/v1/console/tenants/${tenantId}/credentials`,
+    { query: { accountId } },
+  );
 }
+
+/** Request-deduped + short-lived cache so rapid Keys nav does not stampede Contabo. */
+export const getTenantCredentials = cache(async (accountId: string, tenantId: string) => {
+  return unstable_cache(
+    () => fetchTenantCredentials(accountId, tenantId),
+    ["tenant-credentials-v2", accountId, tenantId],
+    {
+      revalidate: 30,
+      tags: [`credentials:${tenantId}`],
+    },
+  )();
+});
 
 export async function markKeysRevealed(accountId: string): Promise<void> {
   await consoleFetch(`/v1/console/accounts/${accountId}/keys-revealed`, {
@@ -83,13 +105,17 @@ export async function markKeysRevealed(accountId: string): Promise<void> {
   });
 }
 
-export async function getTenantBrief(tenantId: string): Promise<{
+export async function getTenantBrief(
+  accountId: string,
+  tenantId: string,
+): Promise<{
   name: string;
   slug: string | null;
   plan: string;
 } | null> {
   return consoleFetch(`/v1/console/tenants/${tenantId}/brief`, {
     allowEmpty: true,
+    query: { accountId },
   });
 }
 

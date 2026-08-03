@@ -6,6 +6,7 @@ import {
   getTenantAppDetail,
   updateTenantApp,
 } from "@/lib/control-plane/apps";
+import { revalidateConsoleTags } from "@/lib/control-plane/revalidate";
 
 type RouteContext = { params: Promise<{ appCode: string }> };
 
@@ -70,6 +71,7 @@ export async function PATCH(request: Request, context: RouteContext) {
       pushyJson: body.pushyJson,
       clearPushy: body.clearPushy,
     });
+    revalidateConsoleTags(session.user.tenantId);
     return NextResponse.json({ ok: true, app });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not update app";
@@ -96,6 +98,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
       tenantId: session.user.tenantId,
       appCode: decodeURIComponent(appCode),
     });
+    revalidateConsoleTags(session.user.tenantId);
     return NextResponse.json({ ok: true });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not delete app";

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
 import { rotateTenantKeys } from "@/lib/control-plane/ops";
+import { revalidateConsoleTags } from "@/lib/control-plane/revalidate";
 
 export async function POST() {
   const session = await auth();
@@ -14,6 +15,8 @@ export async function POST() {
       accountId: session.user.accountId,
       tenantId: session.user.tenantId,
     });
+
+    revalidateConsoleTags(session.user.tenantId);
 
     return NextResponse.json({
       ok: true,

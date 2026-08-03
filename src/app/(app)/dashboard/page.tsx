@@ -21,7 +21,7 @@ import { siteConfig } from "@/lib/site";
 
 export default async function DashboardOverviewPage() {
   const session = await auth();
-  if (!session?.user?.tenantId) {
+  if (!session?.user?.tenantId || !session.user.accountId) {
     redirect("/start");
   }
 
@@ -29,10 +29,11 @@ export default async function DashboardOverviewPage() {
   const planName = getPlanDisplayName(planId);
   const [usage, lastWebhookTest] = await Promise.all([
     getTenantUsageSnapshot({
+      accountId: session.user.accountId,
       tenantId: session.user.tenantId,
       planId,
     }),
-    getLastWebhookTest(session.user.tenantId),
+    getLastWebhookTest(session.user.accountId, session.user.tenantId),
   ]);
 
   const nextStep = !session.user.keysRevealed
@@ -80,34 +81,65 @@ export default async function DashboardOverviewPage() {
       />
 
       <EmptyHint>
-        Meters are computed from live gateway data for {usage.periodLabel}.{" "}
-        {usage.approxNote}
+        {usage.available
+          ? `Meters are computed from live gateway data for ${usage.periodLabel}. ${usage.approxNote}`
+          : usage.approxNote}
       </EmptyHint>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           label="Active chatters"
-          value={formatCount(usage.activeChatters.used)}
-          hint={`${usagePercent(usage.activeChatters.used, usage.activeChatters.limit)}% of ${formatCount(usage.activeChatters.limit)} / mo`}
-          progress={usagePercent(usage.activeChatters.used, usage.activeChatters.limit)}
+          value={usage.available ? formatCount(usage.activeChatters.used) : "—"}
+          hint={
+            usage.available
+              ? `${usagePercent(usage.activeChatters.used, usage.activeChatters.limit)}% of ${formatCount(usage.activeChatters.limit)} / mo`
+              : "Unavailable"
+          }
+          progress={
+            usage.available
+              ? usagePercent(usage.activeChatters.used, usage.activeChatters.limit)
+              : 0
+          }
         />
         <MetricCard
           label="Messages"
-          value={formatCount(usage.messages.used)}
-          hint={`${usagePercent(usage.messages.used, usage.messages.limit)}% of ${formatCount(usage.messages.limit)} / mo`}
-          progress={usagePercent(usage.messages.used, usage.messages.limit)}
+          value={usage.available ? formatCount(usage.messages.used) : "—"}
+          hint={
+            usage.available
+              ? `${usagePercent(usage.messages.used, usage.messages.limit)}% of ${formatCount(usage.messages.limit)} / mo`
+              : "Unavailable"
+          }
+          progress={
+            usage.available ? usagePercent(usage.messages.used, usage.messages.limit) : 0
+          }
         />
         <MetricCard
           label="Voice participant-min"
-          value={formatMinutes(usage.voiceMinutes.used)}
-          hint={`${usagePercent(usage.voiceMinutes.used, usage.voiceMinutes.limit)}% of ${formatCount(usage.voiceMinutes.limit)} / mo`}
-          progress={usagePercent(usage.voiceMinutes.used, usage.voiceMinutes.limit)}
+          value={usage.available ? formatMinutes(usage.voiceMinutes.used) : "—"}
+          hint={
+            usage.available
+              ? `${usagePercent(usage.voiceMinutes.used, usage.voiceMinutes.limit)}% of ${formatCount(usage.voiceMinutes.limit)} / mo`
+              : "Unavailable"
+          }
+          progress={
+            usage.available
+              ? usagePercent(usage.voiceMinutes.used, usage.voiceMinutes.limit)
+              : 0
+          }
         />
         <MetricCard
           label="Storage"
-          value={`${usage.storageGB.used} GB`}
-          hint={`${usagePercent(usage.storageGB.used, usage.storageGB.limit)}% of ${usage.storageGB.limit} GB`}
-          progress={usagePercent(usage.storageGB.used, usage.storageGB.limit)}
+          value={usage.available ? `${usage.storageGB.used} GB` : "—"}
+          hint={
+            usage.available
+              ? `${usagePercent(usage.storageGB.used, usage.storageGB.limit)}% of ${usage.storageGB.limit} GB`
+              : "Unavailable"
+          }
+          progress={
+            usage.available
+              ? usagePercent(usage.storageGB.used, usage.storageGB.limit)
+              : 0
+          }
         />
       </div>
 

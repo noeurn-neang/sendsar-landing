@@ -22,24 +22,54 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
         Skip to main content
       </a>
 
-      <header className="relative z-10 flex items-center justify-between px-6 py-5 sm:px-8">
-        <Logo size="sm" href="/" variant="inverse" />
-        <Link
-          href={siteConfig.docsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sm text-[#a1a1a1] transition hover:text-white"
-        >
-          Documentation
-        </Link>
-      </header>
-
       <main
         id="auth-main"
-        className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 pb-16 pt-4"
+        className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 py-12"
       >
-        <div className="w-full max-w-[384px]">{children}</div>
+        <div className="flex w-full max-w-[384px] flex-col items-center text-center">
+          <Logo size="md" href="/" variant="inverse" />
+          <div className="mt-10 w-full text-left">{children}</div>
+        </div>
       </main>
+
+      <footer className="relative z-10 px-6 pb-8 pt-2">
+        <div className="mx-auto flex w-full max-w-[384px] flex-col items-center gap-3 text-center">
+          <nav
+            aria-label="Legal and support"
+            className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-[#8a8a8a]"
+          >
+            <Link href="/terms" className="transition hover:text-white">
+              Terms
+            </Link>
+            <span aria-hidden className="text-[#404040]">
+              ·
+            </span>
+            <Link href="/privacy" className="transition hover:text-white">
+              Privacy
+            </Link>
+            <span aria-hidden className="text-[#404040]">
+              ·
+            </span>
+            <Link
+              href={siteConfig.docsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition hover:text-white"
+            >
+              Docs
+            </Link>
+            <span aria-hidden className="text-[#404040]">
+              ·
+            </span>
+            <a href={siteConfig.contactMailto} className="transition hover:text-white">
+              Support
+            </a>
+          </nav>
+          <p className="text-[11px] text-[#525252]">
+            © {new Date().getFullYear()} {siteConfig.name}
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }

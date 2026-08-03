@@ -1,8 +1,8 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
 import { SettingsPanel } from "@/app/(app)/dashboard/settings/SettingsPanel";
-import { getLastWebhookTest } from "@/lib/control-plane/ops";
 import { getSettingsPageData } from "@/lib/control-plane/settings";
 
 export default async function DashboardSettingsPage() {
@@ -11,16 +11,23 @@ export default async function DashboardSettingsPage() {
     redirect("/start");
   }
 
-  const [data, lastWebhookTest] = await Promise.all([
-    getSettingsPageData({
-      accountId: session.user.accountId,
-      tenantId: session.user.tenantId,
-    }),
-    getLastWebhookTest(session.user.tenantId),
-  ]);
+  const data = await getSettingsPageData({
+    accountId: session.user.accountId,
+    tenantId: session.user.tenantId,
+  });
 
   if (!data) {
-    redirect("/start");
+    return (
+      <div className="mx-auto max-w-lg space-y-4 py-16 text-center">
+        <h2 className="text-lg font-semibold text-console-fg">Couldn’t load settings</h2>
+        <p className="text-sm text-console-muted">
+          The gateway took too long or was busy. Your session is fine — retry in a moment.
+        </p>
+        <Link href="/dashboard/settings" className="console-btn-primary inline-flex">
+          Try again
+        </Link>
+      </div>
+    );
   }
 
   return (
@@ -28,7 +35,7 @@ export default async function DashboardSettingsPage() {
       tenant={data.tenant}
       account={data.account}
       apps={data.apps}
-      lastWebhookTest={lastWebhookTest}
+      lastWebhookTest={data.lastWebhookTest}
     />
   );
 }
