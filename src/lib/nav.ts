@@ -7,37 +7,19 @@ export type NavItem = {
   description?: string;
 };
 
-/** Homepage sections and key pages — docs live under Developers. */
+const docsBase = siteConfig.docsUrl.replace(/\/$/, "");
+
+/** Slim product anchors that still exist after the home cut. */
 export const productLinks: NavItem[] = [
-  {
-    label: "Platform overview",
-    href: "/#platform",
-    description: "Messaging, voice, and video",
-  },
   {
     label: "How it works",
     href: "/#how-it-works",
-    description: "Integrate in three steps",
-  },
-  {
-    label: "Use cases",
-    href: "/#use-cases",
-    description: "Marketplaces & B2B SaaS",
-  },
-  {
-    label: "Features",
-    href: "/#features",
-    description: "Rooms, webhooks, calls",
+    description: "Mint, connect, ship",
   },
   {
     label: "Pricing",
     href: "/pricing",
-    description: "Free, Plus, Pro, Enterprise",
-  },
-  {
-    label: "Contact",
-    href: "/#contact",
-    description: "Email or Telegram",
+    description: "Free to start",
   },
 ];
 
@@ -46,23 +28,34 @@ export const developerLinks: NavItem[] = [
     label: "Documentation",
     href: siteConfig.docsUrl,
     external: true,
-    description: "Integration guides",
+    description: "UI Kits, SDKs, server",
   },
   {
-    label: "Quickstart",
+    label: "Quick start",
     href: siteConfig.quickstartUrl,
     external: true,
-    description: "Ship your first room",
+    description: "Ship in minutes",
   },
   {
-    label: "Telegram",
-    href: siteConfig.contactTelegram,
+    label: "UI Kits",
+    href: `${docsBase}/uikit/angular/`,
     external: true,
-    description: "Chat with us directly",
+    description: "Angular & Flutter",
+  },
+  {
+    label: "SDKs",
+    href: `${docsBase}/sdk/javascript/`,
+    external: true,
+    description: "JavaScript & Flutter",
   },
 ];
 
+/** Top-level nav — Pricing + Docs; Start is the CTA button. */
 export const visibleTopNavLinks: NavItem[] = [
   { label: "Pricing", href: "/pricing" },
-  { label: "Blog", href: "/blog" },
+  {
+    label: "Docs",
+    href: siteConfig.docsUrl,
+    external: true,
+  },
 ];

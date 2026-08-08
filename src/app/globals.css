@@ -229,6 +229,14 @@ html {
   color: transparent;
 }
 
+/* Light marketing atmosphere (docs-aligned) — prefer over dark terminal hero */
+.bg-marketing-wash {
+  background:
+    radial-gradient(ellipse 90% 70% at 50% -20%, rgba(0, 150, 200, 0.18), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 100% 30%, rgba(0, 232, 230, 0.1), transparent 50%),
+    linear-gradient(180deg, #f0f9fc 0%, #ffffff 55%, #ffffff 100%);
+}
+
 .bg-hero-gradient {
   background:
     radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0, 150, 200, 0.22), transparent),
@@ -244,10 +252,44 @@ html {
 }
 
 @media (prefers-color-scheme: dark) {
+  .bg-marketing-wash {
+    background:
+      radial-gradient(ellipse 90% 70% at 50% -20%, rgba(0, 150, 200, 0.2), transparent 55%),
+      radial-gradient(ellipse 50% 40% at 100% 30%, rgba(0, 232, 230, 0.08), transparent 50%),
+      linear-gradient(180deg, #0f172a 0%, #0c1929 100%);
+  }
+
   .bg-hero-gradient-subtle {
     background:
       radial-gradient(ellipse 70% 50% at 20% 0%, rgba(0, 150, 200, 0.12), transparent),
       radial-gradient(ellipse 40% 30% at 90% 80%, rgba(0, 232, 230, 0.06), transparent),
       var(--surface-muted);
+  }
+}
+
+/* Quiet entrance — hero only */
+@keyframes marketing-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.marketing-fade-up {
+  animation: marketing-fade-up 0.55s ease-out both;
+}
+
+.marketing-fade-up-delay {
+  animation: marketing-fade-up 0.55s ease-out 0.12s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-fade-up,
+  .marketing-fade-up-delay {
+    animation: none;
   }
 }

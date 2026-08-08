@@ -5,15 +5,14 @@ export const siteConfig = {
   name: "Sendsar",
   tagline: "Headless Chat API",
   description:
-    "Add messaging, voice, and video to your product without replacing auth, users, or UI. Your IDs, your login, our real-time engine.",
+    "Your users, your login — messaging, voice, and video. Headless chat API with UI Kits and SDKs.",
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://sendsar.com",
   docsUrl,
   quickstartUrl: `${docsUrl.replace(/\/$/, "")}/setup/quickstart`,
   contactEmail: "support@sendsar.com",
   contactTelegram: "https://t.me/sendsar_support",
   contactMailto: "mailto:support@sendsar.com?subject=Sendsar",
-  contactNote:
-    "Start on the Free plan or message us on Telegram — we'll help you wire up chat, calls, and production.",
+  contactNote: "Start free, or message us on Telegram.",
   /** Solo operator of the Sendsar service (not a registered company). */
   legal: {
     operatorName: "Noeurn Neang",

@@ -128,16 +128,15 @@ export default function PricingPage() {
     <div className="bg-background">
       <FaqJsonLd items={pricingFaqs} />
 
-      <section className="border-b border-border bg-hero-gradient-subtle py-16">
+      <section className="border-b border-border bg-marketing-wash py-14">
         <div className="container mx-auto max-w-6xl px-6 text-center">
           <p className="font-mono text-xs uppercase tracking-widest text-brand">
             Pricing
           </p>
           <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
-            Simple, transparent,{" "}
-            <span className="text-brand-gradient">predictable</span>
+            Simple and predictable
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-neutral-600 dark:text-neutral-400">
+          <p className="mx-auto mt-4 max-w-xl text-neutral-600 dark:text-neutral-400">
             {pricingPageIntro}
           </p>
         </div>
@@ -177,18 +176,21 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section className="border-t border-border bg-hero-gradient py-16 text-white">
+      <section className="border-t border-border bg-marketing-wash py-14">
         <div className="container mx-auto max-w-6xl px-6 text-center">
-          <h2 className="text-2xl font-bold sm:text-3xl">
-            Everything your platform needs to{" "}
-            <span className="text-brand-gradient">talk</span>.
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            Ready to ship chat?
           </h2>
-          <p className="mx-auto mt-3 max-w-lg text-hero-muted">
-            Pick a plan above or message us on Telegram — we&apos;ll help you ship
-            chat, calls, and production infrastructure.
+          <p className="mx-auto mt-3 max-w-md text-sm text-neutral-600 dark:text-neutral-400">
+            Start free, or message us on Telegram for production help.
           </p>
           <div className="mt-8 flex justify-center">
-            <ContactCta variant="hero" showDocsLink showPricingLink={false} />
+            <ContactCta
+              variant="light"
+              showDocsLink
+              primaryLabel="Start free"
+              primaryHref="/start"
+            />
           </div>
         </div>
       </section>

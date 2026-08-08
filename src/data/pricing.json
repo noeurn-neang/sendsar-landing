@@ -29,8 +29,8 @@
       "messageOverage": "{price} per {blockMessages} extra messages",
       "concurrentConnections": "Up to {count} concurrent connections"
     },
-    "pricingSectionIntro": "Free, Plus, Pro, and Enterprise — flat monthly tiers for apps of any size. Limits are based on active chatters (people who actually message), not total registered users. Text chat, voice call, video call, and call recording are metered separately.",
-    "pricingPageIntro": "Flat monthly tiers sized for consumer apps, marketplaces, and teams. Each plan includes monthly allowances for active chatters, text chat messages, voice call, video call, and call recording.",
+    "pricingPageIntro": "Pay for people who chat — not your whole user base. Flat monthly tiers with separate allowances for messages and calls.",
+    "pricingSectionIntro": "Pay for active chatters, not total registered users.",
     "chatLines": {
       "messages": "{count} text chat messages/month",
       "messageOverage": "Then {price} per {blockMessages} extra messages",

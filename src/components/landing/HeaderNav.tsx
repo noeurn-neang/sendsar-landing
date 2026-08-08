@@ -5,32 +5,9 @@ import { useEffect, useState } from "react";
 
 import {
   developerLinks,
-  productLinks,
   visibleTopNavLinks,
   type NavItem,
 } from "@/lib/nav";
-
-function Chevron() {
-  return (
-    <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 opacity-60" aria-hidden>
-      <path
-        fill="currentColor"
-        d="M4.5 6 8 9.5 11.5 6"
-      />
-    </svg>
-  );
-}
-
-function DropdownLabel({ item }: { item: NavItem }) {
-  return (
-    <>
-      <span className="block text-sm font-medium text-foreground">{item.label}</span>
-      {item.description ? (
-        <span className="mt-0.5 block text-xs text-neutral-500">{item.description}</span>
-      ) : null}
-    </>
-  );
-}
 
 function NavLink({
   item,
@@ -62,52 +39,6 @@ function NavLink({
   );
 }
 
-function DesktopDropdown({
-  label,
-  items,
-}: {
-  label: string;
-  items: NavItem[];
-}) {
-  return (
-    <div className="group relative">
-      <button
-        type="button"
-        className="inline-flex items-center gap-1 text-sm font-medium text-neutral-600 transition-colors hover:text-brand dark:text-neutral-300"
-        aria-haspopup="true"
-      >
-        {label}
-        <Chevron />
-      </button>
-      <div className="invisible absolute left-0 top-full z-50 pt-3 opacity-0 transition-all group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-        <div className="w-72 rounded-xl border border-border bg-surface p-2 shadow-lg">
-          {items.map((item) =>
-            item.external ? (
-              <a
-                key={item.label}
-                href={item.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block rounded-lg px-3 py-2.5 transition hover:bg-surface-muted"
-              >
-                <DropdownLabel item={item} />
-              </a>
-            ) : (
-              <Link
-                key={item.label}
-                href={item.href}
-                className="block rounded-lg px-3 py-2.5 transition hover:bg-surface-muted"
-              >
-                <DropdownLabel item={item} />
-              </Link>
-            ),
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function MenuIcon({ open }: { open: boolean }) {
   return (
     <svg
@@ -135,35 +66,6 @@ function MenuIcon({ open }: { open: boolean }) {
   );
 }
 
-function MobileGroup({
-  title,
-  items,
-  onNavigate,
-}: {
-  title: string;
-  items: NavItem[];
-  onNavigate: () => void;
-}) {
-  return (
-    <div>
-      <p className="px-3 py-2 font-mono text-[10px] uppercase tracking-widest text-neutral-500">
-        {title}
-      </p>
-      <ul className="space-y-0.5">
-        {items.map((item) => (
-          <li key={item.label}>
-            <NavLink
-              item={item}
-              onNavigate={onNavigate}
-              className="block rounded-lg px-3 py-2.5 text-base font-medium text-neutral-700 transition hover:bg-surface-muted hover:text-brand dark:text-neutral-200"
-            />
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 export function HeaderNav() {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
@@ -184,16 +86,14 @@ export function HeaderNav() {
   }, []);
 
   const linkClass =
-    "text-sm font-medium text-neutral-600 transition-colors hover:text-brand dark:text-neutral-300";
+    "text-sm font-semibold text-neutral-600 transition-colors hover:text-brand dark:text-neutral-300";
 
   return (
     <>
-      <nav className="hidden items-center gap-8 lg:flex" aria-label="Main">
-        <DesktopDropdown label="Product" items={productLinks} />
+      <nav className="hidden items-center gap-7 lg:flex" aria-label="Main">
         {visibleTopNavLinks.map((link) => (
           <NavLink key={link.label} item={link} className={linkClass} />
         ))}
-        <DesktopDropdown label="Developers" items={developerLinks} />
       </nav>
 
       <div className="hidden items-center gap-3 lg:flex">
@@ -201,7 +101,7 @@ export function HeaderNav() {
           href="/start"
           className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-strong"
         >
-          Get started
+          Start free
         </Link>
       </div>
 
@@ -234,21 +134,17 @@ export function HeaderNav() {
         aria-hidden={!open}
       >
         <nav className="container mx-auto max-w-6xl space-y-4 px-6 py-4" aria-label="Mobile">
-          <MobileGroup title="Product" items={productLinks} onNavigate={close} />
-          <MobileGroup title="Developers" items={developerLinks} onNavigate={close} />
-          {visibleTopNavLinks.length > 0 ? (
-            <ul className="space-y-0.5 border-t border-border pt-4">
-              {visibleTopNavLinks.map((link) => (
-                <li key={link.label}>
-                  <NavLink
-                    item={link}
-                    onNavigate={close}
-                    className="block rounded-lg px-3 py-2.5 text-base font-medium text-neutral-700 transition hover:bg-surface-muted hover:text-brand dark:text-neutral-200"
-                  />
-                </li>
-              ))}
-            </ul>
-          ) : null}
+          <ul className="space-y-0.5">
+            {[...visibleTopNavLinks, ...developerLinks].map((link) => (
+              <li key={link.label}>
+                <NavLink
+                  item={link}
+                  onNavigate={close}
+                  className="block rounded-lg px-3 py-2.5 text-base font-medium text-neutral-700 transition hover:bg-surface-muted hover:text-brand dark:text-neutral-200"
+                />
+              </li>
+            ))}
+          </ul>
 
           <div className="flex flex-col gap-2 border-t border-border pt-4">
             <Link
@@ -256,7 +152,7 @@ export function HeaderNav() {
               className="rounded-lg bg-brand px-3 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-brand-strong"
               onClick={close}
             >
-              Get started
+              Start free
             </Link>
           </div>
         </nav>

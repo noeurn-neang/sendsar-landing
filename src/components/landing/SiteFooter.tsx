@@ -3,43 +3,46 @@ import Link from "next/link";
 import { Logo } from "@/components/landing/Logo";
 import { siteConfig } from "@/lib/site";
 
+const docsBase = siteConfig.docsUrl.replace(/\/$/, "");
+
 const footerLinks = {
   Product: [
-    { label: "Platform overview", href: "/#platform" },
     { label: "How it works", href: "/#how-it-works" },
-    { label: "Features", href: "/#features" },
     { label: "Pricing", href: "/pricing" },
-    { label: "Use cases", href: "/#use-cases" },
   ],
   Developers: [
     { label: "Documentation", href: siteConfig.docsUrl, external: true },
-    { label: "Quickstart", href: siteConfig.quickstartUrl, external: true },
-    { label: "Telegram", href: siteConfig.contactTelegram, external: true },
-  ],
-  Contact: [
-    { label: "Email", href: siteConfig.contactMailto, external: true },
-    { label: "Telegram", href: siteConfig.contactTelegram, external: true },
+    { label: "Quick start", href: siteConfig.quickstartUrl, external: true },
+    { label: "UI Kits", href: `${docsBase}/uikit/angular/`, external: true },
+    { label: "SDKs", href: `${docsBase}/sdk/javascript/`, external: true },
+    {
+      label: "Angular sample",
+      href: "https://github.com/Sendsar-Chat/sendsar-uikit-angular",
+      external: true,
+    },
+    {
+      label: "Flutter sample",
+      href: "https://github.com/Sendsar-Chat/sendsar-uikit-flutter",
+      external: true,
+    },
   ],
   Resources: [
     { label: "Blog", href: "/blog" },
     { label: "Privacy", href: "/privacy" },
     { label: "Terms", href: "/terms" },
+    { label: "Telegram", href: siteConfig.contactTelegram, external: true },
   ],
 };
 
 export function SiteFooter() {
   return (
     <footer className="border-t border-border bg-surface">
-      <div className="container mx-auto max-w-6xl px-6 py-14">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
-          <div className="lg:col-span-2">
+      <div className="container mx-auto max-w-6xl px-6 py-12">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+          <div className="lg:col-span-1">
             <Logo size="md" />
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-              {siteConfig.tagline}. {siteConfig.description}
-            </p>
-            <p className="mt-3 text-sm text-neutral-500">
-              Connect any two parties.{" "}
-              <span className="font-semibold text-brand-gradient">Instantly.</span>
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+              {siteConfig.tagline}. Your users, your login.
             </p>
             <p className="mt-3 text-sm text-neutral-500">
               <a href={siteConfig.contactMailto} className="hover:text-brand">
@@ -80,10 +83,9 @@ export function SiteFooter() {
           ))}
         </div>
 
-        <div className="mt-10 flex flex-col gap-2 border-t border-border pt-8 text-sm text-neutral-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Sendsar</p>
-          <p className="font-mono text-xs">sendsar · headless · api-first</p>
-        </div>
+        <p className="mt-10 border-t border-border pt-6 text-xs text-neutral-500">
+          © {new Date().getFullYear()} {siteConfig.name}
+        </p>
       </div>
     </footer>
   );
