@@ -1,9 +1,12 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /*
- * Sendsar — brand palette (from brand-icon.svg)
+ * Sendsar & Bootstrap Theme Palette
  * Primary #0096C8 · Deep #0049AB · Accent #00E8E6
+ * Bootstrap 5.3 theme adapted: Cerulean #0096c8 · Cyan #007ba4 · Accent #ffe484 · Pink #d63384 · Blue #0d6efd
  */
 :root {
   --background: #ffffff;
@@ -20,6 +23,19 @@
   --hero-muted: #94a3b8;
   --hero-surface: #1e293b;
   --hero-border: #334155;
+
+  /* Bootstrap 5.3 Brand Tokens - Aligned to Sendsar #0096c8 */
+  --bd-violet: #0096c8;
+  --bd-violet-rgb: 0, 150, 200;
+  --bd-purple: #007ba4;
+  --bd-accent: #ffe484;
+  --bd-accent-rgb: 255, 228, 132;
+  --bd-pink: #d63384;
+  --bd-pink-rgb: 214, 51, 132;
+  --bd-blue: #0d6efd;
+  --bd-blue-rgb: 13, 110, 253;
+  --bs-body-bg-rgb: 255, 255, 255;
+  --bs-primary-rgb: 13, 110, 253;
 
   /* Console defaults (overridden by .console-theme[data-theme]) */
   --console-canvas: #f8f9fb;
@@ -50,6 +66,9 @@
   --color-hero-muted: var(--hero-muted);
   --color-hero-surface: var(--hero-surface);
   --color-hero-border: var(--hero-border);
+  --color-bd-violet: var(--bd-violet);
+  --color-bd-purple: var(--bd-purple);
+  --color-bd-accent: var(--bd-accent);
   --color-console-canvas: var(--console-canvas);
   --color-console-panel: var(--console-panel);
   --color-console-fg: var(--console-fg);
@@ -60,13 +79,67 @@
   --color-console-sidebar-hover: var(--console-sidebar-hover);
   --color-console-sidebar-active: var(--console-sidebar-active);
   --color-console-sidebar-active-fg: var(--console-sidebar-active-fg);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif;
+  --font-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --font-family-brand: var(--font-inter), system-ui, sans-serif;
 }
 
+:root.dark,
+[data-theme="dark"],
+.dark {
+  --background: #0f172a;
+  --foreground: #f8fafc;
+  --surface: #1e293b;
+  --surface-muted: #1e293b;
+  --border: #334155;
+  --brand: #0096c8;
+  --brand-strong: #00e8e6;
+  --brand-light: #003566;
+  --hero: #0f172a;
+  --hero-muted: #64748b;
+  --hero-surface: #1e293b;
+  --hero-border: #334155;
+
+  --bs-body-bg-rgb: 15, 23, 42;
+  --bs-primary-rgb: 13, 110, 253;
+  --bd-accent-rgb: 255, 228, 132;
+  --bd-violet-rgb: 0, 150, 200;
+  --bd-pink-rgb: 214, 51, 132;
+}
+
+:root.light,
+[data-theme="light"],
+.light {
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --surface: #ffffff;
+  --surface-muted: #f8fafc;
+  --border: #e2e8f0;
+  --brand: #0096c8;
+  --brand-strong: #0049ab;
+  --brand-light: #e8f7fc;
+  --flash: #00e8e6;
+  --flash-strong: #0096c8;
+  --hero: #0f172a;
+  --hero-muted: #94a3b8;
+  --hero-surface: #1e293b;
+  --hero-border: #334155;
+
+  --bd-violet: #0096c8;
+  --bd-violet-rgb: 0, 150, 200;
+  --bd-purple: #007ba4;
+  --bd-accent: #ffe484;
+  --bd-accent-rgb: 255, 228, 132;
+  --bd-pink: #d63384;
+  --bd-pink-rgb: 214, 51, 132;
+  --bd-blue: #0d6efd;
+  --bd-blue-rgb: 13, 110, 253;
+  --bs-body-bg-rgb: 255, 255, 255;
+  --bs-primary-rgb: 13, 110, 253;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(.light):not([data-theme="light"]) {
     --background: #0f172a;
     --foreground: #f8fafc;
     --surface: #1e293b;
@@ -79,6 +152,12 @@
     --hero-muted: #64748b;
     --hero-surface: #1e293b;
     --hero-border: #334155;
+
+    --bs-body-bg-rgb: 15, 23, 42;
+    --bs-primary-rgb: 13, 110, 253;
+    --bd-accent-rgb: 255, 228, 132;
+    --bd-violet-rgb: 0, 150, 200;
+    --bd-pink-rgb: 214, 51, 132;
 
     /* Keep console light even when OS is dark — product UI stays LiveKit-style */
   }
@@ -251,19 +330,65 @@ html {
     var(--surface-muted);
 }
 
+.bd-masthead {
+  --bd-pink-rgb: 214, 51, 132;
+  background-image: linear-gradient(180deg, rgba(var(--bs-body-bg-rgb), .01), rgba(var(--bs-body-bg-rgb), 1) 85%), radial-gradient(ellipse at top left, rgba(var(--bs-primary-rgb), .5), transparent 50%), radial-gradient(ellipse at top right, rgba(var(--bd-accent-rgb), .5), transparent 50%), radial-gradient(ellipse at center right, rgba(var(--bd-violet-rgb), .5), transparent 50%), radial-gradient(ellipse at center left, rgba(var(--bd-pink-rgb), .5), transparent 50%);
+}
+
+.bd-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-image: linear-gradient(135deg, #0096c8 0%, #0049ab 100%);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15), inset 0 -1px rgba(255, 255, 255, 0.15);
+}
+
+.btn-bd-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background-color: #0096c8;
+  color: #ffffff;
+  font-weight: 600;
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 0.5rem 1rem rgba(0, 150, 200, 0.25);
+}
+
+.btn-bd-primary:hover {
+  background-color: #007ba4;
+  box-shadow: 0 0.5rem 1.25rem rgba(0, 150, 200, 0.35);
+  transform: translateY(-1px);
+}
+
+.masthead-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 150, 200, 0.2);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease-in-out;
+}
+
+.masthead-notice:hover {
+  border-color: rgba(0, 150, 200, 0.4);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 6px rgba(0, 150, 200, 0.12);
+}
+
 @media (prefers-color-scheme: dark) {
-  .bg-marketing-wash {
-    background:
-      radial-gradient(ellipse 90% 70% at 50% -20%, rgba(0, 150, 200, 0.2), transparent 55%),
-      radial-gradient(ellipse 50% 40% at 100% 30%, rgba(0, 232, 230, 0.08), transparent 50%),
-      linear-gradient(180deg, #0f172a 0%, #0c1929 100%);
+  .masthead-notice {
+    border-color: rgba(0, 150, 200, 0.3);
+    background: rgba(30, 41, 59, 0.85);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
 
-  .bg-hero-gradient-subtle {
-    background:
-      radial-gradient(ellipse 70% 50% at 20% 0%, rgba(0, 150, 200, 0.12), transparent),
-      radial-gradient(ellipse 40% 30% at 90% 80%, rgba(0, 232, 230, 0.06), transparent),
-      var(--surface-muted);
+  .masthead-notice:hover {
+    border-color: rgba(0, 150, 200, 0.5);
+    background: rgba(30, 41, 59, 0.95);
   }
 }
 

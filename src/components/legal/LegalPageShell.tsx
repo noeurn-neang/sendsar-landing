@@ -13,7 +13,7 @@ export function LegalPageShell({
 }) {
   return (
     <main className="border-b border-border bg-surface">
-      <div className="container mx-auto max-w-3xl px-6 py-16 lg:py-20">
+      <div className="container mx-auto max-w-3xl px-6 pt-24 sm:pt-28 pb-16 lg:pb-20">
         <p className="font-mono text-xs uppercase tracking-[0.14em] text-neutral-500">
           Legal
         </p>

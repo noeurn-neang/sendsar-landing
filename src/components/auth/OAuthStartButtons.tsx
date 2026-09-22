@@ -39,7 +39,7 @@ function GitHubIcon() {
 }
 
 const buttonClass =
-  "flex h-10 w-full items-center justify-center gap-2.5 rounded-md border border-[#2e2e2e] bg-[#1f1f1f] px-4 text-sm font-normal text-[#ededed] transition hover:border-[#404040] hover:bg-[#262626] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:opacity-50";
+  "group flex h-11 w-full items-center justify-center gap-3 rounded-xl border border-slate-200/90 bg-white/90 px-4 text-sm font-medium text-slate-700 shadow-sm backdrop-blur transition-all duration-150 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 hover:shadow active:scale-[0.99] dark:border-slate-700/80 dark:bg-slate-800/80 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0096c8] disabled:cursor-not-allowed disabled:opacity-50";
 
 export function OAuthStartButtons({ className }: OAuthStartButtonsProps) {
   const [pending, setPending] = useState<"google" | "github" | null>(null);
@@ -55,7 +55,7 @@ export function OAuthStartButtons({ className }: OAuthStartButtonsProps) {
 
   return (
     <div className={className}>
-      <div className="space-y-2">
+      <div className="space-y-3">
         <button
           type="button"
           className={buttonClass}
@@ -63,7 +63,7 @@ export function OAuthStartButtons({ className }: OAuthStartButtonsProps) {
           onClick={() => void handleSignIn("github")}
         >
           <GitHubIcon />
-          {pending === "github" ? "Redirecting…" : "Continue with GitHub"}
+          <span>{pending === "github" ? "Redirecting…" : "Continue with GitHub"}</span>
         </button>
         <button
           type="button"
@@ -72,7 +72,7 @@ export function OAuthStartButtons({ className }: OAuthStartButtonsProps) {
           onClick={() => void handleSignIn("google")}
         >
           <GoogleIcon />
-          {pending === "google" ? "Redirecting…" : "Continue with Google"}
+          <span>{pending === "google" ? "Redirecting…" : "Continue with Google"}</span>
         </button>
       </div>
     </div>

@@ -74,14 +74,20 @@ export default async function PostPage({
   const imageUrl = post.image ? ogImageUrl(post.image) : null;
 
   return (
-    <main className="container mx-auto min-h-screen max-w-6xl px-6 py-10 sm:py-16">
+    <main
+      className="container mx-auto min-h-screen max-w-5xl px-4 sm:px-6 pt-32 sm:pt-36 lg:pt-40 pb-16 lg:pb-24"
+      style={{
+        backgroundColor: "rgb(var(--bs-body-bg-rgb))",
+      }}
+    >
       <ArticleJsonLd post={post} imageUrl={imageUrl} />
 
       <Link
         href="/blog"
-        className="mb-8 inline-flex text-sm text-neutral-500 transition-colors hover:text-brand"
+        className="mb-8 inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 transition-colors hover:text-[#0096c8] dark:text-slate-400 dark:hover:text-[#38bdf8]"
       >
-        ← Back to blog
+        <span>←</span>
+        <span>Back to blog</span>
       </Link>
 
       <PostHeader

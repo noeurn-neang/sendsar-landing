@@ -18,7 +18,7 @@ export const productLinks: NavItem[] = [
   },
   {
     label: "Pricing",
-    href: "/pricing",
+    href: "/#pricing",
     description: "Free to start",
   },
 ];
@@ -50,12 +50,7 @@ export const developerLinks: NavItem[] = [
   },
 ];
 
-/** Top-level nav — Pricing + Docs; Start is the CTA button. */
-export const visibleTopNavLinks: NavItem[] = [
-  { label: "Pricing", href: "/pricing" },
-  {
-    label: "Docs",
-    href: siteConfig.docsUrl,
-    external: true,
-  },
-];
+/** Top-level nav — defined in siteConfig.topNav */
+export const visibleTopNavLinks: NavItem[] = siteConfig.topNav.map((link) => ({
+  ...link,
+}));

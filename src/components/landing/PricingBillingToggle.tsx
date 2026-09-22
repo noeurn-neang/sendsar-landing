@@ -22,17 +22,17 @@ export function PricingBillingToggle({
   return (
     <div className="relative z-20 flex flex-col items-center gap-4">
       <p
-        className={`rounded-full border px-4 py-1.5 text-sm font-semibold ${
+        className={`rounded-full border px-4 py-1.5 text-xs sm:text-sm font-semibold transition ${
           isMonthly
-            ? "border-border bg-surface-muted text-neutral-600 dark:text-neutral-400"
-            : "border-brand/25 bg-brand-light text-brand-strong dark:border-brand/40 dark:bg-brand-light/30 dark:text-flash"
+            ? "border-slate-200/80 bg-slate-100/80 text-slate-600 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-400"
+            : "border-[#0096c8]/25 bg-[#0096c8]/10 text-[#0096c8] dark:border-[#0096c8]/30 dark:text-[#38bdf8]"
         }`}
       >
         {isMonthly ? getBillingMonthlyHint() : getBillingPromoHeadline()}
       </p>
 
       <div
-        className="relative z-20 inline-flex max-w-full flex-wrap justify-center gap-1 rounded-full border border-border bg-surface p-1 shadow-sm"
+        className="relative z-20 inline-flex max-w-full flex-wrap justify-center gap-1 rounded-full border border-slate-200/80 bg-slate-100/80 p-1 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80"
         role="tablist"
         aria-label="Billing period"
       >
@@ -49,10 +49,10 @@ export function PricingBillingToggle({
               aria-selected={active}
               aria-pressed={active}
               onClick={() => onChange(billingPeriod)}
-              className={`relative z-20 inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition ${
+              className={`relative z-20 inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-xs sm:text-sm font-semibold transition ${
                 active
-                  ? "bg-brand text-white shadow-sm ring-1 ring-brand/30"
-                  : "text-neutral-600 hover:bg-surface-muted hover:text-brand dark:text-neutral-400"
+                  ? "bg-[#0096c8] text-white shadow-md shadow-[#0096c8]/25"
+                  : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               }`}
             >
               <span>{label}</span>
@@ -61,7 +61,7 @@ export function PricingBillingToggle({
                   className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
                     active
                       ? "bg-white/20 text-white"
-                      : "bg-flash/15 text-brand-strong dark:text-flash"
+                      : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
                   }`}
                 >
                   {discountBadge}
@@ -72,11 +72,11 @@ export function PricingBillingToggle({
         })}
       </div>
 
-      <p className="min-h-[2.75rem] max-w-md text-center text-sm leading-snug">
+      <p className="min-h-[2rem] max-w-md text-center text-xs sm:text-sm leading-snug">
         {isMonthly ? (
-          <span className="text-neutral-500">Prices below are billed every month.</span>
+          <span className="text-slate-500 dark:text-slate-400">Prices below are billed monthly.</span>
         ) : (
-          <span className="font-medium text-brand-strong dark:text-flash">
+          <span className="font-medium text-[#0096c8] dark:text-[#38bdf8]">
             {getBillingActiveNote(value)}
           </span>
         )}

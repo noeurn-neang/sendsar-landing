@@ -13,6 +13,28 @@ export const siteConfig = {
   contactTelegram: "https://t.me/sendsar_support",
   contactMailto: "mailto:support@sendsar.com?subject=Sendsar",
   contactNote: "Start free, or message us on Telegram.",
+  topNav: [
+    {
+      label: "How it works",
+      href: "/#how-it-works",
+      external: false,
+    },
+    {
+      label: "Pricing",
+      href: "/#pricing",
+      external: false,
+    },
+    {
+      label: "Docs",
+      href: docsUrl,
+      external: true,
+    },
+    {
+      label: "Blog",
+      href: "/blog",
+      external: false,
+    },
+  ],
   /** Solo operator of the Sendsar service (not a registered company). */
   legal: {
     operatorName: "Noeurn Neang",
