@@ -1,15 +1,25 @@
 type LogoMarkProps = {
   className?: string;
   colored?: boolean;
-  tone?: "light" | "dark";
+  tone?: "light" | "dark" | "white" | "auto" | "original";
 };
 
 export function LogoMark({
   className = "",
   colored = true,
-  tone = "light",
+  tone = "auto",
 }: LogoMarkProps) {
-  if (colored && tone === "light") {
+  if (tone === "white") {
+    return (
+      <img
+        src="/logo-white.svg"
+        alt=""
+        className={`inline-block shrink-0 object-contain ${className}`}
+        aria-hidden
+      />
+    );
+  }
+  if (tone === "original" || (colored && tone === "light")) {
     return (
       <img
         src="/logo.svg"
@@ -17,6 +27,26 @@ export function LogoMark({
         className={`inline-block shrink-0 object-contain ${className}`}
         aria-hidden
       />
+    );
+  }
+  if (tone === "auto") {
+    return (
+      <>
+        {/* Original logo in light mode */}
+        <img
+          src="/logo.svg"
+          alt=""
+          className={`inline-block shrink-0 object-contain dark:hidden ${className}`}
+          aria-hidden
+        />
+        {/* White logo in dark mode */}
+        <img
+          src="/logo-white.svg"
+          alt=""
+          className={`hidden shrink-0 object-contain dark:inline-block ${className}`}
+          aria-hidden
+        />
+      </>
     );
   }
 

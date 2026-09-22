@@ -41,19 +41,19 @@ export function DashboardNavLink({
         navigate(href);
       }}
       aria-current={active ? "page" : undefined}
-      className={`group flex items-center rounded-md text-[13px] transition ${
-        collapsed ? "justify-center px-0 py-2.5" : "gap-2.5 px-2.5 py-2"
+      className={`group flex items-center rounded-xl text-[13px] font-medium transition ${
+        collapsed ? "justify-center px-0 py-2.5" : "gap-2.5 px-3 py-2"
       } ${
         active
-          ? "bg-console-sidebar-active font-medium text-console-sidebar-active-fg"
-          : "text-console-muted hover:bg-console-sidebar-hover hover:text-console-fg"
+          ? "bg-white text-[#0096c8] font-semibold shadow-xs ring-1 ring-slate-200/80 dark:bg-white/10 dark:text-[#38bdf8] dark:ring-white/10"
+          : "text-slate-600 hover:bg-white/70 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white"
       } ${pending && !active ? "opacity-70" : ""}`}
     >
       <span
         className={
           active
-            ? "text-console-sidebar-active-fg"
-            : "text-console-muted group-hover:text-console-fg"
+            ? "text-[#0096c8] dark:text-[#38bdf8]"
+            : "text-slate-400 transition-colors group-hover:text-slate-700 dark:text-slate-400 dark:group-hover:text-white"
         }
       >
         {icon}

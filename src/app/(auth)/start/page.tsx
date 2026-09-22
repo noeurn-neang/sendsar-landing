@@ -10,20 +10,28 @@ export const metadata = {
 export default function StartPage() {
   return (
     <div className="text-center">
-      <h1 className="text-2xl font-semibold tracking-tight text-white">Welcome</h1>
-      <h2 className="mt-2 text-sm font-normal text-[#a1a1a1]">
+      <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+        Welcome
+      </h1>
+      <h2 className="mt-2 text-sm font-normal text-slate-600 dark:text-slate-400">
         Continue to your Sendsar workspace
       </h2>
 
       <OAuthStartButtons className="mt-8" />
 
-      <p className="mt-8 text-xs leading-relaxed text-[#737373]">
+      <p className="mt-8 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
         By continuing, you agree to Sendsar&apos;s{" "}
-        <Link href="/terms" className="text-[#a1a1a1] underline-offset-2 hover:text-white hover:underline">
+        <Link
+          href="/terms"
+          className="font-medium text-[#0096c8] underline-offset-2 hover:underline dark:text-[#38bdf8]"
+        >
           Terms of Service
         </Link>{" "}
         and{" "}
-        <Link href="/privacy" className="text-[#a1a1a1] underline-offset-2 hover:text-white hover:underline">
+        <Link
+          href="/privacy"
+          className="font-medium text-[#0096c8] underline-offset-2 hover:underline dark:text-[#38bdf8]"
+        >
           Privacy Policy
         </Link>
         .

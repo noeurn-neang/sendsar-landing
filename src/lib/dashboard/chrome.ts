@@ -1,18 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSiteTheme, type ResolvedTheme } from "@/lib/theme";
 
-export type ConsoleTheme = "light" | "dark";
-
-const THEME_KEY = "sendsar-console-theme";
 const SIDEBAR_KEY = "sendsar-console-sidebar-collapsed";
-
-function readTheme(): ConsoleTheme {
-  if (typeof window === "undefined") return "light";
-  const stored = window.localStorage.getItem(THEME_KEY);
-  if (stored === "dark" || stored === "light") return stored;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-}
 
 function readCollapsed(): boolean {
   if (typeof window === "undefined") return false;
@@ -20,28 +11,26 @@ function readCollapsed(): boolean {
 }
 
 export function useConsoleChrome() {
-  const [theme, setThemeState] = useState<ConsoleTheme>("light");
+  const { resolvedTheme, setTheme } = useSiteTheme();
   const [collapsed, setCollapsedState] = useState(false);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    setThemeState(readTheme());
     setCollapsedState(readCollapsed());
     setReady(true);
   }, []);
 
   useEffect(() => {
     if (!ready) return;
-    window.localStorage.setItem(THEME_KEY, theme);
-  }, [theme, ready]);
-
-  useEffect(() => {
-    if (!ready) return;
-    window.localStorage.setItem(SIDEBAR_KEY, collapsed ? "1" : "0");
+    try {
+      window.localStorage.setItem(SIDEBAR_KEY, collapsed ? "1" : "0");
+    } catch {
+      // ignore
+    }
   }, [collapsed, ready]);
 
   function toggleTheme() {
-    setThemeState((current) => (current === "dark" ? "light" : "dark"));
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
   }
 
   function toggleCollapsed() {
@@ -49,7 +38,7 @@ export function useConsoleChrome() {
   }
 
   return {
-    theme,
+    theme: resolvedTheme as ResolvedTheme,
     collapsed,
     ready,
     toggleTheme,

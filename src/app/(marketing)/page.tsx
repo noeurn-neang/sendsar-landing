@@ -1,7 +1,6 @@
 import { Hero } from "@/components/landing/Hero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
-import { IntegratePaths } from "@/components/landing/IntegratePaths";
-import { PriceClose } from "@/components/landing/PriceClose";
+import { PricingHighlight } from "@/components/landing/PricingHighlight";
 import { HomeJsonLd } from "@/components/seo/HomeJsonLd";
 import { createMetadata } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
@@ -27,9 +26,8 @@ export default function HomePage() {
     <>
       <HomeJsonLd />
       <Hero />
-      <IntegratePaths />
       <HowItWorks />
-      <PriceClose />
+      <PricingHighlight />
     </>
   );
 }
