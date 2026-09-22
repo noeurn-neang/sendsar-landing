@@ -176,43 +176,43 @@ html {
 
 .console-theme {
   color-scheme: light;
-  --brand-strong: #0077a3;
-  --console-canvas: #f8f9fb;
+  --brand-strong: #007ba4;
+  --console-canvas: #f8fafc;
   --console-panel: #ffffff;
-  --console-fg: #111827;
-  --console-muted: #6b7280;
-  --console-border: #e5e7eb;
-  --console-track: #eef0f4;
+  --console-fg: #0f172a;
+  --console-muted: #64748b;
+  --console-border: #e2e8f0;
+  --console-track: #f1f5f9;
   --console-sidebar: #ffffff;
-  --console-sidebar-hover: #f3f4f6;
-  --console-sidebar-active: #eef8fc;
-  --console-sidebar-active-fg: #0077a3;
-  --console-btn-secondary-hover-border: #d1d5db;
-  --console-btn-secondary-hover-bg: #f9fafb;
+  --console-sidebar-hover: #f8fafc;
+  --console-sidebar-active: #e0f2fe;
+  --console-sidebar-active-fg: #0096c8;
+  --console-btn-secondary-hover-border: #cbd5e1;
+  --console-btn-secondary-hover-bg: #f8fafc;
 }
 
 .console-theme[data-theme="dark"] {
   color-scheme: dark;
-  --brand-strong: #33b4db;
-  --console-canvas: #0c0f14;
-  --console-panel: #12161e;
-  --console-fg: #f3f4f6;
-  --console-muted: #9ca3af;
-  --console-border: #232833;
-  --console-track: #1a1f29;
-  --console-sidebar: #0e1218;
-  --console-sidebar-hover: #171c25;
-  --console-sidebar-active: rgba(0, 150, 200, 0.14);
-  --console-sidebar-active-fg: #5ec8e8;
-  --console-btn-secondary-hover-border: #3a4150;
-  --console-btn-secondary-hover-bg: #171c25;
+  --brand-strong: #38bdf8;
+  --console-canvas: #0b0f17;
+  --console-panel: #111827;
+  --console-fg: #f8fafc;
+  --console-muted: #94a3b8;
+  --console-border: #1f2937;
+  --console-track: #1e293b;
+  --console-sidebar: #0e1420;
+  --console-sidebar-hover: #161f30;
+  --console-sidebar-active: rgba(0, 150, 200, 0.16);
+  --console-sidebar-active-fg: #38bdf8;
+  --console-btn-secondary-hover-border: #374151;
+  --console-btn-secondary-hover-bg: #1f2937;
 }
 
 .console-theme .console-card {
   border: 1px solid var(--console-border);
   background: var(--console-panel);
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05);
 }
 
 .console-theme[data-theme="dark"] .console-card {

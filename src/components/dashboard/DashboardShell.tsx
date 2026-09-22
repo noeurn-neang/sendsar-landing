@@ -7,6 +7,7 @@ import { useState } from "react";
 
 import { Logo } from "@/components/landing/Logo";
 import { LogoMark } from "@/components/landing/LogoMark";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { DashboardNavLink } from "@/components/dashboard/DashboardNavLink";
 import { NavigationProgressProvider } from "@/components/dashboard/NavigationProgress";
 import { useConsoleChrome } from "@/lib/dashboard/chrome";
@@ -100,30 +101,6 @@ function NavIcon({ name }: { name: string }) {
   }
 }
 
-function SunIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-      <circle cx="12" cy="12" r="4" />
-      <path
-        strokeLinecap="round"
-        d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"
-      />
-    </svg>
-  );
-}
-
-function MoonIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M20 14.5A7.5 7.5 0 0 1 9.5 4 7.5 7.5 0 1 0 20 14.5Z"
-      />
-    </svg>
-  );
-}
-
 function PanelLeftIcon({ collapsed }: { collapsed: boolean }) {
   return (
     <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
@@ -153,32 +130,34 @@ export function DashboardShell({
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
-  const { theme, collapsed, toggleTheme, toggleCollapsed, setCollapsed } = useConsoleChrome();
+  const { theme, collapsed, toggleCollapsed, setCollapsed } = useConsoleChrome();
   const initials = workspace.name.slice(0, 2).toUpperCase();
   const currentNav = dashboardNav.find((item) => isActive(pathname, item.href));
-  const logoInverse = theme === "dark";
 
   const sidebar = (opts: { collapsed: boolean; onNavigate?: () => void }) => (
-    <div className="flex h-full flex-col bg-console-sidebar">
+    <div className="relative flex h-full flex-col overflow-hidden bg-gradient-to-b from-white via-[#f0f9ff]/80 to-[#f8fafc] dark:from-[#131d2e] dark:via-[#0e1624] dark:to-[#0a0f17]">
+      {/* Ambient lighter brand cyan glow */}
       <div
-        className={`flex h-14 shrink-0 items-center ${
+        className="pointer-events-none absolute -top-12 -left-12 h-44 w-44 rounded-full bg-[#0096c8]/12 blur-2xl dark:bg-[#0096c8]/20"
+        aria-hidden
+      />
+
+      <div
+        className={`relative z-10 flex h-16 shrink-0 items-center ${
           opts.collapsed ? "justify-center px-2" : "justify-between gap-2 px-4"
         }`}
       >
         {opts.collapsed ? (
           <Link
             href="/dashboard"
-            className="inline-flex h-9 w-9 items-center justify-center"
+            className="inline-flex h-9 w-9 items-center justify-center transition-transform hover:scale-105"
             aria-label="Sendsar"
           >
-            <LogoMark
-              className="h-7 w-7"
-              tone={logoInverse ? "dark" : "light"}
-            />
+            <LogoMark className="h-7 w-7" tone="auto" />
           </Link>
         ) : (
           <>
-            <Logo size="sm" href="/dashboard" variant={logoInverse ? "inverse" : "default"} />
+            <Logo size="sm" href="/dashboard" />
             <button
               type="button"
               className="console-icon-btn hidden lg:inline-flex"
@@ -192,21 +171,21 @@ export function DashboardShell({
         )}
       </div>
 
-      <div className={opts.collapsed ? "px-2 pb-3" : "px-3 pb-3"}>
+      <div className={`relative z-10 ${opts.collapsed ? "px-2 pb-3" : "px-3 pb-3"}`}>
         {opts.collapsed ? (
           <div
-            className="mx-auto flex h-9 w-9 items-center justify-center rounded-md bg-brand/10 text-[11px] font-bold tracking-wide text-brand"
+            className="mx-auto flex h-9 w-9 items-center justify-center rounded-xl bg-brand/10 text-[11px] font-bold tracking-wide text-brand shadow-xs"
             title={`${workspace.name} · ${workspace.planName}`}
           >
             {initials}
           </div>
         ) : (
-          <div className="flex items-center gap-2.5 px-1 py-1">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-brand/10 text-[11px] font-bold tracking-wide text-brand">
+          <div className="flex items-center gap-2.5 rounded-xl border border-slate-200/80 bg-white/80 px-3 py-2 shadow-xs backdrop-blur-xs dark:border-white/10 dark:bg-white/5">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-[11px] font-bold tracking-wide text-brand">
               {initials}
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-medium text-console-fg">
+              <span className="block truncate text-sm font-semibold text-console-fg">
                 {workspace.name}
               </span>
               <span className="block truncate text-xs text-console-muted">
@@ -218,13 +197,13 @@ export function DashboardShell({
         )}
       </div>
 
-      <div className={opts.collapsed ? "px-2" : "px-3"}>
+      <div className={`relative z-10 ${opts.collapsed ? "px-2" : "px-3"}`}>
         {!opts.collapsed ? (
-          <p className="px-2 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-console-muted">
-            Project
+          <p className="px-2.5 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-console-muted">
+            Workspace
           </p>
         ) : null}
-        <nav className="space-y-0.5" aria-label="Dashboard">
+        <nav className="space-y-1" aria-label="Dashboard">
           {dashboardNav.map((item) => {
             const active = isActive(pathname, item.href);
             return (
@@ -243,7 +222,7 @@ export function DashboardShell({
       </div>
 
       <div
-        className={`mt-auto space-y-0.5 border-t border-console-border ${
+        className={`relative z-10 mt-auto space-y-1 border-t border-slate-200/80 dark:border-slate-800/80 ${
           opts.collapsed ? "p-2" : "p-3"
         }`}
       >
@@ -252,8 +231,8 @@ export function DashboardShell({
           target="_blank"
           rel="noopener noreferrer"
           title="Documentation"
-          className={`flex items-center rounded-md text-[13px] text-console-muted transition hover:bg-console-sidebar-hover hover:text-console-fg ${
-            opts.collapsed ? "justify-center px-0 py-2.5" : "gap-2.5 px-2.5 py-2"
+          className={`flex items-center rounded-xl text-[13px] font-medium text-console-muted transition hover:bg-white/70 hover:text-console-fg dark:hover:bg-white/5 ${
+            opts.collapsed ? "justify-center px-0 py-2.5" : "gap-2.5 px-3 py-2"
           }`}
         >
           {opts.collapsed ? (
@@ -268,7 +247,19 @@ export function DashboardShell({
               <path strokeLinecap="round" d="M7 4.5h8.5A2.5 2.5 0 0 1 18 7v13.5L12.5 17 7 20.5V4.5Z" />
             </svg>
           ) : (
-            "Documentation"
+            <>
+              <svg
+                viewBox="0 0 24 24"
+                className="h-[18px] w-[18px]"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                aria-hidden
+              >
+                <path strokeLinecap="round" d="M7 4.5h8.5A2.5 2.5 0 0 1 18 7v13.5L12.5 17 7 20.5V4.5Z" />
+              </svg>
+              <span>Documentation</span>
+            </>
           )}
         </a>
         <button
@@ -279,8 +270,8 @@ export function DashboardShell({
             setSigningOut(true);
             void signOut({ callbackUrl: "/" });
           }}
-          className={`flex w-full items-center rounded-md text-left text-[13px] text-console-muted transition hover:bg-console-sidebar-hover hover:text-console-fg disabled:opacity-60 ${
-            opts.collapsed ? "justify-center px-0 py-2.5" : "gap-2.5 px-2.5 py-2"
+          className={`flex w-full items-center rounded-xl text-left text-[13px] font-medium text-console-muted transition hover:bg-console-sidebar-hover hover:text-console-fg disabled:opacity-60 ${
+            opts.collapsed ? "justify-center px-0 py-2.5" : "gap-2.5 px-3 py-2"
           }`}
         >
           {opts.collapsed ? (
@@ -298,7 +289,22 @@ export function DashboardShell({
               />
             </svg>
           ) : (
-            signingOut ? "Signing out…" : "Sign out"
+            <>
+              <svg
+                viewBox="0 0 24 24"
+                className="h-[18px] w-[18px]"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                aria-hidden
+              >
+                <path
+                  strokeLinecap="round"
+                  d="M10 7V5.5A1.5 1.5 0 0 1 11.5 4h7A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 10 18.5V17M4 12h10M7.5 8.5 4 12l3.5 3.5"
+                />
+              </svg>
+              <span>{signingOut ? "Signing out…" : "Sign out"}</span>
+            </>
           )}
         </button>
       </div>
@@ -307,127 +313,127 @@ export function DashboardShell({
 
   return (
     <NavigationProgressProvider>
-    <div
-      className="console-theme flex min-h-screen bg-console-canvas text-console-fg"
-      data-theme={theme}
-    >
-      <aside
-        className={`fixed inset-y-0 left-0 z-40 hidden border-r border-console-border transition-[width] duration-200 ease-out lg:block ${
-          collapsed ? "w-[72px]" : "w-[240px]"
-        }`}
-      >
-        {sidebar({ collapsed })}
-      </aside>
-
-      {mobileOpen ? (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <button
-            type="button"
-            className="absolute inset-0 bg-black/30 backdrop-blur-[1px]"
-            aria-label="Close menu"
-            onClick={() => setMobileOpen(false)}
-          />
-          <aside className="absolute inset-y-0 left-0 w-[280px] border-r border-console-border bg-console-sidebar shadow-xl">
-            {sidebar({
-              collapsed: false,
-              onNavigate: () => setMobileOpen(false),
-            })}
-          </aside>
-        </div>
-      ) : null}
-
       <div
-        className={`flex min-h-screen flex-1 flex-col transition-[padding] duration-200 ease-out ${
-          collapsed ? "lg:pl-[72px]" : "lg:pl-[240px]"
-        }`}
+        className="console-theme relative flex min-h-screen bg-console-canvas text-console-fg transition-colors duration-200"
+        data-theme={theme}
       >
-        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-console-border bg-console-panel/90 px-4 backdrop-blur-md sm:gap-3 sm:px-6">
-          <button
-            type="button"
-            className="console-icon-btn inline-flex lg:hidden"
-            aria-label="Open menu"
-            onClick={() => setMobileOpen(true)}
-          >
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
-            </svg>
-          </button>
+        <aside
+          className={`fixed inset-y-0 left-0 z-40 hidden border-r border-slate-200/80 dark:border-slate-800/80 transition-[width] duration-200 ease-out lg:block ${
+            collapsed ? "w-[72px]" : "w-[240px]"
+          }`}
+        >
+          {sidebar({ collapsed })}
+        </aside>
 
-          {collapsed ? (
+        {mobileOpen ? (
+          <div className="fixed inset-0 z-50 lg:hidden">
             <button
               type="button"
-              className="console-icon-btn hidden lg:inline-flex"
-              aria-label="Expand sidebar"
-              title="Expand sidebar"
-              onClick={() => setCollapsed(false)}
+              className="absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
+              aria-label="Close menu"
+              onClick={() => setMobileOpen(false)}
+            />
+            <aside className="absolute inset-y-0 left-0 w-[280px] border-r border-slate-200/80 dark:border-slate-800/80 shadow-2xl">
+              {sidebar({
+                collapsed: false,
+                onNavigate: () => setMobileOpen(false),
+              })}
+            </aside>
+          </div>
+        ) : null}
+
+        <div
+          className={`flex min-h-screen flex-1 flex-col transition-[padding] duration-200 ease-out ${
+            collapsed ? "lg:pl-[72px]" : "lg:pl-[240px]"
+          }`}
+        >
+          <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 border-b border-console-border/80 bg-console-panel/80 px-4 backdrop-blur-md sm:gap-3 sm:px-6">
+            <button
+              type="button"
+              className="console-icon-btn inline-flex lg:hidden"
+              aria-label="Open menu"
+              onClick={() => setMobileOpen(true)}
             >
-              <PanelLeftIcon collapsed />
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
+              </svg>
             </button>
-          ) : null}
 
-          <div className="min-w-0 flex-1">
-            <nav className="flex items-center gap-1.5 text-sm" aria-label="Breadcrumb">
-              <span className="truncate font-medium text-console-fg">{workspace.name}</span>
-              <span className="text-console-border">/</span>
-              <span className="truncate text-console-muted">
-                {currentNav?.label ?? "Console"}
-              </span>
-            </nav>
-          </div>
-
-          <button
-            type="button"
-            className="console-icon-btn inline-flex"
-            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-            title={theme === "dark" ? "Light mode" : "Dark mode"}
-            onClick={toggleTheme}
-          >
-            {theme === "dark" ? <SunIcon /> : <MoonIcon />}
-          </button>
-
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-console-border bg-console-canvas px-2.5 py-1 text-xs font-medium text-console-muted">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
-            {workspace.planName}
-          </span>
-        </header>
-
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
-          {children}
-        </main>
-
-        <footer className="mt-auto shrink-0 border-t border-console-border bg-console-panel">
-          <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-4 py-4 text-xs text-console-muted sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-            <p>
-              © {new Date().getFullYear()} {siteConfig.name}
-            </p>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-              <a
-                href={siteConfig.docsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition hover:text-console-fg"
+            {collapsed ? (
+              <button
+                type="button"
+                className="console-icon-btn hidden lg:inline-flex"
+                aria-label="Expand sidebar"
+                title="Expand sidebar"
+                onClick={() => setCollapsed(false)}
               >
-                Docs
-              </a>
-              <a
-                href={siteConfig.contactTelegram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition hover:text-console-fg"
-              >
-                Support
-              </a>
-              <Link href="/privacy" className="transition hover:text-console-fg">
-                Privacy
-              </Link>
-              <Link href="/terms" className="transition hover:text-console-fg">
-                Terms
-              </Link>
+                <PanelLeftIcon collapsed />
+              </button>
+            ) : null}
+
+            <div className="min-w-0 flex-1">
+              <nav className="flex items-center gap-2 text-sm" aria-label="Breadcrumb">
+                <div className="flex items-center gap-1.5 font-semibold text-console-fg">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                  </span>
+                  <span className="truncate">{workspace.name}</span>
+                </div>
+                <span className="text-console-border select-none">/</span>
+                <span className="truncate text-xs font-medium text-console-muted">
+                  {currentNav?.label ?? "Overview"}
+                </span>
+              </nav>
             </div>
-          </div>
-        </footer>
+
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-console-border/80 bg-console-canvas/80 px-3 py-1 text-xs font-semibold text-console-muted shadow-xs">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
+                {workspace.planName}
+              </span>
+            </div>
+          </header>
+
+          <main className="relative mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
+            {children}
+          </main>
+
+          <footer className="mt-auto shrink-0 border-t border-console-border/80 bg-console-panel/60 backdrop-blur-xs">
+            <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-4 py-4 text-xs text-console-muted sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+              <p>
+                © {new Date().getFullYear()} {siteConfig.name} · Headless Real-time Platform
+              </p>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                <a
+                  href={siteConfig.docsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition hover:text-[#0096c8] dark:hover:text-[#38bdf8]"
+                >
+                  Docs
+                </a>
+                <a
+                  href={siteConfig.contactTelegram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition hover:text-[#0096c8] dark:hover:text-[#38bdf8]"
+                >
+                  Telegram
+                </a>
+                <Link href="/privacy" className="transition hover:text-[#0096c8] dark:hover:text-[#38bdf8]">
+                  Privacy
+                </Link>
+                <Link href="/terms" className="transition hover:text-[#0096c8] dark:hover:text-[#38bdf8]">
+                  Terms
+                </Link>
+              </div>
+            </div>
+          </footer>
+        </div>
       </div>
-    </div>
     </NavigationProgressProvider>
   );
 }
