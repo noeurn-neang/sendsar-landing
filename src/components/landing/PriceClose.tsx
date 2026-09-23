@@ -13,7 +13,7 @@ export function PriceClose() {
           <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
             Pay for people who chat — not your whole user base.{" "}
             <Link
-              href="/pricing"
+              href="/#pricing"
               className="font-semibold text-brand hover:text-brand-strong"
             >
               See pricing

@@ -8,8 +8,7 @@ const docsBase = siteConfig.docsUrl.replace(/\/$/, "");
 const footerLinks = {
   Product: [
     { label: "How it works", href: "/#how-it-works" },
-    { label: "Pricing Highlights", href: "/#pricing" },
-    { label: "Pricing Comparison", href: "/pricing" },
+    { label: "Pricing", href: "/#pricing" },
     { label: "Start Free", href: "/start" },
   ],
   Developers: [

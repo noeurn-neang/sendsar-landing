@@ -12,7 +12,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl("/"), lastModified: now, changeFrequency: "weekly", priority: 1 },
     { url: siteConfig.docsUrl.replace(/\/$/, ""), lastModified: now, changeFrequency: "weekly", priority: 0.95 },
     { url: siteConfig.quickstartUrl, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
-    { url: absoluteUrl("/pricing"), lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: absoluteUrl("/blog"), lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: absoluteUrl("/terms"), lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: absoluteUrl("/privacy"), lastModified: now, changeFrequency: "yearly", priority: 0.3 },
