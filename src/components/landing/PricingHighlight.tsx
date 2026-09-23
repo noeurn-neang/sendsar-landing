@@ -1,12 +1,28 @@
-import Link from "next/link";
+"use client";
 
+import Link from "next/link";
+import { useMemo, useState } from "react";
+
+import { PricingBillingToggle } from "@/components/landing/PricingBillingToggle";
+import {
+  defaultBillingPeriod,
+  getPricingTiers,
+  type BillingPeriod,
+} from "@/lib/pricing";
 import { siteConfig } from "@/lib/site";
 
-const highlightPlans = [
+const highlightPlanDetails: Record<
+  string,
   {
-    name: "Free",
-    price: "$0",
-    period: "/month",
+    description: string;
+    features: string[];
+    ctaLabel: string;
+    ctaHref: string;
+    isExternal: boolean;
+    badge?: string;
+  }
+> = {
+  free: {
     description: "For hackathons, prototypes, and MVPs.",
     features: [
       "Up to 200 monthly active chatters",
@@ -17,13 +33,9 @@ const highlightPlans = [
     ctaLabel: "Start free",
     ctaHref: "/start",
     isExternal: false,
-    highlighted: false,
   },
-  {
-    name: "Plus",
+  plus: {
     badge: "Most popular",
-    price: "$19",
-    period: "/month",
     description: "For startups and growing products ready to ship.",
     features: [
       "Up to 2,500 monthly active chatters",
@@ -34,12 +46,8 @@ const highlightPlans = [
     ctaLabel: "Start with Plus",
     ctaHref: siteConfig.contactTelegram,
     isExternal: true,
-    highlighted: true,
   },
-  {
-    name: "Pro",
-    price: "$49",
-    period: "/month",
+  pro: {
     description: "For high-traffic platforms, marketplaces, and scale.",
     features: [
       "Up to 15,000 monthly active chatters",
@@ -50,11 +58,38 @@ const highlightPlans = [
     ctaLabel: "Start with Pro",
     ctaHref: siteConfig.contactTelegram,
     isExternal: true,
-    highlighted: false,
   },
-];
+};
 
 export function PricingHighlight() {
+  const [period, setPeriod] = useState<BillingPeriod>(defaultBillingPeriod);
+  const tiers = useMemo(() => getPricingTiers(period), [period]);
+
+  const plans = useMemo(() => {
+    return ["free", "plus", "pro"].map((id) => {
+      const tier = tiers.find((t) => t.id === id);
+      const details = highlightPlanDetails[id];
+      return {
+        id,
+        name: tier?.name ?? id,
+        badge: details.badge ?? tier?.badge,
+        price: tier?.price ?? "$0",
+        priceSuffix: tier?.priceSuffix ?? "/month",
+        compareAt: tier?.compareAt,
+        savingsBadge: tier?.savingsBadge,
+        billingSubtext: tier?.billingSubtext,
+        description: details.description,
+        features: details.features,
+        ctaLabel: details.ctaLabel,
+        ctaHref: details.ctaHref,
+        isExternal: details.isExternal,
+        highlighted: id === "plus",
+      };
+    });
+  }, [tiers]);
+
+  const isAnnual = period === "annual";
+
   return (
     <section
       id="pricing"
@@ -79,15 +114,27 @@ export function PricingHighlight() {
           </p>
         </div>
 
+        {/* Billing Period Toggle (Monthly / Annual) */}
+        <div className="relative z-20 mt-10 mb-12">
+          <PricingBillingToggle value={period} onChange={setPeriod} />
+        </div>
+
         {/* 3 Highlight Cards */}
-        <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-3 lg:gap-8 items-stretch">
-          {highlightPlans.map((plan) => {
+        <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3 lg:gap-8 items-stretch">
+          {plans.map((plan) => {
+            const hasDiscount = isAnnual && Boolean(plan.savingsBadge && plan.compareAt);
+            const billingNote = isAnnual
+              ? plan.billingSubtext
+              : plan.priceSuffix
+                ? "Billed monthly"
+                : null;
+
             return (
               <div
-                key={plan.name}
+                key={plan.id}
                 className={`relative flex flex-col justify-between rounded-2xl border p-7 sm:p-8 backdrop-blur transition-all duration-300 hover:-translate-y-1 ${
                   plan.highlighted
-                    ? "border-[#0096c8]/50 bg-white/85 shadow-xl shadow-[#0096c8]/10 dark:border-[#0096c8]/40 dark:bg-slate-900/70"
+                    ? "border-[#0096c8]/50 bg-white/85 shadow-xl shadow-[#0096c8]/10 ring-1 ring-[#0096c8]/30 dark:border-[#0096c8]/40 dark:bg-slate-900/70"
                     : "border-slate-200/80 bg-white/70 shadow-sm hover:border-slate-400/50 hover:shadow-lg hover:shadow-black/5 dark:border-slate-800/80 dark:bg-slate-900/50 dark:hover:border-slate-700"
                 }`}
               >
@@ -108,13 +155,60 @@ export function PricingHighlight() {
                     {plan.description}
                   </p>
 
-                  <div className="mt-4 flex items-baseline gap-1">
-                    <span className="text-4xl font-extrabold tracking-tight text-foreground">
-                      {plan.price}
-                    </span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400">
-                      {plan.period}
-                    </span>
+                  {/* Pricing info */}
+                  <div className="mt-4">
+                    {/* Annual savings badge & strike-through */}
+                    {isAnnual ? (
+                      <div className="flex items-center gap-2 mb-1 min-h-[1.5rem]">
+                        {hasDiscount ? (
+                          <>
+                            <span className="text-sm font-medium text-slate-400 line-through dark:text-slate-500">
+                              {plan.compareAt}
+                            </span>
+                            {plan.savingsBadge ? (
+                              <span className="inline-flex rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700 ring-1 ring-emerald-500/25 dark:text-emerald-300">
+                                {plan.savingsBadge}
+                              </span>
+                            ) : null}
+                          </>
+                        ) : (
+                          <span className="invisible text-xs" aria-hidden>
+                            Free
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="min-h-[1.5rem]" />
+                    )}
+
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-4xl font-extrabold tracking-tight text-foreground">
+                        {plan.price}
+                      </span>
+                      {plan.priceSuffix ? (
+                        <span className="text-xs text-slate-500 dark:text-slate-400">
+                          {plan.priceSuffix}
+                        </span>
+                      ) : null}
+                    </div>
+
+                    <div className="mt-1 min-h-[1.75rem]">
+                      {billingNote ? (
+                        <p
+                          className={`text-xs leading-snug ${
+                            plan.billingSubtext && isAnnual
+                              ? "font-medium text-[#0096c8] dark:text-[#38bdf8]"
+                              : "text-slate-500 dark:text-slate-400"
+                          }`}
+                        >
+                          {billingNote}
+                        </p>
+                      ) : (
+                        <span className="invisible text-xs" aria-hidden>
+                          &nbsp;
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Feature Bullets */}
@@ -173,25 +267,6 @@ export function PricingHighlight() {
               </div>
             );
           })}
-        </div>
-
-        {/* Full Comparison Link Bar */}
-        <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white/70 p-6 sm:p-7 shadow-sm backdrop-blur dark:border-slate-800/80 dark:bg-slate-900/50">
-          <div className="text-center sm:text-left">
-            <h4 className="text-base font-semibold text-foreground">
-              Looking for all limits, overages, and technical specs?
-            </h4>
-            <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
-              Compare all 20+ features, retention policies, and enterprise options side-by-side.
-            </p>
-          </div>
-          <Link
-            href="/pricing"
-            className="shrink-0 inline-flex items-center gap-2 rounded-xl border border-slate-300/90 bg-white px-5 py-2.5 text-xs font-semibold text-slate-800 shadow-sm transition hover:border-slate-400 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-slate-600 dark:hover:bg-slate-700"
-          >
-            <span>Full Pricing Comparison</span>
-            <span>→</span>
-          </Link>
         </div>
       </div>
     </section>

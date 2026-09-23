@@ -25,7 +25,7 @@ export function PricingSection() {
 
         <p className="mt-8 text-center text-sm text-neutral-500">
           Need a detailed comparison?{" "}
-          <Link href="/pricing" className="font-semibold text-brand hover:text-brand-strong">
+          <Link href="/#pricing" className="font-semibold text-brand hover:text-brand-strong">
             View full pricing →
           </Link>
         </p>

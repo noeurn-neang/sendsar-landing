@@ -49,7 +49,7 @@ export function ContactCta({
         </Link>
       )}
       {showPricingLink ? (
-        <Link href="/pricing" className={secondaryClass}>
+        <Link href="/#pricing" className={secondaryClass}>
           Pricing
         </Link>
       ) : null}

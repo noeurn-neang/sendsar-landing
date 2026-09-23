@@ -67,8 +67,8 @@ export default async function DashboardBillingPage() {
         title="Plan"
         description="Free to start. Contact us when you need Plus or Pro — we handle billing manually."
         actions={
-          <Link href="/pricing" className="console-btn-secondary">
-            Compare plans
+          <Link href="/#pricing" className="console-btn-secondary">
+            View plans
           </Link>
         }
       />

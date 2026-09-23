@@ -44,7 +44,7 @@ export function DevExperience() {
                 Open documentation
               </a>
               <Link
-                href="/pricing"
+                href="/#pricing"
                 className="rounded-md border border-hero-border px-4 py-2 text-sm font-semibold text-stone-200 hover:border-brand/60"
               >
                 View pricing

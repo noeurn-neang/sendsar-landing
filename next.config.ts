@@ -8,6 +8,15 @@ const nextConfig: NextConfig = {
     // Keep server actions / RSC payloads lean on hosted deploys.
     optimizePackageImports: ["next-auth"],
   },
+  async redirects() {
+    return [
+      {
+        source: "/pricing",
+        destination: "/#pricing",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
