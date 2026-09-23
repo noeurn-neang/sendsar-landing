@@ -194,6 +194,7 @@
     {
       "id": "enterprise",
       "name": "Enterprise",
+      "hidden": true,
       "builtFor": "Banks, logistics & regulated orgs",
       "price": {
         "monthly": null,
