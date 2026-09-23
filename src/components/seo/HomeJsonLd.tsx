@@ -1,6 +1,6 @@
 import { JsonLd } from "@/components/seo/JsonLd";
 import { absoluteUrl } from "@/lib/seo";
-import { getSchemaHighPrice } from "@/lib/pricing";
+import { getSchemaHighPrice, getPricingTiers } from "@/lib/pricing";
 import { siteConfig } from "@/lib/site";
 
 export function HomeJsonLd() {
@@ -37,7 +37,7 @@ export function HomeJsonLd() {
               lowPrice: "0",
               highPrice: getSchemaHighPrice(),
               priceCurrency: "USD",
-              offerCount: "4",
+              offerCount: String(getPricingTiers().length),
             },
           },
         ],

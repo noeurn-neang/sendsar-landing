@@ -25,6 +25,7 @@ export type PricingTier = {
   highlighted?: boolean;
   badge?: string | null;
   features: string[];
+  hidden?: boolean;
 };
 
 export type PricingComparisonRow = {
@@ -423,24 +424,30 @@ function tierMeta(plan: Plan): Pick<PricingTier, "highlighted" | "badge" | "cta"
   };
 }
 
-export function getPricingTiers(period: BillingPeriod = defaultBillingPeriod): PricingTier[] {
-  return pricingData.plans.map((plan) => {
-    const pricing = formatPrice(plan, period);
-    const meta = tierMeta(plan);
+export function getPricingTiers(
+  period: BillingPeriod = defaultBillingPeriod,
+  options?: { includeHidden?: boolean },
+): PricingTier[] {
+  return pricingData.plans
+    .filter((plan) => options?.includeHidden || !("hidden" in plan && Boolean(plan.hidden)))
+    .map((plan) => {
+      const pricing = formatPrice(plan, period);
+      const meta = tierMeta(plan);
 
-    return {
-      id: plan.id,
-      name: plan.name,
-      price: pricing.price,
-      priceSuffix: pricing.priceSuffix,
-      compareAt: pricing.compareAt,
-      savingsBadge: pricing.savingsBadge,
-      billingSubtext: pricing.billingSubtext,
-      description: plan.builtFor,
-      features: buildFeatures(plan),
-      ...meta,
-    };
-  });
+      return {
+        id: plan.id,
+        name: plan.name,
+        price: pricing.price,
+        priceSuffix: pricing.priceSuffix,
+        compareAt: pricing.compareAt,
+        savingsBadge: pricing.savingsBadge,
+        billingSubtext: pricing.billingSubtext,
+        description: plan.builtFor,
+        features: buildFeatures(plan),
+        hidden: "hidden" in plan ? Boolean(plan.hidden) : false,
+        ...meta,
+      };
+    });
 }
 
 export const pricingTiers = getPricingTiers(defaultBillingPeriod);

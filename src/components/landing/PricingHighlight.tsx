@@ -66,7 +66,9 @@ export function PricingHighlight() {
   const tiers = useMemo(() => getPricingTiers(period), [period]);
 
   const plans = useMemo(() => {
-    return ["free", "plus", "pro"].map((id) => {
+    return ["free", "plus", "pro"]
+      .filter((id) => tiers.some((t) => t.id === id))
+      .map((id) => {
       const tier = tiers.find((t) => t.id === id);
       const details = highlightPlanDetails[id];
       return {
