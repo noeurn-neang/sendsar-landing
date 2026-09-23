@@ -75,11 +75,11 @@ export function PricingBillingToggle({
       <p className="min-h-[2rem] max-w-md text-center text-xs sm:text-sm leading-snug">
         {isMonthly ? (
           <span className="text-slate-500 dark:text-slate-400">Prices below are billed monthly.</span>
-        ) : (
+        ) : getBillingActiveNote(value) ? (
           <span className="font-medium text-[#0096c8] dark:text-[#38bdf8]">
             {getBillingActiveNote(value)}
           </span>
-        )}
+        ) : null}
       </p>
     </div>
   );
