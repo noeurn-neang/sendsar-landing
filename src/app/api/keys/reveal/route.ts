@@ -10,10 +10,6 @@ export async function POST() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (session.user.keysRevealed) {
-    return NextResponse.json({ error: "Keys were already revealed" }, { status: 409 });
-  }
-
   const credentials = await getTenantCredentials(
     session.user.accountId,
     session.user.tenantId,
@@ -22,8 +18,10 @@ export async function POST() {
     return NextResponse.json({ error: "Tenant not found" }, { status: 404 });
   }
 
-  await markKeysRevealed(session.user.accountId);
-  revalidateConsoleTags(session.user.tenantId);
+  if (!session.user.keysRevealed) {
+    await markKeysRevealed(session.user.accountId);
+    revalidateConsoleTags(session.user.tenantId);
+  }
 
   return NextResponse.json({
     apiKey: credentials.apiKey,

@@ -39,10 +39,10 @@ export default async function DashboardOverviewPage() {
 
   const nextStep = !session.user.keysRevealed
     ? {
-        title: "Reveal your API keys",
-        body: "Copy the live server secret and webhook signing secret once — store them in your server environment.",
+        title: "Copy your API keys",
+        body: "Reveal the live server secret and webhook signing secret, then store them in your server environment.",
         href: "/dashboard/keys?welcome=1",
-        cta: "Reveal API keys",
+        cta: "Open API keys",
         icon: (
           <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
             <circle cx="8" cy="14" r="3.25" />
@@ -363,7 +363,7 @@ export default async function DashboardOverviewPage() {
             {
               step: "01",
               title: "Copy API key & secret",
-              body: "Server key + webhook secret — reveal once, then rotate anytime if needed.",
+              body: "Server key + webhook secret — reveal and copy anytime; rotate if needed.",
               href: "/dashboard/keys",
               icon: (
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

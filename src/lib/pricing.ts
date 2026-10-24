@@ -648,6 +648,16 @@ export function getPlanDisplayName(planId: string): string {
   return planById[planId]?.name ?? "Free";
 }
 
+/** Server-side checkout amount in USD for Plus/Pro. Null if plan is not purchasable. */
+export function getCheckoutAmountUsd(
+  planId: string,
+  period: BillingPeriod,
+): number | null {
+  const plan = planById[planId];
+  if (!plan || (planId !== "plus" && planId !== "pro")) return null;
+  return getPlanAmount(plan, period);
+}
+
 export type PlanUsageLimits = {
   activeChatters: number;
   messages: number;

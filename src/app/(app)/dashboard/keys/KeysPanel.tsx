@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   DashboardPageHeader,
@@ -21,6 +21,11 @@ type KeysPanelProps = {
   welcome: boolean;
 };
 
+type SecretId = "live" | "webhook";
+
+const actionBtnClass =
+  "rounded-md border border-console-border px-2.5 py-1 text-xs font-medium text-console-fg transition hover:border-brand/40 disabled:cursor-not-allowed disabled:opacity-40";
+
 export function KeysPanel({
   maskedApiKey,
   maskedWebhookSecret,
@@ -30,53 +35,120 @@ export function KeysPanel({
   const router = useRouter();
   const searchParams = useSearchParams();
   const { update } = useSession();
+  const secretsRef = useRef<{ apiKey: string; webhookSecret: string } | null>(null);
+  const loadPromiseRef = useRef<Promise<boolean> | null>(null);
+
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [webhookSecret, setWebhookSecret] = useState<string | null>(null);
-  const [revealedFlag, setRevealedFlag] = useState(keysRevealed);
-  const [loadingReveal, setLoadingReveal] = useState(false);
+  const [showLive, setShowLive] = useState(false);
+  const [showWebhook, setShowWebhook] = useState(false);
+  const [loadingId, setLoadingId] = useState<SecretId | null>(null);
   const [loadingRotate, setLoadingRotate] = useState(false);
   const [confirmRotate, setConfirmRotate] = useState(false);
-  const [copied, setCopied] = useState<string | null>(null);
+  const [copied, setCopied] = useState<SecretId | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
-  const shouldPromptReveal = welcome && !revealedFlag;
-
   useEffect(() => {
-    setRevealedFlag(keysRevealed);
-  }, [keysRevealed]);
-
-  useEffect(() => {
-    if (shouldPromptReveal && !loadingReveal && !apiKey) {
-      void revealKeys();
+    if (!welcome) {
+      return;
     }
+    void (async () => {
+      const ok = await ensureSecrets();
+      if (ok) {
+        setShowLive(true);
+        setShowWebhook(true);
+      }
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldPromptReveal]);
+  }, [welcome]);
 
-  async function revealKeys() {
-    setLoadingReveal(true);
+  function storeSecrets(nextApiKey: string, nextWebhook: string) {
+    secretsRef.current = { apiKey: nextApiKey, webhookSecret: nextWebhook };
+    setApiKey(nextApiKey);
+    setWebhookSecret(nextWebhook);
+  }
+
+  async function ensureSecrets(): Promise<boolean> {
+    if (secretsRef.current) {
+      return true;
+    }
+    if (loadPromiseRef.current) {
+      return loadPromiseRef.current;
+    }
+
+    loadPromiseRef.current = (async () => {
+      try {
+        const response = await fetch("/api/keys/reveal", { method: "POST" });
+        const payload = (await response.json()) as {
+          apiKey?: string;
+          webhookSecret?: string;
+          error?: string;
+        };
+        if (!response.ok) {
+          throw new Error(payload.error ?? "Could not reveal keys");
+        }
+        if (!payload.apiKey || !payload.webhookSecret) {
+          throw new Error("Could not reveal keys");
+        }
+        storeSecrets(payload.apiKey, payload.webhookSecret);
+        if (!keysRevealed) {
+          await update({ keysRevealed: true });
+        }
+        if (searchParams.get("welcome")) {
+          router.replace("/dashboard/keys");
+        }
+        return true;
+      } catch (revealError) {
+        setError(revealError instanceof Error ? revealError.message : "Could not reveal keys");
+        return false;
+      } finally {
+        loadPromiseRef.current = null;
+      }
+    })();
+
+    return loadPromiseRef.current;
+  }
+
+  async function revealSecret(id: SecretId) {
+    setError(null);
+    setLoadingId(id);
+    try {
+      const ok = await ensureSecrets();
+      if (!ok) {
+        return;
+      }
+      if (id === "live") {
+        setShowLive(true);
+      } else {
+        setShowWebhook(true);
+      }
+    } finally {
+      setLoadingId(null);
+    }
+  }
+
+  function hideSecret(id: SecretId) {
+    if (id === "live") {
+      setShowLive(false);
+    } else {
+      setShowWebhook(false);
+    }
+  }
+
+  async function copySecret(id: SecretId) {
+    const value = id === "live" ? apiKey : webhookSecret;
+    if (!value || (id === "live" ? !showLive : !showWebhook)) {
+      setError("Reveal this key first, then copy.");
+      return;
+    }
     setError(null);
     try {
-      const response = await fetch("/api/keys/reveal", { method: "POST" });
-      const payload = (await response.json()) as {
-        apiKey?: string;
-        webhookSecret?: string;
-        error?: string;
-      };
-      if (!response.ok) {
-        throw new Error(payload.error ?? "Could not reveal keys");
-      }
-      setApiKey(payload.apiKey ?? null);
-      setWebhookSecret(payload.webhookSecret ?? null);
-      setRevealedFlag(true);
-      await update({ keysRevealed: true });
-      if (searchParams.get("welcome")) {
-        router.replace("/dashboard/keys");
-      }
-    } catch (revealError) {
-      setError(revealError instanceof Error ? revealError.message : "Could not reveal keys");
-    } finally {
-      setLoadingReveal(false);
+      await navigator.clipboard.writeText(value);
+      setCopied(id);
+      setTimeout(() => setCopied(null), 1500);
+    } catch {
+      setError("Copy failed — select the value and copy manually.");
     }
   }
 
@@ -94,9 +166,12 @@ export function KeysPanel({
       if (!response.ok) {
         throw new Error(payload.error ?? "Could not rotate keys");
       }
-      setApiKey(payload.apiKey ?? null);
-      setWebhookSecret(payload.webhookSecret ?? null);
-      setRevealedFlag(true);
+      if (!payload.apiKey || !payload.webhookSecret) {
+        throw new Error("Could not rotate keys");
+      }
+      storeSecrets(payload.apiKey, payload.webhookSecret);
+      setShowLive(true);
+      setShowWebhook(true);
       setConfirmRotate(false);
       setNotice(
         "New keys generated. Old keys stop working after gateway cache expires (up to ~5 minutes). Update your server env now.",
@@ -109,21 +184,6 @@ export function KeysPanel({
       setLoadingRotate(false);
     }
   }
-
-  async function copyValue(id: string, value: string) {
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(id);
-      setTimeout(() => setCopied(null), 1500);
-    } catch {
-      setError("Copy failed — select the value and copy manually.");
-    }
-  }
-
-  const liveKey = apiKey ?? maskedApiKey;
-  const webhook = webhookSecret ?? maskedWebhookSecret;
-  const canReveal = !revealedFlag && !apiKey;
-  const showingFull = Boolean(apiKey && webhookSecret);
 
   return (
     <div className="space-y-8">
@@ -142,32 +202,6 @@ export function KeysPanel({
         }
       />
 
-      {shouldPromptReveal || showingFull ? (
-        <Panel
-          title={showingFull && !shouldPromptReveal ? "New keys — copy now" : "Save your keys now"}
-          description="Shown in full once — copy them to your password manager or server env"
-        >
-          {loadingReveal ? (
-            <p className="text-sm text-console-muted">Loading your live credentials…</p>
-          ) : (
-            <div className="space-y-4">
-              <SecretRow
-                label="Live secret"
-                value={liveKey}
-                onCopy={() => void copyValue("api", liveKey)}
-                copied={copied === "api"}
-              />
-              <SecretRow
-                label="Webhook secret"
-                value={webhook}
-                onCopy={() => void copyValue("wh", webhook)}
-                copied={copied === "wh"}
-              />
-            </div>
-          )}
-        </Panel>
-      ) : null}
-
       {error ? (
         <EmptyHint>
           <span className="text-red-600 [.console-theme[data-theme=dark]_&]:text-red-300">
@@ -178,80 +212,32 @@ export function KeysPanel({
 
       {notice ? <EmptyHint>{notice}</EmptyHint> : null}
 
-      <EmptyHint>
-        {revealedFlag || apiKey
-          ? "Full secrets were already revealed. Rotate below if you need a new pair."
-          : "Reveal once to copy live credentials to your server environment."}
-      </EmptyHint>
-
-      <Panel title="Credentials" description="Active keys for this tenant">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-console-border text-xs uppercase tracking-wide text-console-muted">
-                <th className="pb-3 font-medium">Name</th>
-                <th className="pb-3 font-medium">Key</th>
-                <th className="pb-3 font-medium">Status</th>
-                <th className="pb-3 font-medium"> </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-console-border">
-                <td className="py-3.5 font-medium text-console-fg">Live secret</td>
-                <td className="py-3.5">
-                  <code className="rounded-md bg-console-canvas px-2 py-1 font-mono text-xs text-console-fg">
-                    {liveKey}
-                  </code>
-                </td>
-                <td className="py-3.5">
-                  <StatusPill tone="success">Active</StatusPill>
-                </td>
-                <td className="py-3.5">
-                  <div className="flex justify-end gap-2">
-                    {canReveal ? (
-                      <button
-                        type="button"
-                        className="rounded-md border border-console-border px-2.5 py-1 text-xs font-medium text-console-fg transition hover:border-brand/40"
-                        onClick={() => void revealKeys()}
-                        disabled={loadingReveal}
-                      >
-                        Reveal once
-                      </button>
-                    ) : null}
-                    <button
-                      type="button"
-                      className="rounded-md border border-console-border px-2.5 py-1 text-xs font-medium text-console-fg transition hover:border-brand/40"
-                      onClick={() => void copyValue("live", liveKey)}
-                    >
-                      {copied === "live" ? "Copied" : "Copy"}
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td className="py-3.5 font-medium text-console-fg">Webhook secret</td>
-                <td className="py-3.5">
-                  <code className="rounded-md bg-console-canvas px-2 py-1 font-mono text-xs text-console-fg">
-                    {webhook}
-                  </code>
-                </td>
-                <td className="py-3.5">
-                  <StatusPill tone="success">Active</StatusPill>
-                </td>
-                <td className="py-3.5">
-                  <div className="flex justify-end">
-                    <button
-                      type="button"
-                      className="rounded-md border border-console-border px-2.5 py-1 text-xs font-medium text-console-fg transition hover:border-brand/40"
-                      onClick={() => void copyValue("webhook", webhook)}
-                    >
-                      {copied === "webhook" ? "Copied" : "Copy"}
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      <Panel title="Credentials" description="Masked until you reveal each secret">
+        <div className="divide-y divide-console-border">
+          <SecretRow
+            label="Live secret"
+            description="Authenticate your server with the Sendsar gateway"
+            masked={maskedApiKey}
+            value={apiKey}
+            visible={showLive}
+            loading={loadingId === "live"}
+            copied={copied === "live"}
+            onReveal={() => void revealSecret("live")}
+            onHide={() => hideSecret("live")}
+            onCopy={() => void copySecret("live")}
+          />
+          <SecretRow
+            label="Webhook secret"
+            description="Verify webhook signatures from Sendsar"
+            masked={maskedWebhookSecret}
+            value={webhookSecret}
+            visible={showWebhook}
+            loading={loadingId === "webhook"}
+            copied={copied === "webhook"}
+            onReveal={() => void revealSecret("webhook")}
+            onHide={() => hideSecret("webhook")}
+            onCopy={() => void copySecret("webhook")}
+          />
         </div>
       </Panel>
 
@@ -271,8 +257,7 @@ export function KeysPanel({
           <div className="space-y-3">
             <p className="text-sm text-console-muted">
               This invalidates the current pair. Old keys may work for up to ~5 minutes while the
-              gateway cache expires. Type <span className="font-mono text-console-fg">rotate</span>{" "}
-              is not required — confirm below.
+              gateway cache expires. Confirm below.
             </p>
             <div className="flex flex-wrap gap-2">
               <LoadingButton
@@ -306,27 +291,53 @@ export function KeysPanel({
 
 function SecretRow({
   label,
+  description,
+  masked,
   value,
-  onCopy,
+  visible,
+  loading,
   copied,
+  onReveal,
+  onHide,
+  onCopy,
 }: {
   label: string;
-  value: string;
-  onCopy: () => void;
+  description: string;
+  masked: string;
+  value: string | null;
+  visible: boolean;
+  loading: boolean;
   copied: boolean;
+  onReveal: () => void;
+  onHide: () => void;
+  onCopy: () => void;
 }) {
+  const display = visible && value ? value : masked;
+  const canCopy = Boolean(visible && value);
+
   return (
-    <div>
-      <p className="text-xs font-medium uppercase tracking-wide text-console-muted">{label}</p>
-      <div className="mt-2 flex flex-wrap items-center gap-2">
-        <code className="break-all rounded-md bg-console-canvas px-2 py-1 font-mono text-xs text-console-fg">
-          {value}
+    <div className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+      <div className="min-w-0 flex-1 space-y-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-sm font-medium text-console-fg">{label}</p>
+          <StatusPill tone="success">Active</StatusPill>
+        </div>
+        <p className="text-xs text-console-muted">{description}</p>
+        <code className="block break-all rounded-md bg-console-canvas px-2.5 py-2 font-mono text-xs text-console-fg">
+          {loading ? "Loading…" : display}
         </code>
-        <button
-          type="button"
-          onClick={onCopy}
-          className="rounded-md border border-console-border px-2.5 py-1 text-xs font-medium text-console-fg transition hover:border-brand/40"
-        >
+      </div>
+      <div className="flex shrink-0 flex-wrap gap-2 sm:pt-6">
+        {visible ? (
+          <button type="button" className={actionBtnClass} onClick={onHide}>
+            Hide
+          </button>
+        ) : (
+          <button type="button" className={actionBtnClass} onClick={onReveal} disabled={loading}>
+            {loading ? "Revealing…" : "Reveal"}
+          </button>
+        )}
+        <button type="button" className={actionBtnClass} onClick={onCopy} disabled={!canCopy}>
           {copied ? "Copied" : "Copy"}
         </button>
       </div>

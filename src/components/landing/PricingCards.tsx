@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 
 import { PricingBillingToggle } from "@/components/landing/PricingBillingToggle";
 import {
@@ -13,6 +13,12 @@ import {
 
 /** Reserved badge row height so every card’s header block lines up. */
 const BADGE_PLACEHOLDER = "Most popular";
+
+export type PricingCtaContext = {
+  tier: PricingTier;
+  period: BillingPeriod;
+  isCurrent: boolean;
+};
 
 function PriceDisplay({ tier, period }: { tier: PricingTier; period: BillingPeriod }) {
   const isAnnual = period === "annual";
@@ -89,20 +95,34 @@ function PriceDisplay({ tier, period }: { tier: PricingTier; period: BillingPeri
   );
 }
 
-function TierCta({
+function DefaultTierCta({
   tier,
   href,
   external,
+  label,
+  disabled,
 }: {
   tier: PricingTier;
   href: string;
   external: boolean;
+  label: string;
+  disabled?: boolean;
 }) {
   const className = `block w-full rounded-xl py-2.5 text-center text-xs font-semibold transition ${
-    tier.highlighted
-      ? "btn-bd-primary text-white shadow-md shadow-[#0096c8]/20 hover:bg-[#007ba4]"
-      : "border border-slate-300/80 bg-white/80 text-slate-700 hover:border-slate-400 hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-white"
+    disabled
+      ? "cursor-not-allowed border border-slate-200 bg-slate-100 text-slate-400 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-500"
+      : tier.highlighted
+        ? "btn-bd-primary text-white shadow-md shadow-[#0096c8]/20 hover:bg-[#007ba4]"
+        : "border border-slate-300/80 bg-white/80 text-slate-700 hover:border-slate-400 hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-white"
   }`;
+
+  if (disabled) {
+    return (
+      <span className={className} aria-disabled>
+        {label}
+      </span>
+    );
+  }
 
   if (external) {
     return (
@@ -112,29 +132,62 @@ function TierCta({
         rel={href.startsWith("mailto") ? undefined : "noopener noreferrer"}
         className={className}
       >
-        {tier.cta}
+        {label}
       </a>
     );
   }
 
   return (
     <Link href={href} className={className}>
-      {tier.cta}
+      {label}
     </Link>
   );
+}
+
+export function pricingCtaClassName(tier: PricingTier, disabled?: boolean): string {
+  return `block w-full rounded-xl py-2.5 text-center text-xs font-semibold transition ${
+    disabled
+      ? "cursor-not-allowed border border-slate-200 bg-slate-100 text-slate-400 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-500"
+      : tier.highlighted
+        ? "btn-bd-primary text-white shadow-md shadow-[#0096c8]/20 hover:bg-[#007ba4]"
+        : "border border-slate-300/80 bg-white/80 text-slate-700 hover:border-slate-400 hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-white"
+  }`;
 }
 
 export function PricingCards({
   compact = false,
   showBillingToggle = false,
   defaultPeriod = defaultBillingPeriod,
+  period: controlledPeriod,
+  onPeriodChange,
+  currentPlanId,
+  renderCta,
 }: {
   compact?: boolean;
   showBillingToggle?: boolean;
   defaultPeriod?: BillingPeriod;
+  period?: BillingPeriod;
+  onPeriodChange?: (period: BillingPeriod) => void;
+  currentPlanId?: string;
+  renderCta?: (ctx: PricingCtaContext) => ReactNode;
 }) {
-  const [period, setPeriod] = useState<BillingPeriod>(defaultPeriod);
+  const [internalPeriod, setInternalPeriod] = useState<BillingPeriod>(defaultPeriod);
+  const period = controlledPeriod ?? internalPeriod;
+  const setPeriod = (next: BillingPeriod) => {
+    onPeriodChange?.(next);
+    if (controlledPeriod === undefined) {
+      setInternalPeriod(next);
+    }
+  };
   const tiers = useMemo(() => getPricingTiers(period), [period]);
+  const colClass =
+    tiers.length <= 1
+      ? "sm:grid-cols-1"
+      : tiers.length === 2
+        ? "sm:grid-cols-2"
+        : tiers.length === 3
+          ? "sm:grid-cols-2 lg:grid-cols-3"
+          : "sm:grid-cols-2 xl:grid-cols-4";
 
   return (
     <div>
@@ -145,15 +198,12 @@ export function PricingCards({
       ) : null}
 
       <div
-        className={`relative z-0 grid items-stretch gap-5 lg:gap-6 [grid-template-rows:repeat(6,auto)_minmax(0,1fr)] ${
-          compact
-            ? "sm:grid-cols-2 xl:grid-cols-4"
-            : "sm:grid-cols-2 xl:grid-cols-4"
-        }`}
+        className={`relative z-0 grid items-stretch gap-5 lg:gap-6 [grid-template-rows:repeat(6,auto)_minmax(0,1fr)] ${colClass}`}
       >
         {tiers.map((tier) => {
           const href = tier.ctaHref;
           const external = href.startsWith("http") || href.startsWith("mailto");
+          const isCurrent = Boolean(currentPlanId && tier.id === currentPlanId);
 
           return (
             <article
@@ -165,7 +215,11 @@ export function PricingCards({
               }`}
             >
               <div className="flex min-h-8 items-end justify-center">
-                {tier.badge ? (
+                {isCurrent ? (
+                  <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-500/25 dark:text-emerald-300">
+                    Current plan
+                  </span>
+                ) : tier.badge ? (
                   <span className="rounded-full bg-[#0096c8]/10 px-2.5 py-0.5 text-xs font-semibold text-[#0096c8] border border-[#0096c8]/20 dark:text-[#38bdf8]">
                     {tier.badge}
                   </span>
@@ -191,7 +245,16 @@ export function PricingCards({
               </p>
 
               <div className="mt-4">
-                <TierCta tier={tier} href={href} external={external} />
+                {renderCta ? (
+                  renderCta({ tier, period, isCurrent })
+                ) : (
+                  <DefaultTierCta
+                    tier={tier}
+                    href={href}
+                    external={external}
+                    label={tier.cta}
+                  />
+                )}
               </div>
 
               <div className="border-t border-slate-200/70 dark:border-slate-800 my-4" role="presentation" />
