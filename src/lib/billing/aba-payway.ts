@@ -2,7 +2,15 @@ import "server-only";
 
 import { createHash, randomBytes } from "crypto";
 
+import {
+  interpretAbaStatusPayload,
+  parseKhqrMerchantName,
+  type AbaStatusResult,
+  type AbaStatusState,
+} from "@/lib/billing/aba-status";
 import { getAbaPaywayConfig } from "@/lib/billing/config";
+
+export type { AbaStatusResult, AbaStatusState };
 
 export type AbaCheckout = {
   qrString: string;
@@ -13,14 +21,6 @@ export type AbaCheckout = {
   expiresIn: number;
   amount: string;
   currency: "USD";
-};
-
-export type AbaStatusState = "pending" | "paid" | "terminal" | "error";
-
-export type AbaStatusResult = {
-  state: AbaStatusState;
-  message?: string;
-  transactionRef?: string;
 };
 
 function sha512Hex(input: string): string {
@@ -45,19 +45,7 @@ function formatAmountUsd(amount: number): string {
   return amount.toFixed(2);
 }
 
-/** Parse KHQR TLV merchant name (tag 59). */
-export function parseKhqrMerchantName(qr: string): string | null {
-  let i = 0;
-  while (i + 4 <= qr.length) {
-    const tag = qr.slice(i, i + 2);
-    const len = Number.parseInt(qr.slice(i + 2, i + 4), 10);
-    if (!Number.isFinite(len) || len < 0) break;
-    const value = qr.slice(i + 4, i + 4 + len);
-    if (tag === "59") return value || null;
-    i += 4 + len;
-  }
-  return null;
-}
+export { parseKhqrMerchantName };
 
 function pickQrString(data: Record<string, unknown>): string | null {
   for (const key of ["qr_string", "khqr", "qr", "qr_code", "qrCode"]) {
@@ -273,25 +261,15 @@ export async function createAbaCheckout(amountUsd: number): Promise<AbaCheckout>
   };
 }
 
-function collectStatusText(payload: Record<string, unknown>): string {
-  const parts: string[] = [];
-  const walk = (obj: unknown) => {
-    if (!obj || typeof obj !== "object") return;
-    const record = obj as Record<string, unknown>;
-    for (const key of ["status", "action", "message", "payment_status", "description"]) {
-      const v = record[key];
-      if (typeof v === "string") parts.push(v);
-      else if (v && typeof v === "object") walk(v);
-    }
-    if (record.data && typeof record.data === "object") walk(record.data);
-  };
-  walk(payload);
-  return parts.join(" ").toLowerCase();
-}
-
-function matchWholeWord(haystack: string, word: string): boolean {
-  return new RegExp(`\\b${word}\\b`, "i").test(haystack);
-}
+/** Log once per process when ABA returns a non-request_qr shape (helps map live paid wording). */
+const seenNonPendingActions = new Set<string>();
+const pendingActions = new Set([
+  "request_qr",
+  "requestqr",
+  "pending",
+  "waiting",
+  "wait_payment",
+]);
 
 export async function checkAbaPaymentStatus(input: {
   token: string;
@@ -311,27 +289,39 @@ export async function checkAbaPaymentStatus(input: {
       { headers: { token: input.token }, quiet: true },
     );
 
-    const text = collectStatusText(data);
-    if (
-      matchWholeWord(text, "paid") ||
-      matchWholeWord(text, "approved") ||
-      matchWholeWord(text, "completed")
-    ) {
-      const ref =
-        (typeof data.transaction_id === "string" && data.transaction_id) ||
-        (typeof data.tran_id === "string" && data.tran_id) ||
-        input.clientId;
-      return { state: "paid", transactionRef: ref };
+    const result = interpretAbaStatusPayload(data, input.clientId);
+
+    const action =
+      typeof (data.data as { action?: unknown } | undefined)?.action === "string"
+        ? String((data.data as { action: string }).action).toLowerCase()
+        : typeof data.action === "string"
+          ? data.action.toLowerCase()
+          : "";
+
+    if (action && !pendingActions.has(action) && !seenNonPendingActions.has(action)) {
+      seenNonPendingActions.add(action);
+      console.info("[aba] status snapshot (non-request_qr)", {
+        action,
+        state: result.state,
+        keys: Object.keys(data),
+      });
     }
+
     if (
-      matchWholeWord(text, "expired") ||
-      matchWholeWord(text, "failed") ||
-      matchWholeWord(text, "declined") ||
-      text.includes("validation required")
+      result.state === "paid" &&
+      action &&
+      !pendingActions.has(action) &&
+      !action.includes("request") &&
+      !action.includes("paid") &&
+      !action.includes("success") &&
+      !action.includes("complete") &&
+      !action.includes("approve") &&
+      !action.includes("confirm")
     ) {
-      return { state: "terminal", message: text || "Payment failed or expired" };
+      console.warn("[aba] treating non-request_qr action as paid", { action });
     }
-    return { state: "pending" };
+
+    return result;
   } catch (err) {
     console.error("[aba] checkStatus error", err instanceof Error ? err.message : err);
     return {

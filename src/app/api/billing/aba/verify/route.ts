@@ -50,6 +50,10 @@ export async function POST(request: Request) {
   }
 
   if (payment.status === "paid") {
+    console.info("[billing/aba/verify] already paid", {
+      paymentId,
+      plan: payment.plan,
+    });
     return NextResponse.json({
       status: 1,
       plan: payment.plan,
@@ -113,13 +117,21 @@ export async function POST(request: Request) {
       paymentId,
       transactionRef: aba.transactionRef,
     });
+    console.info("[billing/aba/verify] complete success", {
+      paymentId,
+      plan: completed.plan,
+      transactionRef: aba.transactionRef,
+    });
     return NextResponse.json({
       status: 1,
       plan: completed.plan,
       redirect: "/dashboard/billing?upgraded=1",
     });
   } catch (err) {
-    console.error("[billing/aba/verify]", err instanceof Error ? err.message : err);
+    console.error("[billing/aba/verify] complete FAILED", {
+      paymentId,
+      message: err instanceof Error ? err.message : err,
+    });
     return NextResponse.json({
       status: 0,
       verification_error: true,

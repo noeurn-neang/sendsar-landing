@@ -1,5 +1,7 @@
 import "server-only";
 
+import { normalizePaymentLinkId } from "@/lib/billing/aba-status";
+
 export type AbaPaywayConfig = {
   enabled: boolean;
   apiBaseUrl: string;
@@ -14,22 +16,6 @@ function envBool(value: string | undefined, fallback: boolean): boolean {
   if (value == null || value.trim() === "") return fallback;
   const v = value.trim().toLowerCase();
   return v === "1" || v === "true" || v === "yes";
-}
-
-/** Accept either `ABAPAYxxx` or a full `https://link.payway.com.kh/ABAPAYxxx` URL. */
-function normalizePaymentLinkId(raw: string): string {
-  const value = raw.trim();
-  if (!value) return "";
-  try {
-    if (value.includes("://") || value.includes("/")) {
-      const path = value.includes("://") ? new URL(value).pathname : value;
-      const segment = path.split("/").filter(Boolean).pop() ?? "";
-      return segment.trim();
-    }
-  } catch {
-    // fall through
-  }
-  return value;
 }
 
 export function getAbaPaywayConfig(): AbaPaywayConfig {

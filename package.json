@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "generate-favicons": "node scripts/generate-favicons.mjs"
   },
   "dependencies": {
@@ -31,6 +33,7 @@
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
     "to-ico": "1.1.5",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.7"
   }
 }
