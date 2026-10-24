@@ -10,6 +10,7 @@ import {
   Panel,
   StatusPill,
 } from "@/components/dashboard/ui";
+import { getTenantBrief } from "@/lib/control-plane/accounts";
 import { getLastWebhookTest } from "@/lib/control-plane/ops";
 import { getTenantUsageSnapshot } from "@/lib/control-plane/usage";
 import {
@@ -26,7 +27,9 @@ export default async function DashboardOverviewPage() {
     redirect("/start");
   }
 
-  const planId = session.user.plan ?? "free";
+  const brief = await getTenantBrief(session.user.accountId, session.user.tenantId);
+  const planId =
+    (brief?.plan ?? session.user.plan ?? "free").trim().toLowerCase() || "free";
   const planName = getPlanDisplayName(planId);
   const [usage, lastWebhookTest] = await Promise.all([
     getTenantUsageSnapshot({

@@ -645,7 +645,8 @@ export const pricingFaqs: PricingFaq[] = pricingData.faqs.map((faq) => ({
 }));
 
 export function getPlanDisplayName(planId: string): string {
-  return planById[planId]?.name ?? "Free";
+  const id = planId.trim().toLowerCase();
+  return planById[id]?.name ?? "Free";
 }
 
 /** Server-side checkout amount in USD for Plus/Pro. Null if plan is not purchasable. */

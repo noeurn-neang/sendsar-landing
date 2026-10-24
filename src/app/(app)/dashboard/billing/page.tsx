@@ -8,6 +8,7 @@ import {
   Panel,
 } from "@/components/dashboard/ui";
 import { isAbaPaywayEnabled } from "@/lib/billing/config";
+import { getTenantBrief } from "@/lib/control-plane/accounts";
 import {
   approachingLimit,
   atLimit,
@@ -31,10 +32,12 @@ export default async function DashboardBillingPage({ searchParams }: BillingPage
   }
 
   const params = await searchParams;
-  const planId = session.user.plan ?? "free";
+  const brief = await getTenantBrief(session.user.accountId, session.user.tenantId);
+  const planId =
+    (brief?.plan ?? session.user.plan ?? "free").trim().toLowerCase() || "free";
   const planName = getPlanDisplayName(planId);
   const tenantId = session.user.tenantId;
-  const slug = session.user.tenantSlug ?? null;
+  const slug = brief?.slug ?? session.user.tenantSlug ?? null;
   const abaEnabled = isAbaPaywayEnabled();
   const usage = await getTenantUsageSnapshot({
     accountId: session.user.accountId,

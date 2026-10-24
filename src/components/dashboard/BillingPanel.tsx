@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 import { PlanPickerModal } from "@/components/dashboard/PlanPickerModal";
 import { Panel, StatusPill } from "@/components/dashboard/ui";
@@ -23,6 +24,15 @@ export function BillingPanel({
   upgraded,
 }: BillingPanelProps) {
   const [open, setOpen] = useState(false);
+  const { update } = useSession();
+
+  // After ABA redirect (?upgraded=1), force JWT to re-read tenants.plan.
+  useEffect(() => {
+    if (!upgraded) return;
+    void update().catch((err) => {
+      console.error("[billing] session update after upgrade failed", err);
+    });
+  }, [upgraded, update]);
 
   return (
     <div className="space-y-4">

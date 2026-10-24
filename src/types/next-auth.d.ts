@@ -23,6 +23,8 @@ declare module "next-auth/jwt" {
     tenantName?: string;
     tenantSlug?: string | null;
     plan?: string;
+    /** Epoch ms when plan/tenant claims were last loaded from console API. */
+    planSyncedAt?: number;
     onboardingCompleted?: boolean;
     keysRevealed?: boolean;
   }
