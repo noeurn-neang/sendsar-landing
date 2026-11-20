@@ -56,13 +56,30 @@ function inputClass(mono?: boolean) {
   }`;
 }
 
-function pushSummary(app: TenantAppView) {
-  const providers = [
-    app.hasOneSignal ? "OneSignal" : null,
-    app.hasFcm ? "FCM" : null,
-    app.hasPushy ? "Pushy" : null,
-  ].filter(Boolean);
-  return providers.length > 0 ? providers.join(" · ") : "No push configured";
+function PushBadges({ app }: { app: TenantAppView }) {
+  const hasAny = app.hasOneSignal || app.hasFcm || app.hasPushy;
+  if (!hasAny) {
+    return <span className="text-xs text-console-muted">No push configured</span>;
+  }
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {app.hasOneSignal ? (
+        <StatusPill tone="brand" dot={false}>
+          OneSignal
+        </StatusPill>
+      ) : null}
+      {app.hasFcm ? (
+        <StatusPill tone="success" dot={false}>
+          FCM
+        </StatusPill>
+      ) : null}
+      {app.hasPushy ? (
+        <StatusPill tone="neutral" dot={false}>
+          Pushy
+        </StatusPill>
+      ) : null}
+    </div>
+  );
 }
 
 export function AppsManager({ apps: initialApps }: { apps: TenantAppView[] }) {
@@ -151,22 +168,23 @@ export function AppsManager({ apps: initialApps }: { apps: TenantAppView[] }) {
                     Payload {app.pushPayloadType}
                   </p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="hidden text-xs text-console-muted sm:inline">
-                    {pushSummary(app)}
-                  </span>
-                  {(app.hasOneSignal || app.hasFcm || app.hasPushy) ? (
+                <div className="flex items-center gap-2.5 sm:gap-3">
+                  <div className="hidden sm:flex items-center">
+                    <PushBadges app={app} />
+                  </div>
+                  {app.hasOneSignal || app.hasFcm || app.hasPushy ? (
                     <button
                       type="button"
-                      className="console-btn-secondary shrink-0 text-xs"
+                      className="console-btn-secondary shrink-0 text-xs font-medium"
                       onClick={() => setTestApp(app)}
+                      title="Send a test notification to device token"
                     >
                       Test Push
                     </button>
                   ) : null}
                   <button
                     type="button"
-                    className="console-btn-secondary shrink-0 text-xs"
+                    className="console-btn-secondary shrink-0 text-xs font-medium"
                     onClick={() => setMode({ type: "edit", appCode: app.appCode })}
                   >
                     Manage
@@ -432,10 +450,15 @@ function AppModal({
                 </select>
               </Field>
 
-              <div className="rounded-lg border border-console-border p-3">
-                <p className="text-sm font-medium text-console-fg">OneSignal</p>
+              <div className="rounded-lg border border-console-border p-3.5 bg-console-canvas/50">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold text-console-fg">OneSignal</p>
+                  {hasOneSignalRestKey ? (
+                    <StatusPill tone="brand" dot={false}>Configured</StatusPill>
+                  ) : null}
+                </div>
                 <p className="mt-0.5 text-xs text-console-muted">
-                  Primary push provider supported by the gateway today.
+                  Web, iOS & Android notifications via OneSignal REST API. Found in OneSignal Dashboard → Settings → Keys & IDs.
                 </p>
                 <div className="mt-3 space-y-3">
                   <input
@@ -472,33 +495,30 @@ function AppModal({
                 </div>
               </div>
 
-              <button
-                type="button"
-                className="text-xs font-medium text-brand hover:text-brand-strong"
-                onClick={() => setShowAdvanced((open) => !open)}
-              >
-                {showAdvanced ? "Hide advanced providers" : "Show FCM / Pushy (advanced)"}
-              </button>
-
-              {showAdvanced ? (
-                <div className="space-y-4 rounded-lg border border-dashed border-console-border p-3">
-                  <p className="text-xs text-amber-700 [.console-theme[data-theme=dark]_&]:text-amber-300">
-                    FCM and Pushy configs are stored for future use. Gateway send is OneSignal-first today —
-                    saving here does not enable FCM delivery yet.
-                  </p>
+              <div className="rounded-lg border border-console-border p-3.5 bg-console-canvas/50">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold text-console-fg">Firebase Cloud Messaging (FCM)</p>
+                  {hasFcmConfig ? (
+                    <StatusPill tone="success" dot={false}>Configured</StatusPill>
+                  ) : null}
+                </div>
+                <p className="mt-0.5 text-xs text-console-muted">
+                  Native push delivery via FCM HTTP v1. Download from Firebase Console → Project Settings → Service Accounts → Generate New Private Key.
+                </p>
+                <div className="mt-3">
                   <Field
-                    label="FCM config (JSON)"
+                    label="Service Account JSON"
                     hint={
                       hasFcmConfig && !fcmJson && !clearFcm
                         ? "Configured. Leave blank to keep, or paste JSON to replace."
-                        : "Optional JSON object. Secrets are never shown after save."
+                        : "Paste your Firebase Service Account JSON (project_id, client_email, private_key)."
                     }
                   >
                     <textarea
                       className="min-h-[88px] w-full rounded-lg border border-console-border bg-console-canvas px-3 py-2 font-mono text-xs text-console-fg outline-none focus:border-brand/50 disabled:opacity-60"
                       value={fcmJson}
                       onChange={(e) => setFcmJson(e.target.value)}
-                      placeholder={hasFcmConfig ? "•••• configured — paste JSON to replace" : '{"projectId":"..."}'}
+                      placeholder={hasFcmConfig ? "•••• configured — paste JSON to replace" : '{"type": "service_account", "project_id": "...", ...}'}
                       disabled={clearFcm}
                     />
                     {!isCreate && hasFcmConfig ? (
@@ -513,6 +533,22 @@ function AppModal({
                       </label>
                     ) : null}
                   </Field>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="text-xs font-medium text-brand hover:text-brand-strong"
+                onClick={() => setShowAdvanced((open) => !open)}
+              >
+                {showAdvanced ? "Hide Pushy (experimental)" : "Show Pushy (experimental)"}
+              </button>
+
+              {showAdvanced ? (
+                <div className="space-y-4 rounded-lg border border-dashed border-console-border p-3">
+                  <p className="text-xs text-console-muted">
+                    Pushy configuration is stored for future gateway support.
+                  </p>
                   <Field
                     label="Pushy config (JSON)"
                     hint={
