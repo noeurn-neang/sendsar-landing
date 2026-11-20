@@ -132,7 +132,7 @@ export type PushTestResult = {
 export async function testTenantAppPush(
   input: PushTestInput,
 ): Promise<PushTestResult> {
-  const { tenantId, appCode, ...body } = input;
+  const { tenantId, appCode, accountId: _accountId, ...body } = input;
   return consoleFetch(
     `/v1/console/tenants/${tenantId}/apps/${encodeURIComponent(appCode)}/push/test`,
     {
