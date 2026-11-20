@@ -155,13 +155,15 @@ export function AppsManager({ apps: initialApps }: { apps: TenantAppView[] }) {
                   <span className="hidden text-xs text-console-muted sm:inline">
                     {pushSummary(app)}
                   </span>
-                  <button
-                    type="button"
-                    className="console-btn-secondary shrink-0 text-xs"
-                    onClick={() => setTestApp(app)}
-                  >
-                    Test Push
-                  </button>
+                  {(app.hasOneSignal || app.hasFcm || app.hasPushy) ? (
+                    <button
+                      type="button"
+                      className="console-btn-secondary shrink-0 text-xs"
+                      onClick={() => setTestApp(app)}
+                    >
+                      Test Push
+                    </button>
+                  ) : null}
                   <button
                     type="button"
                     className="console-btn-secondary shrink-0 text-xs"
@@ -590,7 +592,7 @@ function AppModal({
 
         <div className="flex items-center justify-between gap-2 border-t border-console-border px-5 py-3">
           <div>
-            {!isCreate ? (
+            {!isCreate && (hasOneSignalRestKey || hasFcmConfig || hasPushyConfig) ? (
               <button
                 type="button"
                 className="console-btn-secondary text-xs"
