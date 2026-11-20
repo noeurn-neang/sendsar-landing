@@ -4,6 +4,7 @@ import { useEffect, useId, useMemo, useRef, useState, useTransition } from "reac
 import { useRouter } from "next/navigation";
 
 import { LoadingButton, StatusPill } from "@/components/dashboard/ui";
+import { TestPushModal } from "./TestPushModal";
 import type { TenantAppView } from "@/lib/control-plane/settings";
 
 type AppDetail = {
@@ -68,6 +69,7 @@ export function AppsManager({ apps: initialApps }: { apps: TenantAppView[] }) {
   const router = useRouter();
   const [apps, setApps] = useState(initialApps);
   const [mode, setMode] = useState<Mode | null>(null);
+  const [testApp, setTestApp] = useState<TenantAppView | null>(null);
   const [refreshing, startTransition] = useTransition();
 
   useEffect(() => {
@@ -155,7 +157,14 @@ export function AppsManager({ apps: initialApps }: { apps: TenantAppView[] }) {
                   </span>
                   <button
                     type="button"
-                    className="console-btn-secondary shrink-0"
+                    className="console-btn-secondary shrink-0 text-xs"
+                    onClick={() => setTestApp(app)}
+                  >
+                    Test Push
+                  </button>
+                  <button
+                    type="button"
+                    className="console-btn-secondary shrink-0 text-xs"
                     onClick={() => setMode({ type: "edit", appCode: app.appCode })}
                   >
                     Manage
@@ -169,6 +178,9 @@ export function AppsManager({ apps: initialApps }: { apps: TenantAppView[] }) {
 
       {mode ? (
         <AppModal mode={mode} onClose={closeModal} onSaved={onSaved} onDeleted={onDeleted} />
+      ) : null}
+      {testApp ? (
+        <TestPushModal app={testApp} onClose={() => setTestApp(null)} />
       ) : null}
     </>
   );
@@ -196,6 +208,7 @@ function AppModal({
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [showTestModal, setShowTestModal] = useState(false);
 
   const [appCode, setAppCode] = useState("");
   const [name, setName] = useState("");
@@ -575,23 +588,42 @@ function AppModal({
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-2 border-t border-console-border px-5 py-3">
-          <LoadingButton
-            variant="secondary"
-            onClick={onClose}
-            disabled={saving || deleting}
-          >
-            Cancel
-          </LoadingButton>
-          <LoadingButton
-            pending={saving}
-            pendingLabel="Saving…"
-            disabled={loading || deleting || !canSave}
-            onClick={() => void save()}
-          >
-            {isCreate ? "Create app" : "Save changes"}
-          </LoadingButton>
+        <div className="flex items-center justify-between gap-2 border-t border-console-border px-5 py-3">
+          <div>
+            {!isCreate ? (
+              <button
+                type="button"
+                className="console-btn-secondary text-xs"
+                onClick={() => setShowTestModal(true)}
+              >
+                Test Push
+              </button>
+            ) : null}
+          </div>
+          <div className="flex items-center gap-2">
+            <LoadingButton
+              variant="secondary"
+              onClick={onClose}
+              disabled={saving || deleting}
+            >
+              Cancel
+            </LoadingButton>
+            <LoadingButton
+              pending={saving}
+              pendingLabel="Saving…"
+              disabled={loading || deleting || !canSave}
+              onClick={() => void save()}
+            >
+              {isCreate ? "Create app" : "Save changes"}
+            </LoadingButton>
+          </div>
         </div>
+        {showTestModal ? (
+          <TestPushModal
+            app={{ appCode, name, hasOneSignal: hasOneSignalRestKey, hasFcm: hasFcmConfig }}
+            onClose={() => setShowTestModal(false)}
+          />
+        ) : null}
       </div>
     </div>
   );

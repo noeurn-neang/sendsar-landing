@@ -106,4 +106,40 @@ export async function deleteTenantApp(input: {
   );
 }
 
+
+export type PushTestInput = {
+  accountId: string;
+  tenantId: string;
+  appCode: string;
+  provider?: string;
+  title?: string;
+  description?: string;
+  tokens: string[];
+  data?: Record<string, unknown>;
+};
+
+export type PushTestResult = {
+  success: boolean;
+  appCode: string;
+  provider: string;
+  targetsCount: number;
+  successfulCount: number;
+  failedCount: number;
+  details: string;
+  errors?: string[];
+};
+
+export async function testTenantAppPush(
+  input: PushTestInput,
+): Promise<PushTestResult> {
+  const { tenantId, appCode, ...body } = input;
+  return consoleFetch(
+    `/v1/console/tenants/${tenantId}/apps/${encodeURIComponent(appCode)}/push/test`,
+    {
+      method: "POST",
+      body,
+    },
+  );
+}
+
 export { normalizeAppCode };
